@@ -1,11 +1,10 @@
-import numeral from "numeral";
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import "./App.css";
-import Menu from "./components/menu";
-import MyOrder from "./components/myOrder";
-import StoreNav from "./components/storeNav";
+import OrderNow from "./components/orderNow";
+import StoreFront from "./components/storeFront";
 import * as orderActions from "./_actions/orderActions";
 
 class App extends Component {
@@ -14,28 +13,18 @@ class App extends Component {
   }
   render() {
     const order = this.props.orders.order || { lines: [] };
-    const orderTotal = order.lines.reduce(
-      (accum, line) => accum + line.lineTotal,
-      0
-    );
+
     return (
-      <div>
-        <StoreNav />
-        <div className="App row">
-          <div className="col-md-9">
-            <Menu />
-            {orderTotal > 0 && (
-              <button className="btn btn-success" style={{ marginTop: "50px" }}>
-                I'm Hungry! Order {numeral(orderTotal).format("$0,0.00")} worth
-                of yum!
-              </button>
-            )}
-          </div>
-          <div className="col-md-3">
-            <MyOrder className="col-md-3" order={this.props.orders.order} />
-          </div>
+      <Router>
+        <div>
+          <Route path="/order-now" component={OrderNow} />
+          <Route
+            path="/"
+            exact
+            render={props => <StoreFront order={order} />}
+          />
         </div>
-      </div>
+      </Router>
     );
   }
 }

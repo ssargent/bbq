@@ -1,4 +1,4 @@
-import { ORDERS_LOAD_ORDER } from "../_actions/types";
+import { ORDERS_LOAD_ORDER, ORDERS_ORDER_PLACED } from "../_actions/types";
 
 export default function(state = { loading: true }, action) {
   switch (action.type) {
@@ -6,6 +6,12 @@ export default function(state = { loading: true }, action) {
       return {
         ...state,
         order: action.order
+      };
+    case ORDERS_ORDER_PLACED:
+      return {
+        ...state,
+        order: action.order,
+        placed: action.placed
       };
     default:
       return state;

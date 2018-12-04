@@ -17,7 +17,6 @@ namespace BbqStore.Core.Services
         {
         }
 
-
         public Order AddItemToOrder(Guid id, OrderLine line)
         {
             var order = default(Order);

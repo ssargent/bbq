@@ -1,7 +1,7 @@
 //@flow
 import axios from "axios";
 import { API_HOST } from "../config";
-import { ORDERS_LOAD_ORDER } from "./types";
+import { ORDERS_LOAD_ORDER, ORDERS_ORDER_PLACED } from "./types";
 
 export function createOrder(order: object) {
   return dispatch => {
@@ -40,14 +40,24 @@ export function addToCart(newItem: object) {
   };
 }
 
-export function placeOrder(order: object) {
+export function placeOrder(customerName: string, order: object) {
   return dispatch => {
+    order.customerName = customerName;
+    const orderToPlace = { ...order, customerName: customerName };
     axios
-      .post(`${API_HOST}/api/orders/${order.id}/checkout`, order)
+      .post(`${API_HOST}/api/orders/${order.id}/checkout`, orderToPlace)
       .then(resp => {
-        dispatch(loadOrder(resp.data));
+        dispatch(orderPlaced(resp.data, true));
         localStorage.removeItem("current-order-id");
       });
+  };
+}
+
+export function orderPlaced(order: object, placed: boolean) {
+  return {
+    order,
+    placed,
+    type: ORDERS_ORDER_PLACED
   };
 }
 

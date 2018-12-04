@@ -85,6 +85,14 @@ namespace BbqStore.WebApp.Controllers
             return Accepted($"/api/orders/{order.Id}", CreateDisplayOrder(order));
         }
 
+        [HttpPost("{id}/checkout")]
+        public IActionResult Checkout(Guid id, [FromBody] Order value)
+        {
+            value.Status = "Ordered";
+            var order = OrderService.Save(value);
+            return Accepted($"/api/orders/{order.Id}", CreateDisplayOrder(order));
+        }
+
         [HttpPost("{id}/items")]
         public IActionResult AddToCart(Guid id, [FromBody] OrderLine line)
         {
