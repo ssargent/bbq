@@ -1,28 +1,45 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { bindActionCreators } from "redux";
+import "./App.css";
+import OrderNow from "./components/orderNow";
+import StoreFront from "./components/storeFront";
+import * as orderActions from "./_actions/orderActions";
 
 class App extends Component {
+  componentDidMount() {
+    this.props.orderActions.loadCart();
+  }
   render() {
+    const order = this.props.orders.order || { lines: [] };
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <div>
+          <Route path="/order-now" component={OrderNow} />
+          <Route
+            path="/"
+            exact
+            render={props => <StoreFront order={order} />}
+          />
+        </div>
+      </Router>
     );
   }
 }
+
+App = connect(
+  (state, ownProps) => {
+    return {
+      orders: state.orders
+    };
+  },
+  (dispatch: Function) => {
+    return {
+      orderActions: bindActionCreators(orderActions, dispatch)
+    };
+  }
+)(App);
 
 export default App;
