@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  bbqstore.webapp:
-    image: ${DOCKER_REGISTRY-}bbqstorewebapp
-    build:
-      context: .
-      dockerfile: src/server/BbqStore.WebApp/Dockerfile
