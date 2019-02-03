@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: bbq-backend-flask
+spec:
+  template:
+    metadata:
+      labels:
+        app: bbq-backend-flask
+    spec:
+      containers:
+      - name: flask
+        image: myfamilycooks.azurecr.io/samples/flask:0.1.1
+        ports:
+        - containerPort: 5000
+      imagePullSecrets:
+      - name: myfamilycooks
