@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: go-bbq
+spec:
+  template:
+    metadata:
+      labels:
+        app: go-bbq
+    spec:
+      containers:
+      - name: go-bbq
+        image: myfamilycooks.azurecr.io/bbq/go-bbq:0.0.4
+        ports:
+        - containerPort: 21337
+        env:
+        - name: BBQ_DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: bbq-db-creds
+              key: BBQ_DB_HOST.txt
+        - name: BBQ_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: bbq-db-creds
+              key: BBQ_DB_NAME.txt
+        - name: BBQ_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bbq-db-creds
+              key: BBQ_DB_PASSWORD.txt
+        - name: BBQ_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: bbq-db-creds
+              key: BBQ_DB_USER.txt
+      imagePullSecrets:
+      - name: myfamilycooks

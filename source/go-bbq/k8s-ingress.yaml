@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: go-bbq-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+      - bbq.k8s.ssargent.net
+      secretName: my-k8s-tls
+  rules:
+  - host: bbq.k8s.ssargent.net
+    http:
+      paths:
+      - path: /v1
+        backend:
+          serviceName: go-bbq
+          servicePort: 80
