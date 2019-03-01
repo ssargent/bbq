@@ -61,7 +61,10 @@ func main() {
 		os.Getenv("BBQ_DB_USER"),
 		os.Getenv("BBQ_DB_PASSWORD"),
 		os.Getenv("BBQ_DB_NAME"),
-		os.Getenv("BBQ_DB_HOST"))
+		os.Getenv("BBQ_DB_HOST"),
+		os.Getenv("BBQ_REDIS_MASTER"),
+		os.Getenv("BBQ_REDIS_PASSWORD")
+	)
 
 	router := Routes(configuration)
 
