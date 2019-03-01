@@ -22,7 +22,7 @@ type Config struct {
 }
 
 // Initialize creates the object and  invokes world::peace()
-func (c *Config) Initialize(user, password, dbname, host string) {
+func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string) {
 	connectionString :=
 		fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, password, host, dbname)
 
@@ -45,6 +45,12 @@ func (c *Config) Initialize(user, password, dbname, host string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	c.Cache = redis.NewClient(&redis.Options{
+		Addr:     redis1,
+		Password: redispw, // no password set
+		DB:       0,       // use default DB
+	})
 
 	c.Port = "21337"
 	c.UseCache = false
