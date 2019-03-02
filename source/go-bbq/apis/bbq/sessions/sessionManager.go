@@ -9,9 +9,9 @@ import (
 
 	//"errors"
 
-	"github.com/ssargent/go-bbq/apis/bbq/devices"
-	"github.com/ssargent/go-bbq/apis/bbq/monitors"
-	"github.com/ssargent/go-bbq/apis/bbq/subjects"
+	//"github.com/ssargent/go-bbq/apis/bbq/devices"
+	//"github.com/ssargent/go-bbq/apis/bbq/monitors"
+	//"github.com/ssargent/go-bbq/apis/bbq/subjects"
 	"github.com/ssargent/go-bbq/apis/system/tenants"
 )
 
@@ -89,33 +89,33 @@ func GetTenantSession(db *sql.DB, tenantName string, sessionid uuid.UUID) (Sessi
 func translateSessionRecord(db *sql.DB, tenantName string, session Session) (sessionRecord, error) {
 	var record sessionRecord
 
-	device, err := devices.GetTenantDeviceByName(db, tenantName, session.Device)
+	/*	device, err := devices.GetTenantDeviceByName(db, tenantName, session.Device)
 
-	if err != nil {
-		return sessionRecord{}, err
-	}
+		if err != nil {
+			return sessionRecord{}, err
+		}
 
-	monitor, err := monitors.GetTenantMonitorByName(db, tenantName, session.Monitor)
+		monitor, err := monitors.GetTenantMonitorByName(db, tenantName, session.Monitor)
 
-	if err != nil {
-		return sessionRecord{}, err
-	}
+		if err != nil {
+			return sessionRecord{}, err
+		}
 
-	subject, err := subjects.GetSubjectByName(db, session.Subject)
+		subject, err := subjects.GetSubjectByName(db, session.Subject)
 
-	if err != nil {
-		return sessionRecord{}, err
-	}
+		if err != nil {
+			return sessionRecord{}, err
+		}
 
-	record.DeviceID = device.ID
-	record.MonitorID = monitor.ID
-	record.SubjectID = subject.ID
-	record.Name = session.Name
-	record.Description = session.Description
-	record.StartTime = session.StartTime
-	record.TenantID = session.TenantID
-	record.EndTime = session.EndTime
-
+		record.DeviceID = device.ID
+		record.MonitorID = monitor.ID
+		record.SubjectID = subject.ID
+		record.Name = session.Name
+		record.Description = session.Description
+		record.StartTime = session.StartTime
+		record.TenantID = session.TenantID
+		record.EndTime = session.EndTime
+	*/
 	return record, nil
 }
 

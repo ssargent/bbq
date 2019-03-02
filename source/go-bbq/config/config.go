@@ -4,18 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" //wtse-1
 	_ "github.com/golang-migrate/migrate/v4/source/file"       //wtse-1
 	_ "github.com/lib/pq"                                      //wtse-1
 
+	"github.com/go-redis/cache"
 	"github.com/go-redis/redis"
+	"github.com/vmihailenco/msgpack"
 )
 
 // Config WTSE-1
 type Config struct {
-	Cache    *redis.Client
+	Cache    *cache.Codec
 	Database *sql.DB
 	UseCache bool
 	Port     string
@@ -46,11 +50,31 @@ func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string
 		log.Fatal(err)
 	}
 
-	c.Cache = redis.NewClient(&redis.Options{
-		Addr:     redis1,
-		Password: redispw, // no password set
-		DB:       0,       // use default DB
+	s := strings.Split(redis1, ":")
+
+	redisAddress := s[0]
+	redisPort := fmt.Sprintf("%s", s[1])
+
+	fmt.Println(redisAddress, ":", redisPort, redispw)
+
+	ring := redis.NewRing(&redis.RingOptions{
+		Addrs: map[string]string{
+			redisAddress:             "redis.k8s.ssargent.net:31812",
+			"redis.k8s.ssargent.net": ":30859",
+		},
+		Password:    redispw,
+		DialTimeout: time.Second * 30,
 	})
+
+	c.Cache = &cache.Codec{
+		Redis: ring,
+		Marshal: func(v interface{}) ([]byte, error) {
+			return msgpack.Marshal(v)
+		},
+		Unmarshal: func(b []byte, v interface{}) error {
+			return msgpack.Unmarshal(b, v)
+		},
+	}
 
 	c.Port = "21337"
 	c.UseCache = false
