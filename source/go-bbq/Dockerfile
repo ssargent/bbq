@@ -7,7 +7,7 @@ ENV GO111MODULE=on
 
 COPY go.mod .
 COPY go.sum .
-
+RUN git --version
 RUN go mod download
 
 FROM build_base AS server_builder
