@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -50,17 +49,9 @@ func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string
 		log.Fatal(err)
 	}
 
-	s := strings.Split(redis1, ":")
-
-	redisAddress := s[0]
-	redisPort := fmt.Sprintf("%s", s[1])
-
-	fmt.Println(redisAddress, ":", redisPort, redispw)
-
 	ring := redis.NewRing(&redis.RingOptions{
 		Addrs: map[string]string{
-			redisAddress:             "redis.k8s.ssargent.net:31812",
-			"redis.k8s.ssargent.net": ":30859",
+			redis1: redis1,
 		},
 		Password:    redispw,
 		DialTimeout: time.Second * 30,
