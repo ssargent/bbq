@@ -13,6 +13,10 @@ spec:
   - host: bbq.k8s.ssargent.net
     http:
       paths:
+      - path: /
+        backend:
+          serviceName: bbq-frontend
+          servicePort: 80
       - path: /v1
         backend:
           serviceName: go-bbq
