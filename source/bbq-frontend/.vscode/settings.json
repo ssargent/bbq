@@ -1,0 +1,25 @@
+{
+  "eslint.enable": true,
+  "eslint.autoFixOnSave": true,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": false,
+  "flow.useNPMPackagedFlow": false,
+  "javascript.validate.enable": false,
+  "javascript.format.enable": false,
+  "prettier.eslintIntegration": true,
+
+  "files.exclude": {
+    "**/.git": true,         // this is a default value
+    "**/.DS_Store": true,    // this is a default value
+
+    "**/node_modules": true, // this excludes all folders 
+                             // named "node_modules" from 
+                             // the explore tree
+
+    // alternative version
+    "node_modules": true    // this excludes the folder 
+                            // only from the root of
+                            // your workspace 
+}
+}

@@ -1,6 +1,25 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  name: bbq-frontend
+spec:
+  template:
+    metadata:
+      labels:
+        app: bbq-frontend
+    spec:
+      containers:
+      - name: bbq-frontend
+        image: myfamilycooks.azurecr.io/bbq/frontend:0.0.1
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: myfamilycooks
+      
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
   name: go-bbq
 spec:
   template:
@@ -46,3 +65,4 @@ spec:
               key: redis-password              
       imagePullSecrets:
       - name: myfamilycooks
+      
