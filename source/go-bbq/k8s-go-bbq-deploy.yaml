@@ -1,25 +1,6 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: bbq-frontend
-spec:
-  template:
-    metadata:
-      labels:
-        app: bbq-frontend
-    spec:
-      containers:
-      - name: bbq-frontend
-        image: myfamilycooks.azurecr.io/bbq/frontend:0.0.1
-        ports:
-        - containerPort: 80
-      imagePullSecrets:
-      - name: myfamilycooks
-      
----
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
   name: go-bbq
 spec:
   template:
@@ -28,41 +9,40 @@ spec:
         app: go-bbq
     spec:
       containers:
-      - name: go-bbq
-        image: myfamilycooks.azurecr.io/bbq/go-bbq:0.0.6
-        ports:
-        - containerPort: 21337
-        env:
-        - name: BBQ_DB_HOST
-          valueFrom:
-            configMapKeyRef:
-                name: bbq-config
-                key: postgresql-server
-        - name: BBQ_DB_NAME
-          valueFrom:
-            secretKeyRef:
-              name: bbq-db-creds
-              key: BBQ_DB_NAME.txt
-        - name: BBQ_DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: bbq-db-creds
-              key: BBQ_DB_PASSWORD.txt
-        - name: BBQ_DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: bbq-db-creds
-              key: BBQ_DB_USER.txt
-        - name: BBQ_REDIS_MASTER
-          valueFrom:
-            configMapKeyRef:
-                name: bbq-config
-                key: redis-one
-        - name: BBQ_REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: bbq-cache-redis
-              key: redis-password              
+        - name: go-bbq
+          image: myfamilycooks.azurecr.io/bbq/go-bbq:0.0.6
+          ports:
+            - containerPort: 21337
+          env:
+            - name: BBQ_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bbq-config
+                  key: postgresql-server
+            - name: BBQ_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: bbq-db-creds
+                  key: BBQ_DB_NAME.txt
+            - name: BBQ_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bbq-db-creds
+                  key: BBQ_DB_PASSWORD.txt
+            - name: BBQ_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bbq-db-creds
+                  key: BBQ_DB_USER.txt
+            - name: BBQ_REDIS_MASTER
+              valueFrom:
+                configMapKeyRef:
+                  name: bbq-config
+                  key: redis-one
+            - name: BBQ_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bbq-redis
+                  key: redis-password
       imagePullSecrets:
-      - name: myfamilycooks
-      
+        - name: myfamilycooks
