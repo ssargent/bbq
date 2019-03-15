@@ -7,17 +7,17 @@ metadata:
 spec:
   tls:
     - hosts:
-      - bbq.k8s.ssargent.net
+        - bbq.k8s.ssargent.net
       secretName: my-k8s-tls
   rules:
-  - host: bbq.k8s.ssargent.net
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: bbq-frontend
-          servicePort: 80
-      - path: /v1
-        backend:
-          serviceName: go-bbq
-          servicePort: 80
+    - host: bbq.k8s.ssargent.net
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: bbq-frontend
+              servicePort: 80
+          - path: /v1
+            backend:
+              serviceName: go-bbq
+              servicePort: 80

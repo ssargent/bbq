@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import Dashboard from "./Components/Dashboard";
-import Devices from "./Components/Devices";
-import Monitors from "./Components/Monitors";
+import { BrowserRouter as Router, Link, Route } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import Devices from "./components/Devices";
+import Monitors from "./components/Monitors";
 
 export default function PageContent({}) {
     return (
