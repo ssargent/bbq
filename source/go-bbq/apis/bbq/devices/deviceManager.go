@@ -102,27 +102,40 @@ func GetTenantDevices(config *config.Config, tenantName string) ([]Device, error
 		log.Fatal(err)
 	}
 
-	fmt.Println("Found Tenant: ", tenant.ID, tenant.Name, tenant.URLKey)
-	rows, err := config.Database.Query(
-		"SELECT id, name, description, tenantid FROM bbq.devices  where tenantid = $1", tenant.ID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
 	devices := []Device{}
 
-	for rows.Next() {
-		var d Device
-		if err := rows.Scan(&d.ID, &d.Name, &d.Description, &d.TenantID); err != nil {
+	cacheKey := fmt.Sprintf("bbq$devices$%s", tenantName)
+
+	if err := config.Cache.Get(cacheKey, &devices); err == nil {
+		return devices, nil
+	} else {
+
+		fmt.Println("Found Tenant: ", tenant.ID, tenant.Name, tenant.URLKey)
+		rows, err := config.Database.Query(
+			"SELECT id, name, description, tenantid FROM bbq.devices  where tenantid = $1", tenant.ID)
+
+		if err != nil {
 			return nil, err
 		}
-		devices = append(devices, d)
-	}
 
-	return devices, nil
+		defer rows.Close()
+
+		for rows.Next() {
+			var d Device
+			if err := rows.Scan(&d.ID, &d.Name, &d.Description, &d.TenantID); err != nil {
+				return nil, err
+			}
+			devices = append(devices, d)
+		}
+
+		config.Cache.Set(&cache.Item{
+			Key:        cacheKey,
+			Object:     devices,
+			Expiration: time.Minute * 10,
+		})
+
+		return devices, nil
+	}
 }
 
 // GetTenantDeviceByName returns a device object given its name.
@@ -132,11 +145,24 @@ func GetTenantDeviceByName(config *config.Config, tenantName string, deviceName 
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var d Device
-	config.Database.QueryRow("select id, name, description, tenantid from bbq.devices where Name = $1 AND tenantid = $2", deviceName, tenant.ID).Scan(&d.ID, &d.Name, &d.Description, &d.TenantID)
+	cacheKey := fmt.Sprintf("bbq$devices$%s-%s", tenantName, deviceName)
 
-	return d, nil
+	if err := config.Cache.Get(cacheKey, &d); err == nil {
+		return d, nil
+	} else {
+
+		config.Database.QueryRow("select id, name, description, tenantid from bbq.devices where Name = $1 AND tenantid = $2", deviceName, tenant.ID).Scan(&d.ID, &d.Name, &d.Description, &d.TenantID)
+
+		config.Cache.Set(&cache.Item{
+			Key:        cacheKey,
+			Object:     d,
+			Expiration: time.Minute * 10,
+		})
+
+		return d, nil
+
+	}
 }
 
 // GetTenantDevice gets a specific device for a tenant
