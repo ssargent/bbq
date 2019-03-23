@@ -15,6 +15,7 @@ import (
 	"github.com/ssargent/go-bbq/apis/bbq/monitors"
 	"github.com/ssargent/go-bbq/apis/bbq/sessions"
 	"github.com/ssargent/go-bbq/apis/data/temperature"
+	"github.com/ssargent/go-bbq/apis/health"
 	"github.com/ssargent/go-bbq/config"
 )
 
@@ -37,6 +38,7 @@ func Routes(c *config.Config) *chi.Mux {
 		middleware.Recoverer,
 		cors.Handler)
 
+	healthAPI := health.New(c)
 	devicesAPI := devices.New(c)
 	monitorsAPI := monitors.New(c)
 	sessionsAPI := sessions.New(c)
@@ -44,6 +46,7 @@ func Routes(c *config.Config) *chi.Mux {
 
 	router.Route("/v1", func(r chi.Router) {
 		//	r.Mount("/bbq/devices", devicesAPI.Routes())
+		r.Mount("/health", healthAPI.HealthRoutes())
 		r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
 		r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
 		r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
