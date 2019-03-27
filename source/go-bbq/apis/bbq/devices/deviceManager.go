@@ -107,6 +107,7 @@ func GetTenantDevices(config *config.Config, tenantName string) ([]Device, error
 	cacheKey := fmt.Sprintf("bbq$devices$%s", tenantName)
 
 	if err := config.Cache.Get(cacheKey, &devices); err == nil {
+		fmt.Println("Cache Hit: ", cacheKey)
 		return devices, nil
 	} else {
 
@@ -149,6 +150,7 @@ func GetTenantDeviceByName(config *config.Config, tenantName string, deviceName 
 	cacheKey := fmt.Sprintf("bbq$devices$%s-%s", tenantName, deviceName)
 
 	if err := config.Cache.Get(cacheKey, &d); err == nil {
+		fmt.Println("Cache Hit: ", cacheKey)
 		return d, nil
 	} else {
 
@@ -176,6 +178,7 @@ func GetTenantDevice(config *config.Config, tenantName string, deviceID int) (De
 
 	cacheKey := fmt.Sprintf("bbq$device$%s-%d", tenantName, deviceID)
 	if err := config.Cache.Get(cacheKey, &d); err == nil {
+		fmt.Println("Cache Hit: ", cacheKey)
 		return d, nil
 	} else {
 

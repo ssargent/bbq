@@ -1,8 +1,13 @@
+import { findIconDefinition, library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from "react";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Devices from "./components/Devices";
 import Monitors from "./components/Monitors";
+
+const temperatureHigh = findIconDefinition({ prefix: 'fas', iconName: 'temperature-high'});
+library.add(temperatureHigh);
 
 export default function PageContent({}) {
     return (
@@ -23,7 +28,7 @@ export default function PageContent({}) {
               <Link className="nav-link" to="/devices">Devices</Link> 
             </li>
             <li className="nav-item">
-            <Link className="nav-link" to="/monitors">Monitors</Link> 
+            <Link className="nav-link" to="/monitors"><FontAwesomeIcon icon="temperature-high" />Monitors</Link> 
             </li>
             <li className="nav-item">
               <a className="nav-link" href="#">
