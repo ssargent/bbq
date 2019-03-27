@@ -12,7 +12,7 @@ import (
 	//"github.com/ssargent/go-bbq/apis/bbq/devices"
 	//"github.com/ssargent/go-bbq/apis/bbq/monitors"
 	//"github.com/ssargent/go-bbq/apis/bbq/subjects"
-	"github.com/ssargent/go-bbq/apis/system/tenants"
+	"github.com/ssargent/go-bbq/internal/apis/system/tenants"
 )
 
 func getTenantSessions(db *sql.DB, tenantName string) ([]Session, error) {

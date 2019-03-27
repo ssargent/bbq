@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 
-	"github.com/ssargent/go-bbq/config"
-	"github.com/ssargent/go-bbq/infrastructure"
+	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/internal/infrastructure"
 )
 
 // DeviceApi - duck typing?

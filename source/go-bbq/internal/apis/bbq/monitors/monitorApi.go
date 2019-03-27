@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 
-	"github.com/ssargent/go-bbq/infrastructure"
-	"github.com/ssargent/go-bbq/config"
+	"github.com/ssargent/go-bbq/internal/infrastructure"
+	"github.com/ssargent/go-bbq/internal/config"
 )
 
 

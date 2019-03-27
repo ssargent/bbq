@@ -14,8 +14,8 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lib/pq"
-	"github.com/ssargent/go-bbq/config"
-	"github.com/ssargent/go-bbq/infrastructure"
+	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/internal/infrastructure"
 )
 
 // Session represents a bbq session.

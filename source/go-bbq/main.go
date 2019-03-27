@@ -11,12 +11,12 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 
-	"github.com/ssargent/go-bbq/apis/bbq/devices"
-	"github.com/ssargent/go-bbq/apis/bbq/monitors"
-	"github.com/ssargent/go-bbq/apis/bbq/sessions"
-	"github.com/ssargent/go-bbq/apis/data/temperature"
-	"github.com/ssargent/go-bbq/apis/health"
-	"github.com/ssargent/go-bbq/config"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/devices"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/monitors"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/sessions"
+	"github.com/ssargent/go-bbq/internal/apis/data/temperature"
+	"github.com/ssargent/go-bbq/internal/apis/health"
+	"github.com/ssargent/go-bbq/internal/config"
 )
 
 // Routes wtse-1

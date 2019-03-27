@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/ssargent/go-bbq/apis/bbq/sessions"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/sessions"
 )
 
 func getTenantSessionReadings(db *sql.DB, tenantName string, sessionid uuid.UUID) ([]Reading, error) {

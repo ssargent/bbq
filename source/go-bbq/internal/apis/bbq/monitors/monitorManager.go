@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/lib/pq"
-	"github.com/ssargent/go-bbq/apis/system/tenants"
+	"github.com/ssargent/go-bbq/internal/apis/system/tenants"
 )
 
 func getTenantMonitors(db *sql.DB, tenantName string) ([]Monitor, error) {
