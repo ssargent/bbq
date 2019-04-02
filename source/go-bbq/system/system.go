@@ -1,4 +1,4 @@
-package sys
+package system
 
 import "github.com/google/uuid"
 
@@ -29,8 +29,18 @@ type TenantService interface {
 
 type AccountService interface {
 	GetAccount(accountName string) (*Account, error)
+	Login(login string, password string) (*Account, error)
 	GetAccounts() ([]*Account, error)
 	CreateAccount(account *Account) (*Account, error)
 	UpdateAccount(account *Account) (*Account, error)
 	DeleteAccount(account *Account) error
+}
+
+type AccountRepository interface {
+	GetByID(id uuid.UUID) (*Account, error)
+	GetByLogin(accountName string) (*Account, error)
+	GetAll() ([]*Account, error)
+	Create(account *Account) (*Account, error)
+	Update(account *Account) (*Account, error)
+	Delete(account *Account) error
 }
