@@ -10,17 +10,6 @@ type pgAccountRepository struct {
 	config *config.Config
 }
 
-/*
-	type AccountRepository interface {
-	GetById(id uuid.UUID) (*Account, error)
-	GetByLogin(accountName string) (*Account, error)
-	GetAll() ([]*Account, error)
-	Create(account *Account) (*Account, error)
-	Update(account *Account) (*Account, error)
-	Delete(account *Account) error
-}
-*/
-
 // NewAccountRepository will create an AccountService
 func NewAccountRepository(config *config.Config) system.AccountRepository {
 	return &pgAccountRepository{config: config}
@@ -31,7 +20,15 @@ func (a *pgAccountRepository) GetByID(id uuid.UUID) (*system.Account, error) {
 }
 
 func (a *pgAccountRepository) GetByLogin(accountName string) (*system.Account, error) {
-	return nil, nil
+
+	var account system.Account
+	err := a.config.Database.QueryRow("select id, loginname, loginpassword, fullname, email, isenabled, tenantid from sys.accounts where loginname = $1", accountName).Scan(&account.ID, &account.LoginName, &account.LoginPassword, &account.FullName, &account.Email, &account.IsEnabled, &account.TenantID)
+
+	if err != nil {
+		return &system.Account{}, err
+	}
+
+	return &account, nil
 }
 
 func (a *pgAccountRepository) GetAll() ([]*system.Account, error) {
