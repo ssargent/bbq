@@ -43,9 +43,10 @@ func (api *HealthApi) LiveCheck(w http.ResponseWriter, r *http.Request) {
 	cacheStatus := "ready"
 	apiServer := "ready"
 
-	_, err := api.config.Database.Query(
+	rows, err := api.config.Database.Query(
 		"SELECT 1")
 
+	defer rows.Close()
 	if err != nil {
 		database = "not-ready"
 	}

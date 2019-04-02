@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: go-bbq
-          image: myfamilycooks.azurecr.io/bbq/go-bbq:0.0.7
+          image: myfamilycooks.azurecr.io/bbq/go-bbq:0.0.8
           ports:
             - containerPort: 21337
           livenessProbe:

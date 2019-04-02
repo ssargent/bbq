@@ -16,3 +16,5 @@ type DeviceService interface {
 	UpdateDevice(tenantName string, existingDevice *Device) (*Device, error)
 	DeleteDevice(tenantName string, existingDevice *Device) error
 }
+
+
