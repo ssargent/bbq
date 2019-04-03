@@ -40,7 +40,7 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 
 	emailAccount, err := a.repository.GetByEmail(account.Email)
 
-	if emailAccount != nil {
+	if err != nil {
 		return system.Account{}, errors.New("a login with that email already exists.  please choose another")
 	}
 
