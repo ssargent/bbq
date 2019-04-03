@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ssargent/go-bbq/internal/config"
-	"github.com/ssargent/go-bbq/system"
+	"github.com/ssargent/go-bbq/pkg/system"
 )
 
 type accountService struct {
@@ -19,29 +19,29 @@ func NewAccountService(config *config.Config, repository system.AccountRepositor
 	return &accountService{repository: repository}
 }
 
-func (a *accountService) GetAccount(accountName string) (*system.Account, error) {
-	return nil, nil
+func (a *accountService) GetAccount(accountName string) (system.Account, error) {
+	return system.Account{}, nil
 }
 
-func (a *accountService) Login(login string, password string) (*system.Account, error) {
-	return nil, nil
+func (a *accountService) Login(login string, password string) (system.Account, error) {
+	return system.Account{}, nil
 }
 
-func (a *accountService) GetAccounts() ([]*system.Account, error) {
-	return nil, nil
+func (a *accountService) GetAccounts() ([]system.Account, error) {
+	return []system.Account{}, nil
 }
 
-func (a *accountService) CreateAccount(account *system.Account) (*system.Account, error) {
+func (a *accountService) CreateAccount(account system.Account) (system.Account, error) {
 	loginAccount, err := a.repository.GetByLogin(account.LoginName)
 
 	if loginAccount != nil {
-		return nil, errors.New("a login with that loginname already exists.  Please choose another.")
+		return system.Account{}, errors.New("a login with that loginname already exists. please choose another")
 	}
 
 	emailAccount, err := a.repository.GetByEmail(account.Email)
 
 	if emailAccount != nil {
-		return nil, errors.New("a login with that email already exists.  Please choose another.")
+		return system.Account{}, errors.New("a login with that email already exists.  please choose another")
 	}
 
 	// encrypt password
@@ -51,7 +51,7 @@ func (a *accountService) CreateAccount(account *system.Account) (*system.Account
 	createdAccount, err := a.repository.Create(account)
 
 	if err != nil {
-		return nil, err
+		return system.Account{}, err
 	}
 
 	// clear password before sending or caching
@@ -60,12 +60,12 @@ func (a *accountService) CreateAccount(account *system.Account) (*system.Account
 	return createdAccount, nil
 }
 
-func (a *accountService) UpdateAccount(account *system.Account) (*system.Account, error) {
-	return nil, nil
+func (a *accountService) UpdateAccount(account system.Account) (system.Account, error) {
+	return system.Account{}, nil
 }
 
-func (a *accountService) DeleteAccount(account *system.Account) error {
-	return nil
+func (a *accountService) DeleteAccount(account system.Account) error {
+	return system.Account{}
 }
 
 func hashAndSalt(pwd []byte) string {
