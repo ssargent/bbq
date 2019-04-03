@@ -37,6 +37,7 @@ type AccountService interface {
 }
 
 type AccountRepository interface {
+	GetByEmail(email string) (*Account, error)
 	GetByID(id uuid.UUID) (*Account, error)
 	GetByLogin(accountName string) (*Account, error)
 	GetAll() ([]*Account, error)

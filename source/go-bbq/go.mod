@@ -14,4 +14,5 @@ require (
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
 	github.com/vmihailenco/msgpack v4.0.2+incompatible
+	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
 )
