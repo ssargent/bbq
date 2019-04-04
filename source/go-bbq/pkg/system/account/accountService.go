@@ -1,12 +1,13 @@
 package account
 
 import (
+	"database/sql"
 	"errors"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/pkg/config"
 	"github.com/ssargent/go-bbq/pkg/system"
 )
 
@@ -19,12 +20,25 @@ func NewAccountService(config *config.Config, repository system.AccountRepositor
 	return &accountService{repository: repository}
 }
 
-func (a *accountService) GetAccount(accountName string) (system.Account, error) {
-	return system.Account{}, nil
+func (a *accountService) GetAccount(loginName string) (system.Account, error) {
+	login, err := a.repository.GetByLogin(loginName)
+
+	if err != nil {
+		return system.Account{}, err
+	}
+
+	return login, nil
 }
 
 func (a *accountService) Login(login string, password string) (system.Account, error) {
-	return system.Account{}, nil
+	account, err := a.GetAccount(login)
+
+	if err != nil || !comparePasswords(account.LoginPassword, []byte(password)) {
+		return system.Account{}, errors.New("account not found")
+	}
+
+	account.LoginPassword = ""
+	return account, nil
 }
 
 func (a *accountService) GetAccounts() ([]system.Account, error) {
@@ -32,16 +46,24 @@ func (a *accountService) GetAccounts() ([]system.Account, error) {
 }
 
 func (a *accountService) CreateAccount(account system.Account) (system.Account, error) {
-	loginAccount, err := a.repository.GetByLogin(account.LoginName)
+	_, loginExistsErr := a.repository.GetByLogin(account.LoginName)
 
-	if loginAccount != nil {
-		return system.Account{}, errors.New("a login with that loginname already exists. please choose another")
+	if loginExistsErr != nil {
+		if loginExistsErr == sql.ErrNoRows {
+			return system.Account{}, errors.New("a login with that loginname already exists. please choose another")
+		}
+
+		return system.Account{}, loginExistsErr
 	}
 
-	emailAccount, err := a.repository.GetByEmail(account.Email)
+	_, emailExistsErr := a.repository.GetByEmail(account.Email)
 
-	if err != nil {
-		return system.Account{}, errors.New("a login with that email already exists.  please choose another")
+	if emailExistsErr != nil {
+		if emailExistsErr == sql.ErrNoRows {
+			return system.Account{}, errors.New("a login with that email already exists.  please choose another")
+		}
+
+		return system.Account{}, emailExistsErr
 	}
 
 	// encrypt password
@@ -61,11 +83,48 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 }
 
 func (a *accountService) UpdateAccount(account system.Account) (system.Account, error) {
-	return system.Account{}, nil
+	_, emailExistsErr := a.repository.GetByEmail(account.Email)
+
+	if emailExistsErr != nil {
+		if emailExistsErr == sql.ErrNoRows {
+			return system.Account{}, errors.New("a login with that email already exists.  please choose another")
+		}
+
+		return system.Account{}, emailExistsErr
+	}
+
+	// encrypt password
+	account.LoginPassword = hashAndSalt([]byte(account.LoginPassword))
+
+	// create account
+	updatedAccount, err := a.repository.Update(account)
+
+	if err != nil {
+		return system.Account{}, err
+	}
+
+	// clear password before sending or caching
+	updatedAccount.LoginPassword = ""
+
+	return updatedAccount, nil
 }
 
 func (a *accountService) DeleteAccount(account system.Account) error {
-	return system.Account{}
+	//todo check permissions...
+	return a.repository.Delete(account)
+}
+
+func comparePasswords(hashedPwd string, plainPwd []byte) bool {
+	// Since we'll be getting the hashed password from the DB it
+	// will be a string so we'll need to convert it to a byte slice
+	byteHash := []byte(hashedPwd)
+	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return true
 }
 
 func hashAndSalt(pwd []byte) string {
