@@ -24,7 +24,7 @@ type Config struct {
 	Database  *sql.DB
 	UseCache  bool
 	Port      string
-	tokenAuth *jwtauth.JWTAuth
+	TokenAuth *jwtauth.JWTAuth
 }
 
 // Initialize creates the object and  invokes world::peace()
@@ -32,7 +32,7 @@ func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string
 	connectionString :=
 		fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, password, host, dbname)
 
-	c.tokenAuth = jwtauth.New("HS256", []byte(password), nil)
+	c.TokenAuth = jwtauth.New("HS256", []byte(password), nil)
 
 	claims := jwt.MapClaims{
 		"sub": "123",
@@ -41,7 +41,7 @@ func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string
 		"exp": time.Now().Add(time.Hour * time.Duration(100000)).Unix(),
 		"iat": time.Now().Unix(),
 	}
-	_, tokenString, _ := c.tokenAuth.Encode(claims)
+	_, tokenString, _ := c.TokenAuth.Encode(claims)
 	fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
 
 	fmt.Println("Connecting to ", connectionString)

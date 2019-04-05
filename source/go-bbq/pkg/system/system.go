@@ -34,6 +34,7 @@ type AccountService interface {
 	CreateAccount(account Account) (Account, error)
 	UpdateAccount(account Account) (Account, error)
 	DeleteAccount(account Account) error
+	CreateToken(account Account) string
 }
 
 type AccountRepository interface {
