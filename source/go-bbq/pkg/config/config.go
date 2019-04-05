@@ -37,7 +37,7 @@ func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string
 	claims := jwt.MapClaims{
 		"sub": "123",
 		"iss": "https://bbq.k8s.ssargent.net/",
-		"aud": "https://bbq.k8s.ssargent.net/"
+		"aud": "https://bbq.k8s.ssargent.net/",
 		"exp": time.Now().Add(time.Hour * time.Duration(100000)).Unix(),
 		"iat": time.Now().Unix(),
 	}

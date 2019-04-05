@@ -1,10 +1,11 @@
-package infrastructure 
+package infrastructure
 
-import ( 
+import (
 	"net/http"
 
 	"github.com/go-chi/render"
 )
+
 //--
 // Error response payloads & renderers
 //--
@@ -29,6 +30,16 @@ func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+// Return an error as a 401
+func ErrAccessDenied(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 401,
+		StatusText:     "Access Denied",
+		ErrorText:      err.Error(),
+	}
+}
+
 // ErrInvalidRequest returns an invalid (badrequest)
 func ErrInvalidRequest(err error) render.Renderer {
 	if err.Error() == "not-found" {
@@ -38,7 +49,7 @@ func ErrInvalidRequest(err error) render.Renderer {
 			StatusText:     "Invalid request.",
 			ErrorText:      err.Error(),
 		}
-	} 
+	}
 
 	return &ErrResponse{
 		Err:            err,
@@ -46,7 +57,7 @@ func ErrInvalidRequest(err error) render.Renderer {
 		StatusText:     "Invalid request.",
 		ErrorText:      err.Error(),
 	}
-	
+
 }
 
 // ErrRender renders an error

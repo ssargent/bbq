@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ssargent/go-bbq/pkg/config"
@@ -14,11 +16,12 @@ import (
 
 type accountService struct {
 	repository system.AccountRepository
+	config     *config.Config
 }
 
 // NewAccountService will create an AccountService
 func NewAccountService(config *config.Config, repository system.AccountRepository) system.AccountService {
-	return &accountService{repository: repository}
+	return &accountService{repository: repository, config: config}
 }
 
 func (a *accountService) GetAccount(loginName string) (system.Account, error) {
@@ -32,7 +35,17 @@ func (a *accountService) GetAccount(loginName string) (system.Account, error) {
 }
 
 func (a *accountService) CreateToken(account system.Account) string {
-	return "" // finish with token
+	claims := jwt.MapClaims{
+		"sub":   account.ID,
+		"iss":   "https://bbq.k8s.ssargent.net/",
+		"aud":   "https://bbq.k8s.ssargent.net/",
+		"exp":   time.Now().Add(time.Second * time.Duration(100000)).Unix(),
+		"iat":   time.Now().Unix(),
+		"login": account.LoginName,
+		"fn":    account.FullName,
+	}
+	_, tokenString, _ := a.config.TokenAuth.Encode(claims)
+	return tokenString
 }
 
 func (a *accountService) Login(login string, password string) (system.Account, error) {
