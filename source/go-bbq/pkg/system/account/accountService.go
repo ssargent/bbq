@@ -32,7 +32,7 @@ func (a *accountService) GetAccount(loginName string) (system.Account, error) {
 }
 
 func (a *accountService) CreateToken(account system.Account) string {
-	return ""
+	return "" // finish with token
 }
 
 func (a *accountService) Login(login string, password string) (system.Account, error) {

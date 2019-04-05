@@ -61,6 +61,7 @@ func (handler *accountHandler) login(w http.ResponseWriter, r *http.Request) {
 
 	jwtToken := handler.service.CreateToken(authenticated)
 
+	render.JSON(w, r, jwtToken)
 }
 
 func (handler *accountHandler) createAccount(w http.ResponseWriter, r *http.Request) {
