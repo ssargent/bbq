@@ -31,6 +31,10 @@ func (a *accountService) GetAccount(loginName string) (system.Account, error) {
 	return login, nil
 }
 
+func (a *accountService) CreateToken(account system.Account) string {
+	return ""
+}
+
 func (a *accountService) Login(login string, password string) (system.Account, error) {
 	account, err := a.GetAccount(login)
 
