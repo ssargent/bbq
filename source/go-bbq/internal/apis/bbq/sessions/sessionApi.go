@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/lib/pq"
-	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/pkg/config"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
 )
 

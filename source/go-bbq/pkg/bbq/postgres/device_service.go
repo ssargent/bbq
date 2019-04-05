@@ -1,6 +1,6 @@
 package postgres
 
-import "github.com/ssargent/go-bbq/bbq"
+import "github.com/ssargent/go-bbq/pkg/bbq"
 
 //	"database/sql"
 

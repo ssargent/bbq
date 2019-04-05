@@ -12,7 +12,7 @@ type Tenant struct {
 type Account struct {
 	ID            uuid.UUID `json:"id"`
 	LoginName     string    `json:"loginName"`
-	LoginPassword string    `json:"loginPassword"`
+	LoginPassword string    `json:"loginPassword,omitempty"`
 	FullName      string    `json:"fullName"`
 	Email         string    `json:"email"`
 	IsEnabled     bool      `json:"isenabled"`

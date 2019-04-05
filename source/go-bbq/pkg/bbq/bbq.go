@@ -2,6 +2,7 @@ package bbq
 
 import "github.com/google/uuid"
 
+//Device is
 type Device struct {
 	ID          int       `json:"id"`
 	Name        string    `json:"name"`
@@ -9,6 +10,7 @@ type Device struct {
 	TenantID    uuid.UUID `json:"tenantid"`
 }
 
+// DeviceService is the service for devices
 type DeviceService interface {
 	GetDevices(tenantName string) ([]*Device, error)
 	GetDevice(tenantName string, deviceName string) (*Device, error)
@@ -16,5 +18,3 @@ type DeviceService interface {
 	UpdateDevice(tenantName string, existingDevice *Device) (*Device, error)
 	DeleteDevice(tenantName string, existingDevice *Device) error
 }
-
-

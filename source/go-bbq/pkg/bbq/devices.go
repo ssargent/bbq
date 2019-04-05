@@ -2,18 +2,16 @@ package bbq
 
 import "database/sql"
 
+// DeviceRepository is ...
 type DeviceRepository struct {
-	database *sql.DB	
+	database *sql.DB
 }
 
-type DeviceService struct {
-
+type deviceService struct {
 }
 
-// NewDeviceRepository creates a fully instantiated 
+// NewDeviceRepository creates a fully instantiated
 func NewDeviceRepository(db *sql.DB) *DeviceRepository {
 	repo := &DeviceRepository{db}
 	return repo
 }
-
-func GetDevices()

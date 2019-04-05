@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/go-redis/cache"
-	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/pkg/config"
 )
 
 // DeviceApi - duck typing?

@@ -3,6 +3,7 @@ package account
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -49,26 +50,24 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 	_, loginExistsErr := a.repository.GetByLogin(account.LoginName)
 
 	if loginExistsErr != nil {
-		if loginExistsErr == sql.ErrNoRows {
-			return system.Account{}, errors.New("a login with that loginname already exists. please choose another")
+		if loginExistsErr != sql.ErrNoRows {
+			return system.Account{}, loginExistsErr
 		}
 
-		return system.Account{}, loginExistsErr
 	}
 
 	_, emailExistsErr := a.repository.GetByEmail(account.Email)
 
 	if emailExistsErr != nil {
-		if emailExistsErr == sql.ErrNoRows {
-			return system.Account{}, errors.New("a login with that email already exists.  please choose another")
+		if emailExistsErr != sql.ErrNoRows {
+			return system.Account{}, emailExistsErr
 		}
-
-		return system.Account{}, emailExistsErr
 	}
 
+	fmt.Println("About to encrypt pw")
 	// encrypt password
 	account.LoginPassword = hashAndSalt([]byte(account.LoginPassword))
-
+	fmt.Println("Finished with encrypt pw")
 	// create account
 	createdAccount, err := a.repository.Create(account)
 
@@ -134,7 +133,7 @@ func hashAndSalt(pwd []byte) string {
 	// package along with DefaultCost & MaxCost.
 	// The cost can be any value you want provided it isn't lower
 	// than the MinCost (4)
-	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MaxCost)
+	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
 	if err != nil {
 		log.Println(err)
 	}

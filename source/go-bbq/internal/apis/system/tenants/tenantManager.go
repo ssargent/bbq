@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/cache"
-	"github.com/ssargent/go-bbq/internal/config"
+	"github.com/ssargent/go-bbq/pkg/config"
 )
 
 // Config is internal config representational

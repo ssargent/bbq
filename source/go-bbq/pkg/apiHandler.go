@@ -5,5 +5,5 @@ import (
 )
 
 type ApiHandler interface {
-	Register() *chi.Mux
+	Routes() *chi.Mux
 }
