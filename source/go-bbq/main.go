@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
 	"github.com/ssargent/go-bbq/internal/apis/bbq/devices"
@@ -48,15 +49,22 @@ func Routes(c *config.Config) *chi.Mux {
 
 	accountRepository := account.NewAccountRepository(c)
 	accountService := account.NewAccountService(c, accountRepository)
-	accountHandler := account.NewAccountHandler(accountService)
+	accountHandler := account.NewAccountHandler(c, accountService)
 
 	router.Route("/v1", func(r chi.Router) {
 		//	r.Mount("/bbq/devices", devicesAPI.Routes())
 		r.Mount("/health", healthAPI.HealthRoutes())
-		r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
+
+		r.Group(func(r chi.Router) {
+			r.Use(jwtauth.Verifier(c.TokenAuth))
+			r.Use(jwtauth.Authenticator)
+
+			r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
+		})
+
 		r.Mount("/system/accounts", accountHandler.Routes())
 	})
 

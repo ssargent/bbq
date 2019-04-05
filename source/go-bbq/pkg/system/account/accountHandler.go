@@ -7,12 +7,14 @@ import (
 	//	"strconv"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
 	//"github.com/google/uuid"
 
 	"github.com/ssargent/go-bbq/internal/infrastructure"
 	"github.com/ssargent/go-bbq/pkg"
+	"github.com/ssargent/go-bbq/pkg/config"
 	"github.com/ssargent/go-bbq/pkg/system"
 )
 
@@ -31,16 +33,27 @@ type LoginResult struct {
 
 type accountHandler struct {
 	service system.AccountService
+	config  *config.Config
 }
 
 // NewAccountHandler will create an api Handler for a new account.
-func NewAccountHandler(service system.AccountService) pkg.ApiHandler {
-	return &accountHandler{service: service}
+func NewAccountHandler(config *config.Config, service system.AccountService) pkg.ApiHandler {
+	return &accountHandler{service: service, config: config}
 }
 
 func (handler *accountHandler) Routes() *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/{login}", handler.getAccountByLogin)
+
+	// This api is special in that it requires some public apis.  but it also
+	// has private apis.  Protect those here.
+	router.Group(func(r chi.Router) {
+		r.Use(jwtauth.Verifier(handler.config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+
+		r.Get("/{login}", handler.getAccountByLogin)
+
+	})
+
 	router.Post("/", handler.createAccount)
 	router.Post("/login", handler.login)
 
