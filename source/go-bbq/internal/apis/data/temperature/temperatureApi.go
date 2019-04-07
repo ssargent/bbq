@@ -1,6 +1,7 @@
 package temperature
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
 
+	"github.com/ssargent/go-bbq/internal/infrastructure"
 	"github.com/ssargent/go-bbq/pkg/config"
 )
 
@@ -37,7 +39,7 @@ type Reading struct {
 func (config *Config) TenantRoutes() *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/{sessionid}", config.getTenantSessionReadings)
-	//	router.Post("/{sessionid}", config.createTenantSessionReadings)
+	router.Post("/{sessionid}", config.createTenantSessionReadings)
 
 	return router
 }
@@ -73,14 +75,23 @@ func (config *Config) createTenantSessionReadings(w http.ResponseWriter, r *http
 		return
 	} else {
 
-		session, err := getTenantSessionReadings(config.Database, tenantKey, sessionid)
+		var tempReading Reading
+
+		if err := json.NewDecoder(r.Body).Decode(&tempReading); err != nil {
+			render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+			return
+		}
+
+		tempReading.SessionID = sessionid
+
+		err := createTenantSessionReading(config.Database, tenantKey, tempReading)
 
 		if err != nil {
-			http.Error(w, http.StatusText(404), 404)
+			render.Render(w, r, infrastructure.ErrInvalidRequest(err))
 			return
-		} else {
-
-			render.JSON(w, r, session)
 		}
+
+		w.WriteHeader(http.StatusCreated)
+		return
 	}
 }

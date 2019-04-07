@@ -56,39 +56,22 @@ func scanReadingRows(row *sql.Rows) (Reading, error) {
 	return t, nil
 }
 
-/*
-func createTenantSession(db *sql.DB, tenantName string, session Session) (Session, error) {
-	tenant, err := tenants.GetTenantByKey(db, tenantName)
+func createTenantSessionReading(db *sql.DB, tenantName string, tempReading Reading) error {
+	//fmt.Println("Found Tenant: ", tenant.ID, tenant.Name, tenant.URLKey)
+
+	insertStatement := `
+	
+insert into data.bbq_temp_readings
+(probe0, probe1, probe2, probe3, recordedat, sessionid)
+values 
+($1, $2, $3, $4, now(), $5) returning id
+	`
+
+	_, err := db.Exec(insertStatement, tempReading.Probe0, tempReading.Probe1, tempReading.Probe2, tempReading.Probe3, tempReading.SessionID)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	fmt.Println("Found Tenant: ", tenant.ID, tenant.Name, tenant.URLKey)
-
-	insertStatement := "insert into bbq.sessions " +
-		"(deviceid, monitorid, name, description, starttime, subjectid, weight, tenantid) " +
-		"values ($1, $2, $3, $4, $5, $6, $7, $8) returning id"
-
-	translatedRecord, err := translateSessionRecord(db, tenantName, session)
-
-	if err != nil {
-		return Session{}, err
-	}
-
-	var createdSession Session
-	err = db.QueryRow(insertStatement, translatedRecord.DeviceID, translatedRecord.MonitorID, translatedRecord.Name, translatedRecord.Description, translatedRecord.StartTime, translatedRecord.SubjectID, translatedRecord.Weight, tenant.ID).Scan(&createdSession.ID)
-
-	if err != nil {
-		return Session{}, err
-	}
-
-	createdSession, err = getTenantSession(db, tenantName, createdSession.UID)
-
-	if err != nil {
-		return Session{}, err
-	}
-
-	return createdSession, nil
+	return nil
 }
-*/
