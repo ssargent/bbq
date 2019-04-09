@@ -56,8 +56,39 @@ func (handler *accountHandler) Routes() *chi.Mux {
 
 	router.Post("/", handler.createAccount)
 	router.Post("/login", handler.login)
-
+	router.Post("/signin", handler.signin)
 	return router
+}
+
+func (handler *accountHandler) signin(w http.ResponseWriter, r *http.Request) {
+	newLogin := LoginModel{}
+
+	if err := json.NewDecoder(r.Body).Decode(&newLogin); err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	authenticated, err := handler.service.Login(newLogin.LoginName, newLogin.Password)
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		render.JSON(w, r, LoginResult{Success: false, Error: err.Error()})
+		return
+	}
+
+	jwtToken := handler.service.CreateToken(authenticated)
+	result := LoginResult{Success: true, Token: jwtToken}
+
+	c := http.Cookie{
+		Name:     "jwt",
+		Value:    jwtToken,
+		HttpOnly: true,
+		Path:     "/",
+	}
+	http.SetCookie(w, &c)
+
+	result.Token = ""
+	render.JSON(w, r, result)
 }
 
 func (handler *accountHandler) login(w http.ResponseWriter, r *http.Request) {
