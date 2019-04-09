@@ -1,1 +1,15 @@
-30:45:11:3F:1D:5B 
+# BBQ Project
+
+BBQ Management Project by Scott
+
+## How to Build
+
+Info about building...
+
+## How to Test
+
+Info about testing
+
+## How to Contribute
+
+Info about contributing
