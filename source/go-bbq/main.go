@@ -18,8 +18,10 @@ import (
 	"github.com/ssargent/go-bbq/internal/apis/data/temperature"
 	"github.com/ssargent/go-bbq/internal/apis/health"
 	"github.com/ssargent/go-bbq/pkg/config"
+
 	//"github.com/ssargent/go-bbq/pkg/system"
 	"github.com/ssargent/go-bbq/pkg/system/account"
+	"github.com/ssargent/go-bbq/pkg/system/tenant"
 )
 
 // Routes wtse-1
@@ -51,6 +53,10 @@ func Routes(c *config.Config) *chi.Mux {
 	accountService := account.NewAccountService(c, accountRepository)
 	accountHandler := account.NewAccountHandler(c, accountService)
 
+	tenantRepository := tenant.NewTenantRepository(c)
+	tenantService := tenant.NewTenantService(c, tenantRepository)
+	tenantHandler := tenant.NewTenantHandler(c, tenantService, accountService)
+
 	router.Route("/v1", func(r chi.Router) {
 		//	r.Mount("/bbq/devices", devicesAPI.Routes())
 		r.Mount("/health", healthAPI.HealthRoutes())
@@ -66,6 +72,7 @@ func Routes(c *config.Config) *chi.Mux {
 		})
 
 		r.Mount("/system/accounts", accountHandler.Routes())
+		r.Mount("/system/tenants", tenantHandler.Routes())
 	})
 
 	return router
