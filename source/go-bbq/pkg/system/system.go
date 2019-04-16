@@ -20,11 +20,11 @@ type Account struct {
 }
 
 type TenantService interface {
-	GetTenant(tenantName string) (*Tenant, error)
-	GetTenants() ([]*Tenant, error)
-	CreateTenant(tenant *Tenant) (*Tenant, error)
-	UpdateTenant(tenant *Tenant) (*Tenant, error)
-	DeleteTenant(tenant *Tenant) error
+	GetByKey(key string) (Tenant, error)
+	//	GetTenants() ([]*Tenant, error)
+	CreateTenant(tenant Tenant) (Tenant, error)
+	//UpdateTenant(tenant *Tenant) (*Tenant, error)
+	//DeleteTenant(tenant *Tenant) error
 }
 
 type AccountService interface {
@@ -35,6 +35,13 @@ type AccountService interface {
 	UpdateAccount(account Account) (Account, error)
 	DeleteAccount(account Account) error
 	CreateToken(account Account) string
+}
+
+type TenantRepository interface {
+	GetByKey(key string) (Tenant, error)
+	Create(tenant Tenant) (Tenant, error)
+	//Update(tenant Tenant) (Tenant, error)
+	//Delete(tenant Tenant) (Tenant, error)
 }
 
 type AccountRepository interface {

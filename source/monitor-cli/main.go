@@ -28,12 +28,8 @@ import (
 	"time"
 
 	"github.com/go-ble/ble"
-	"github.com/google/uuid"
 	"github.com/sworisbreathing/go-ibbq/ibbq"
 )
-
-var bearerToken string
-var sessionId uuid.UUID
 
 //var logger = log.New("main")
 type reading struct {
@@ -73,7 +69,7 @@ func disconnectedHandler(cancel func(), done chan struct{}) func() {
 
 // Code modified to remove hard coded things... obviously there's work here to be done to make it not-dumb.
 func recordReadings(temps []float64) {
-	url := "https://bbq.k8s.ssargent.net/v1/development/data/temperature/use-session-from-active"
+	url := "http://localhost:21337/v1/development/data/temperature/39ae436c-61d3-4e17-826c-56ed9ef33c30"
 
 	var tempReading reading
 
@@ -93,7 +89,7 @@ func recordReadings(temps []float64) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(tempReadingJson))
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer use-token-from-login")
+	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NDc2ODYyMiwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU0NjY4NjIyLCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.weGvBtcKmmrN-rdVTrrpGAWbSqzb6I8jjmPhrsvc8Pg")
 	req.Header.Add("cache-control", "no-cache")
 
 	res, _ := http.DefaultClient.Do(req)
@@ -103,32 +99,38 @@ func recordReadings(temps []float64) {
 }
 
 // Flesh this out more.. it should log in and grab a bearer token.
-func doLogin(loginname string, password string) (string, err) {
-	return "", nil
+func doLogin(loginname string, password string) (string, error) {
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NDc2ODYyMiwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU0NjY4NjIyLCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.weGvBtcKmmrN-rdVTrrpGAWbSqzb6I8jjmPhrsvc8Pg"
+
+	return token, nil
 }
 
-func findActiveSession(monitorAddress string) (uuid.UUID, err) {
-	return nil, nil
+func findActiveSession(monitorAddress string) (string, error) {
+
+	session := "39ae436c-61d3-4e17-826c-56ed9ef33c30"
+	return session, nil
 }
 
 func main() {
 
-	bearerToken, err := doLogin("someUserName", "somePassword")
+	//bearerToken, err := doLogin("someUserName", "somePassword")
 
-	if err != nil {
-		fmt.Println("Login to bbq.k8s.ssargent.net failed")
-		return
-	}
+	/*
+		if err != nil {
+			fmt.Println("Login to bbq.k8s.ssargent.net failed")
+			return
+		}
 
-	sessionId, err := findActiveSession("GetAddressFirstAndUseHere")
+		//sessionId, err := findActiveSession("GetAddressFirstAndUseHere")
 
-	if err != nil {
-		// we'll need to do something more interesting here. perhaps poll and wait for a session... but for now let's exit.
-		fmt.Println("Please create a session and rerun this")
-		return
-	}
+		if err != nil {
+			// we'll need to do something more interesting here. perhaps poll and wait for a session... but for now let's exit.
+			fmt.Println("Please create a session and rerun this")
+			return
+		}*/
 
 	var err error
+
 	//logger.Debug("initializing context")
 	ctx1, cancel := context.WithCancel(context.Background())
 	defer cancel()

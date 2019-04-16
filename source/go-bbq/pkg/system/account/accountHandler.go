@@ -60,6 +60,8 @@ func (handler *accountHandler) Routes() *chi.Mux {
 	return router
 }
 
+// signin will retrun a jwt cookie.  This is used for signing in locally via the web app.
+// if you need api style access, use login.
 func (handler *accountHandler) signin(w http.ResponseWriter, r *http.Request) {
 	newLogin := LoginModel{}
 

@@ -10,7 +10,7 @@ type pgAccountRepository struct {
 	config *config.Config
 }
 
-// NewAccountRepository will create an AccountService
+// NewAccountRepository will create an AccountRepository
 func NewAccountRepository(config *config.Config) system.AccountRepository {
 	return &pgAccountRepository{config: config}
 }
