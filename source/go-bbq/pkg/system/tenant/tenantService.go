@@ -2,6 +2,7 @@ package tenant
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -72,4 +73,15 @@ func (t *tenantService) CreateTenant(entity system.Tenant) (system.Tenant, error
 
 	return createdTenant, nil
 
+}
+
+func (t *tenantService) DeleteTenant(entity system.Tenant) error {
+	_, tenantExistsErr := t.repository.GetByKey(entity.URLKey)
+
+	if tenantExistsErr != nil {
+		if tenantExistsErr == sql.ErrNoRows {
+			return errors.New("Tenant not found")
+		}
+	}
+	return t.repository.Delete(entity)
 }

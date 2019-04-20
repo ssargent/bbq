@@ -1,6 +1,8 @@
 package tenant
 
 import (
+	"errors"
+
 	"github.com/ssargent/go-bbq/pkg/config"
 	"github.com/ssargent/go-bbq/pkg/system"
 )
@@ -37,4 +39,16 @@ func (t *pgTenantRepository) Create(tenant system.Tenant) (system.Tenant, error)
 	}
 
 	return createdTenant, nil
+}
+
+func (t *pgTenantRepository) Delete(tenant system.Tenant) error {
+	query := "delete from sys.tenants where id = $1"
+
+	result, err := t.config.Database.Exec(query, tenant.ID)
+
+	if rows, afferr := result.RowsAffected(); rows == 0 || afferr != nil {
+		return errors.New("not-found")
+	}
+
+	return err
 }

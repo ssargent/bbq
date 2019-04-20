@@ -96,6 +96,9 @@ func (handler *tenantHandler) createTenant(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		//Possibly Mark the tenant as eligible for cleanup/delete.
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+
+		err = handler.tenantService.DeleteTenant(createdTenant)
+
 		return
 	}
 

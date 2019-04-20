@@ -18,6 +18,15 @@ import (
 	"github.com/vmihailenco/msgpack"
 )
 
+/*
+type Config interface {
+	Cache     *cache.Codec
+	Database  *sql.DB
+	UseCache  bool
+	Port      string
+	TokenAuth *jwtauth.JWTAuth
+}
+*/
 // Config WTSE-1
 type Config struct {
 	Cache     *cache.Codec

@@ -64,7 +64,7 @@ func (a *accountService) GetAccounts() ([]system.Account, error) {
 }
 
 func (a *accountService) CreateAccount(account system.Account) (system.Account, error) {
-	_, loginExistsErr := a.repository.GetByLogin(account.LoginName)
+	existingLogin, loginExistsErr := a.repository.GetByLogin(account.LoginName)
 
 	if loginExistsErr != nil {
 		if loginExistsErr != sql.ErrNoRows {
@@ -73,12 +73,20 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 
 	}
 
-	_, emailExistsErr := a.repository.GetByEmail(account.Email)
+	if system.Account{} != existingLogin {
+		return system.Account{}, errors.New("LoginName already exists")
+	}
+
+	existingEmail, emailExistsErr := a.repository.GetByEmail(account.Email)
 
 	if emailExistsErr != nil {
 		if emailExistsErr != sql.ErrNoRows {
 			return system.Account{}, emailExistsErr
 		}
+	}
+
+	if system.Account{} != existingEmail {
+		return system.Account{}, errors.New("Email Already exists")
 	}
 
 	fmt.Println("About to encrypt pw")
