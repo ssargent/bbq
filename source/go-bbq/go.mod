@@ -9,7 +9,7 @@ require (
 	github.com/go-redis/cache v6.3.5+incompatible
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/golang-migrate/migrate/v4 v4.2.5
-	github.com/golang/mock v1.1.1
+	github.com/golang/mock v1.2.0
 	github.com/google/uuid v1.1.1
 	github.com/lib/pq v1.0.0
 	github.com/onsi/ginkgo v1.7.0 // indirect
