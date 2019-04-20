@@ -11,23 +11,47 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"       //wtse-1
 	_ "github.com/lib/pq"                                      //wtse-1
 
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-redis/cache"
 	"github.com/go-redis/redis"
 	"github.com/vmihailenco/msgpack"
 )
 
+/*
+type Config interface {
+	Cache     *cache.Codec
+	Database  *sql.DB
+	UseCache  bool
+	Port      string
+	TokenAuth *jwtauth.JWTAuth
+}
+*/
 // Config WTSE-1
 type Config struct {
-	Cache    *cache.Codec
-	Database *sql.DB
-	UseCache bool
-	Port     string
+	Cache     *cache.Codec
+	Database  *sql.DB
+	UseCache  bool
+	Port      string
+	TokenAuth *jwtauth.JWTAuth
 }
 
 // Initialize creates the object and  invokes world::peace()
 func (c *Config) Initialize(user, password, dbname, host, redis1, redispw string) {
 	connectionString :=
 		fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", user, password, host, dbname)
+
+	c.TokenAuth = jwtauth.New("HS256", []byte(password), nil)
+
+	claims := jwt.MapClaims{
+		"sub": "123",
+		"iss": "https://bbq.k8s.ssargent.net/",
+		"aud": "https://bbq.k8s.ssargent.net/",
+		"exp": time.Now().Add(time.Hour * time.Duration(100000)).Unix(),
+		"iat": time.Now().Unix(),
+	}
+	_, tokenString, _ := c.TokenAuth.Encode(claims)
+	fmt.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
 
 	fmt.Println("Connecting to ", connectionString)
 
