@@ -34,7 +34,6 @@ type AccountService interface {
 	CreateAccount(account Account) (Account, error)
 	UpdateAccount(account Account) (Account, error)
 	DeleteAccount(account Account) error
-	CreateToken(account Account) string
 }
 
 type TenantRepository interface {
@@ -52,4 +51,8 @@ type AccountRepository interface {
 	Create(account Account) (Account, error)
 	Update(account Account) (Account, error)
 	Delete(account Account) error
+}
+
+func (a Account) Empty() bool {
+	return a.LoginName == ""
 }

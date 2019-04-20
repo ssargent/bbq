@@ -2,8 +2,8 @@ package account
 
 import (
 	"github.com/google/uuid"
-	"github.com/ssargent/go-bbq/pkg/config"
-	"github.com/ssargent/go-bbq/pkg/system"
+	"github.com/ssargent/go-bbq/config"
+	"github.com/ssargent/go-bbq/system"
 )
 
 type pgAccountRepository struct {

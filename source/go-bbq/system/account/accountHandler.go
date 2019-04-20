@@ -3,19 +3,20 @@ package account
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	//	"strconv"
 
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
 	//"github.com/google/uuid"
 
+	"github.com/ssargent/go-bbq/config"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
-	"github.com/ssargent/go-bbq/pkg"
-	"github.com/ssargent/go-bbq/pkg/config"
-	"github.com/ssargent/go-bbq/pkg/system"
+	"github.com/ssargent/go-bbq/system"
 )
 
 // LoginModel is a simple model to capture logins.
@@ -37,7 +38,7 @@ type accountHandler struct {
 }
 
 // NewAccountHandler will create an api Handler for a new account.
-func NewAccountHandler(config *config.Config, service system.AccountService) pkg.ApiHandler {
+func NewAccountHandler(config *config.Config, service system.AccountService) infrastructure.ApiHandler {
 	return &accountHandler{service: service, config: config}
 }
 
@@ -60,6 +61,20 @@ func (handler *accountHandler) Routes() *chi.Mux {
 	return router
 }
 
+func (handler *accountHandler) createToken(account system.Account) string {
+	claims := jwt.MapClaims{
+		"sub":   account.ID,
+		"iss":   "https://bbq.k8s.ssargent.net/",
+		"aud":   "https://bbq.k8s.ssargent.net/",
+		"exp":   time.Now().Add(time.Second * time.Duration(100000)).Unix(),
+		"iat":   time.Now().Unix(),
+		"login": account.LoginName,
+		"fn":    account.FullName,
+	}
+	_, tokenString, _ := handler.config.TokenAuth.Encode(claims)
+	return tokenString
+}
+
 // signin will retrun a jwt cookie.  This is used for signing in locally via the web app.
 // if you need api style access, use login.
 func (handler *accountHandler) signin(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +93,7 @@ func (handler *accountHandler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwtToken := handler.service.CreateToken(authenticated)
+	jwtToken := handler.createToken(authenticated)
 	result := LoginResult{Success: true, Token: jwtToken}
 
 	c := http.Cookie{
@@ -109,7 +124,7 @@ func (handler *accountHandler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwtToken := handler.service.CreateToken(authenticated)
+	jwtToken := handler.createToken(authenticated)
 
 	result := LoginResult{Success: true, Token: jwtToken}
 

@@ -12,10 +12,9 @@ import (
 
 	//"github.com/google/uuid"
 
+	"github.com/ssargent/go-bbq/config"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
-	"github.com/ssargent/go-bbq/pkg"
-	"github.com/ssargent/go-bbq/pkg/config"
-	"github.com/ssargent/go-bbq/pkg/system"
+	"github.com/ssargent/go-bbq/system"
 )
 
 type newTenantModel struct {
@@ -39,7 +38,7 @@ type tenantHandler struct {
 }
 
 // NewAccountHandler will create an api Handler for a new account.
-func NewTenantHandler(config *config.Config, tenantService system.TenantService, accountService system.AccountService) pkg.ApiHandler {
+func NewTenantHandler(config *config.Config, tenantService system.TenantService, accountService system.AccountService) infrastructure.ApiHandler {
 	return &tenantHandler{tenantService: tenantService, accountService: accountService, config: config}
 }
 

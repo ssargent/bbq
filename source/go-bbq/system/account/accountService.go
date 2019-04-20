@@ -5,23 +5,21 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/ssargent/go-bbq/pkg/config"
-	"github.com/ssargent/go-bbq/pkg/system"
+	"github.com/ssargent/go-bbq/internal/infrastructure"
+	"github.com/ssargent/go-bbq/system"
 )
 
 type accountService struct {
 	repository system.AccountRepository
-	config     *config.Config
+	cache      *infrastructure.CacheService
 }
 
 // NewAccountService will create an AccountService
-func NewAccountService(config *config.Config, repository system.AccountRepository) system.AccountService {
-	return &accountService{repository: repository, config: config}
+func NewAccountService(cache *infrastructure.CacheService, repository system.AccountRepository) system.AccountService {
+	return &accountService{repository: repository, cache: cache}
 }
 
 func (a *accountService) GetAccount(loginName string) (system.Account, error) {
@@ -32,20 +30,6 @@ func (a *accountService) GetAccount(loginName string) (system.Account, error) {
 	}
 
 	return login, nil
-}
-
-func (a *accountService) CreateToken(account system.Account) string {
-	claims := jwt.MapClaims{
-		"sub":   account.ID,
-		"iss":   "https://bbq.k8s.ssargent.net/",
-		"aud":   "https://bbq.k8s.ssargent.net/",
-		"exp":   time.Now().Add(time.Second * time.Duration(100000)).Unix(),
-		"iat":   time.Now().Unix(),
-		"login": account.LoginName,
-		"fn":    account.FullName,
-	}
-	_, tokenString, _ := a.config.TokenAuth.Encode(claims)
-	return tokenString
 }
 
 func (a *accountService) Login(login string, password string) (system.Account, error) {
@@ -73,7 +57,7 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 
 	}
 
-	if system.Account{} != existingLogin {
+	if existingLogin.Empty() {
 		return system.Account{}, errors.New("LoginName already exists")
 	}
 
@@ -85,7 +69,7 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 		}
 	}
 
-	if system.Account{} != existingEmail {
+	if !existingEmail.Empty() {
 		return system.Account{}, errors.New("Email Already exists")
 	}
 

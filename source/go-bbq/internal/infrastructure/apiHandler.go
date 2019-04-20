@@ -1,4 +1,4 @@
-package pkg
+package infrastructure
 
 import (
 	"github.com/go-chi/chi"

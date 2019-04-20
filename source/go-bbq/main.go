@@ -17,11 +17,11 @@ import (
 	"github.com/ssargent/go-bbq/internal/apis/bbq/sessions"
 	"github.com/ssargent/go-bbq/internal/apis/data/temperature"
 	"github.com/ssargent/go-bbq/internal/apis/health"
-	"github.com/ssargent/go-bbq/pkg/config"
+	"github.com/ssargent/go-bbq/config"
 
-	//"github.com/ssargent/go-bbq/pkg/system"
-	"github.com/ssargent/go-bbq/pkg/system/account"
-	"github.com/ssargent/go-bbq/pkg/system/tenant"
+	//"github.com/ssargent/go-bbq/system"
+	"github.com/ssargent/go-bbq/system/account"
+	"github.com/ssargent/go-bbq/system/tenant"
 )
 
 // Routes wtse-1

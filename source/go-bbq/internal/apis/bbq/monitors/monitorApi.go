@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/ssargent/go-bbq/internal/infrastructure"
-	"github.com/ssargent/go-bbq/pkg/config"
+	"github.com/ssargent/go-bbq/config"
 )
 
 

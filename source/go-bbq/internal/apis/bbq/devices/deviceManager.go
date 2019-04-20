@@ -10,7 +10,7 @@ import (
 	"github.com/go-redis/cache"
 	"github.com/lib/pq"
 	"github.com/ssargent/go-bbq/internal/apis/system/tenants"
-	"github.com/ssargent/go-bbq/pkg/config"
+	"github.com/ssargent/go-bbq/config"
 )
 
 // GetAllDevices  returns all devices

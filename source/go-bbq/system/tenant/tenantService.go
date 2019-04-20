@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/go-redis/cache"
-	"github.com/ssargent/go-bbq/pkg/config"
-	"github.com/ssargent/go-bbq/pkg/system"
+	"github.com/ssargent/go-bbq/config"
+	"github.com/ssargent/go-bbq/system"
 )
 
 /*

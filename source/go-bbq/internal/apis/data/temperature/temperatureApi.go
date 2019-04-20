@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/ssargent/go-bbq/internal/infrastructure"
-	"github.com/ssargent/go-bbq/pkg/config"
+	"github.com/ssargent/go-bbq/config"
 )
 
 // Config - duck typing?
