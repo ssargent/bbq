@@ -9,14 +9,19 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
-	"github.com/ssargent/go-bbq/apis/bbq/devices"
-	"github.com/ssargent/go-bbq/apis/bbq/monitors"
-	"github.com/ssargent/go-bbq/apis/bbq/sessions"
-	"github.com/ssargent/go-bbq/apis/data/temperature"
-	"github.com/ssargent/go-bbq/apis/health"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/devices"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/monitors"
+	"github.com/ssargent/go-bbq/internal/apis/bbq/sessions"
+	"github.com/ssargent/go-bbq/internal/apis/data/temperature"
+	"github.com/ssargent/go-bbq/internal/apis/health"
 	"github.com/ssargent/go-bbq/config"
+
+	//"github.com/ssargent/go-bbq/system"
+	"github.com/ssargent/go-bbq/system/account"
+	"github.com/ssargent/go-bbq/system/tenant"
 )
 
 // Routes wtse-1
@@ -44,13 +49,30 @@ func Routes(c *config.Config) *chi.Mux {
 	sessionsAPI := sessions.New(c)
 	temperatureAPI := temperature.New(c)
 
+	accountRepository := account.NewAccountRepository(c)
+	accountService := account.NewAccountService(c, accountRepository)
+	accountHandler := account.NewAccountHandler(c, accountService)
+
+	tenantRepository := tenant.NewTenantRepository(c)
+	tenantService := tenant.NewTenantService(c, tenantRepository)
+	tenantHandler := tenant.NewTenantHandler(c, tenantService, accountService)
+
 	router.Route("/v1", func(r chi.Router) {
 		//	r.Mount("/bbq/devices", devicesAPI.Routes())
 		r.Mount("/health", healthAPI.HealthRoutes())
-		r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
-		r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
+
+		r.Group(func(r chi.Router) {
+			r.Use(jwtauth.Verifier(c.TokenAuth))
+			r.Use(jwtauth.Authenticator)
+
+			r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
+			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
+		})
+
+		r.Mount("/system/accounts", accountHandler.Routes())
+		r.Mount("/system/tenants", tenantHandler.Routes())
 	})
 
 	return router

@@ -2,7 +2,7 @@ import { findIconDefinition, library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from "react";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard";
 import Devices from "./components/Devices";
 import Monitors from "./components/Monitors";
 

@@ -14,6 +14,7 @@ import {
   DropdownItem } from 'reactstrap';
 import logo from './logo.svg';
 import './TopNav.css';
+import Login from "./components/login";
 
 class TopNav extends Component {
   render() {
@@ -23,7 +24,7 @@ class TopNav extends Component {
   
   <ul className="navbar-nav px-3">
     <li className="nav-item text-nowrap">
-      <a className="nav-link" href="#">Sign out</a>
+      <Login />
     </li>
   </ul> 
         </nav>
