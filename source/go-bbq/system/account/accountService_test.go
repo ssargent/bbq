@@ -1,11 +1,14 @@
 package account
 
 import (
+	"errors"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 
 	"github.com/golang/mock/gomock"
+	mock_infrastructure "github.com/ssargent/go-bbq/internal/infrastructure/mocks"
 	"github.com/ssargent/go-bbq/system"
 	mock_system "github.com/ssargent/go-bbq/system/mocks"
 )
@@ -26,7 +29,8 @@ func TestGetAccount(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	mockRepo := mock_system.NewMockAccountRepository(mockCtrl)
-	accountService := NewAccountService(nil, mockRepo)
+	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
+	accountService := NewAccountService(mockCacheService, mockRepo)
 
 	id, err := uuid.NewUUID()
 
@@ -49,9 +53,12 @@ func TestGetAccount(t *testing.T) {
 		IsEnabled:     true,
 		TenantID:      tenant,
 	}
+	var returnedLogin system.Account
 
 	// Expect Do to be called once with 123 and "Hello GoMock" as parameters, and return nil from the mocked call.
 	mockRepo.EXPECT().GetByLogin("chef").Return(login, nil).Times(1)
+	mockCacheService.EXPECT().GetItem("system$accounts$chef", &returnedLogin).Return(errors.New("not found")).Times(1)
+	mockCacheService.EXPECT().SetItem("system$accounts$chef", login, time.Minute*10).Return(nil).Times(1)
 
 	accountService.GetAccount("chef")
 }
