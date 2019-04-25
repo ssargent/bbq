@@ -12,12 +12,13 @@ import (
 	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
+	"github.com/ssargent/go-bbq/config"
 	"github.com/ssargent/go-bbq/internal/apis/bbq/devices"
 	"github.com/ssargent/go-bbq/internal/apis/bbq/monitors"
 	"github.com/ssargent/go-bbq/internal/apis/bbq/sessions"
 	"github.com/ssargent/go-bbq/internal/apis/data/temperature"
 	"github.com/ssargent/go-bbq/internal/apis/health"
-	"github.com/ssargent/go-bbq/config"
+	"github.com/ssargent/go-bbq/internal/infrastructure/redis"
 
 	//"github.com/ssargent/go-bbq/system"
 	"github.com/ssargent/go-bbq/system/account"
@@ -49,8 +50,9 @@ func Routes(c *config.Config) *chi.Mux {
 	sessionsAPI := sessions.New(c)
 	temperatureAPI := temperature.New(c)
 
+	caching := redis.NewRedisCacheService(c)
 	accountRepository := account.NewAccountRepository(c)
-	accountService := account.NewAccountService(c, accountRepository)
+	accountService := account.NewAccountService(caching, accountRepository)
 	accountHandler := account.NewAccountHandler(c, accountService)
 
 	tenantRepository := tenant.NewTenantRepository(c)

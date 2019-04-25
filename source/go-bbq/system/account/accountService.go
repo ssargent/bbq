@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -14,22 +15,31 @@ import (
 
 type accountService struct {
 	repository system.AccountRepository
-	cache      *infrastructure.CacheService
+	cache      infrastructure.CacheService
 }
 
 // NewAccountService will create an AccountService
-func NewAccountService(cache *infrastructure.CacheService, repository system.AccountRepository) system.AccountService {
+func NewAccountService(cache infrastructure.CacheService, repository system.AccountRepository) system.AccountService {
 	return &accountService{repository: repository, cache: cache}
 }
 
 func (a *accountService) GetAccount(loginName string) (system.Account, error) {
-	login, err := a.repository.GetByLogin(loginName)
+	cacheKey := fmt.Sprintf("system$accounts$%s", loginName)
+	var account system.Account
 
-	if err != nil {
-		return system.Account{}, err
+	if err := a.cache.GetItem(cacheKey, &account); err == nil {
+		return account, nil
+	} else {
+		login, err := a.repository.GetByLogin(loginName)
+
+		if err != nil {
+			return system.Account{}, err
+		}
+
+		a.cache.SetItem(cacheKey, login, time.Minute*10)
+
+		return login, nil
 	}
-
-	return login, nil
 }
 
 func (a *accountService) Login(login string, password string) (system.Account, error) {

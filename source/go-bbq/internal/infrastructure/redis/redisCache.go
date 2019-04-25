@@ -3,20 +3,33 @@ package redis
 import (
 	"time"
 
+	"github.com/go-redis/cache"
+	"github.com/ssargent/go-bbq/config"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
 )
 
-type redisCache struct {
+type redisCacheService struct {
+	config *config.Config
 }
 
-func NewRedisCache() infrastructure.CacheService {
-	return &redisCache{}
+func NewRedisCacheService(config *config.Config) infrastructure.CacheService {
+	return &redisCacheService{config: config}
 }
 
-func (r *redisCache) GetItem(key string, object interface{}) error {
-	return nil
+func (r redisCacheService) SetItem(key string, object interface{}, expiration time.Duration) error {
+	return r.config.Cache.Set(&cache.Item{
+		Key:        key,
+		Object:     object,
+		Expiration: expiration,
+	})
 }
 
-func (r *redisCache) SetItem(key string, object interface{}, expiration time.Duration) error {
+func (r redisCacheService) GetItem(key string, object interface{}) error {
+	err := r.config.Cache.Get(key, &object)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
