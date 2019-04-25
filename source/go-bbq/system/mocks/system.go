@@ -5,11 +5,10 @@
 package mock_system
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 	system "github.com/ssargent/go-bbq/system"
+	reflect "reflect"
 )
 
 // MockTenantService is a mock of TenantService interface

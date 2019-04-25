@@ -51,7 +51,7 @@ func TestGetAccount(t *testing.T) {
 	}
 
 	// Expect Do to be called once with 123 and "Hello GoMock" as parameters, and return nil from the mocked call.
-	mockRepo.EXPECT().GetByLogin("chef").Return(login).Times(1)
+	mockRepo.EXPECT().GetByLogin("chef").Return(login, nil).Times(1)
 
 	accountService.GetAccount("chef")
 }
