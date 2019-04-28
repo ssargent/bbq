@@ -1,5 +1,5 @@
 #!/bin/bash
-for filename in ./secrets/*.txt; do
+for filename in ../source/go-bbq/secrets/*.txt; do
     secret=$(<$filename)
     fbname=$(basename "$filename" | cut -d. -f1)
     export $fbname="$secret"
