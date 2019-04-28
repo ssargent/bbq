@@ -58,38 +58,30 @@ func (a *accountService) GetAccounts() ([]system.Account, error) {
 }
 
 func (a *accountService) CreateAccount(account system.Account) (system.Account, error) {
-	existingLogin, loginExistsErr := a.repository.GetByLogin(account.LoginName)
-
-	if loginExistsErr != nil {
-		if loginExistsErr != sql.ErrNoRows {
-			return system.Account{}, loginExistsErr
+	existingLogin, err := a.repository.GetByLogin(account.LoginName)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return system.Account{}, err
 		}
-
 	}
-
-	if existingLogin.Empty() {
+	if !existingLogin.Empty() {
 		return system.Account{}, errors.New("LoginName already exists")
 	}
 
-	existingEmail, emailExistsErr := a.repository.GetByEmail(account.Email)
-
-	if emailExistsErr != nil {
-		if emailExistsErr != sql.ErrNoRows {
-			return system.Account{}, emailExistsErr
+	existingEmail, err := a.repository.GetByEmail(account.Email)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return system.Account{}, err
 		}
 	}
-
 	if !existingEmail.Empty() {
 		return system.Account{}, errors.New("Email Already exists")
 	}
 
-	fmt.Println("About to encrypt pw")
 	// encrypt password
 	account.LoginPassword = hashAndSalt([]byte(account.LoginPassword))
-	fmt.Println("Finished with encrypt pw")
 	// create account
 	createdAccount, err := a.repository.Create(account)
-
 	if err != nil {
 		return system.Account{}, err
 	}
@@ -101,14 +93,16 @@ func (a *accountService) CreateAccount(account system.Account) (system.Account, 
 }
 
 func (a *accountService) UpdateAccount(account system.Account) (system.Account, error) {
-	_, emailExistsErr := a.repository.GetByEmail(account.Email)
+	existingEmailAccount, err := a.repository.GetByEmail(account.Email)
 
-	if emailExistsErr != nil {
-		if emailExistsErr == sql.ErrNoRows {
-			return system.Account{}, errors.New("a login with that email already exists.  please choose another")
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return system.Account{}, err
 		}
+	}
 
-		return system.Account{}, emailExistsErr
+	if !existingEmailAccount.Empty() {
+		return system.Account{}, errors.New("a login with that email already exists.  please choose another")
 	}
 
 	// encrypt password
