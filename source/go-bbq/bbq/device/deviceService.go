@@ -1,11 +1,7 @@
 package device
 
 import (
-	"database/sql"
-	"errors"
-	"fmt"
-	"log"
-	"time"
+	"github.com/google/uuid"
 
 	"github.com/ssargent/go-bbq/internal/infrastructure"
 	"github.com/ssargent/go-bbq/bbq"
@@ -16,7 +12,7 @@ type deviceService struct {
 	cache      infrastructure.CacheService
 }
 
-// NewAccountService will create an AccountService
+// NewDeviceService will create an DeviceService
 func NewDeviceService(cache infrastructure.CacheService, repository bbq.DeviceRepository) bbq.DeviceService {
 	return &deviceService{repository: repository, cache: cache}
 }
@@ -29,24 +25,46 @@ func NewDeviceService(cache infrastructure.CacheService, repository bbq.DeviceRe
 }*/
 
 
-func(d *deviceService) GetDevices(tenantId uuid.UUID) ([]Device, error) {
-	return d.repository.GetByTenantId(tenantId)
+func(d *deviceService) GetDevices(tenantID uuid.UUID) ([]bbq.Device, error) {
+	devices,err := d.repository.GetByTenantID(tenantID)
+	if err != nil {
+		return []bbq.Device{}, err
+	}
+
+	return devices, nil
 }
 
-func(d *deviceService) GetDevice(tenantId uuid.UUID, deviceName string) (Device, error) {
-	return d.repository.GetDevice(tenantId, deviceName)
+func(d *deviceService) GetDevice(tenantID uuid.UUID, deviceName string) (bbq.Device, error) {
+	device, err := d.repository.GetDeviceByName(tenantID, deviceName)
+	if err != nil {
+		return bbq.Device{}, err
+	}
+
+	return device, nil
 }
 
-func(d *deviceService) CreateDevice(tenantId uuid.UUID, newDevice Device) (Device, error) {
-	newDevice.TenantID = tenantId
-	return d.repository.Create(newDevice)
+func(d *deviceService) CreateDevice(tenantID uuid.UUID, newDevice bbq.Device) (bbq.Device, error) {
+	newDevice.TenantID = tenantID
+	device, err := d.repository.Create(newDevice)
+	if err != nil {
+		return bbq.Device{}, err
+	}
+
+	return device, nil
 }
 
-func(d *deviceService) UpdateDevice(tenantId uuid.UUID, existingDevice Device) (Device, error) {
-	existingDevice.TenantID = tenantId
-	return d.repository.Update(existingDevice)
+func(d *deviceService) UpdateDevice(tenantID uuid.UUID, existingDevice bbq.Device) (bbq.Device, error) {
+	existingDevice.TenantID = tenantID
+	device, err := d.repository.Update(existingDevice)
+	if err != nil {
+		return bbq.Device{}, err
+	}
+
+	return device, nil
+	
 }
 
-func (d *deviceService) DeleteDevice(tenantId uuid.UUID, existingDevice Device) error {
-	return d.repository.Delete(existingDevice)
+func (d *deviceService) DeleteDevice(tenantID uuid.UUID, existingDevice bbq.Device) error {
+	d.repository.Delete(existingDevice)
+	return nil
 }
