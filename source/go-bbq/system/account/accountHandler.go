@@ -63,19 +63,20 @@ func (handler *accountHandler) Routes() *chi.Mux {
 
 func (handler *accountHandler) createToken(account system.Account) string {
 	claims := jwt.MapClaims{
-		"sub":   account.ID,
-		"iss":   "https://bbq.k8s.ssargent.net/",
-		"aud":   "https://bbq.k8s.ssargent.net/",
-		"exp":   time.Now().Add(time.Second * time.Duration(100000)).Unix(),
-		"iat":   time.Now().Unix(),
-		"login": account.LoginName,
-		"fn":    account.FullName,
+		"sub":    account.ID,
+		"tenant": account.TenantID,
+		"iss":    "https://bbq.k8s.ssargent.net/",
+		"aud":    "https://bbq.k8s.ssargent.net/",
+		"exp":    time.Now().Add(time.Second * time.Duration(100000)).Unix(),
+		"iat":    time.Now().Unix(),
+		"login":  account.LoginName,
+		"fn":     account.FullName,
 	}
 	_, tokenString, _ := handler.config.TokenAuth.Encode(claims)
 	return tokenString
 }
 
-// signin will retrun a jwt cookie.  This is used for signing in locally via the web app.
+// signin will return a jwt cookie.  This is used for signing in locally via the web app.
 // if you need api style access, use login.
 func (handler *accountHandler) signin(w http.ResponseWriter, r *http.Request) {
 	newLogin := LoginModel{}
