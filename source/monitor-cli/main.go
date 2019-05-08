@@ -69,7 +69,7 @@ func disconnectedHandler(cancel func(), done chan struct{}) func() {
 
 // Code modified to remove hard coded things... obviously there's work here to be done to make it not-dumb.
 func recordReadings(temps []float64) {
-	url := "http://localhost:21337/v1/development/data/temperature/39ae436c-61d3-4e17-826c-56ed9ef33c30"
+	url := "http://localhost:21337/v1/development/data/temperature/f897a443-6974-4f65-91df-409c8704c681"
 
 	var tempReading reading
 
@@ -89,7 +89,7 @@ func recordReadings(temps []float64) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(tempReadingJson))
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NDc2ODYyMiwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU0NjY4NjIyLCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.weGvBtcKmmrN-rdVTrrpGAWbSqzb6I8jjmPhrsvc8Pg")
+	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NzExOTgwOCwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU3MDE5ODA4LCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.soc3hiRpoTGD1RI3vnC9ohJ_D5nkd9hXvs2O6asguV4")
 	req.Header.Add("cache-control", "no-cache")
 
 	res, _ := http.DefaultClient.Do(req)
@@ -100,7 +100,7 @@ func recordReadings(temps []float64) {
 
 // Flesh this out more.. it should log in and grab a bearer token.
 func doLogin(loginname string, password string) (string, error) {
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NDc2ODYyMiwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU0NjY4NjIyLCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.weGvBtcKmmrN-rdVTrrpGAWbSqzb6I8jjmPhrsvc8Pg"
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NzExOTgwOCwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU3MDE5ODA4LCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.soc3hiRpoTGD1RI3vnC9ohJ_D5nkd9hXvs2O6asguV4"
 
 	return token, nil
 }
