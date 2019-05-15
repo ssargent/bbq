@@ -1,6 +1,9 @@
 package device
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/ssargent/go-bbq/bbq"
@@ -17,30 +20,43 @@ func NewDeviceService(cache infrastructure.CacheService, repository bbq.DeviceRe
 	return &deviceService{repository: repository, cache: cache}
 }
 
-/*type DeviceService interface {
-	GetDevices(tenantId uuid.UUID) ([]Device, error)
-	GetDevice(tenantId uuid.UUID, deviceName string) (Device, error)
-	CreateDevice(tenantId uuid.UUID, newDevice Device) (Device, error)
-	UpdateDevice(tenantId uuid.UUID, existingDevice Device) (Device, error)
-	DeleteDevice(tenantId uuid.UUID, existingDevice Device) error
-}*/
-
 func (d *deviceService) GetDevices(tenantID uuid.UUID) ([]bbq.Device, error) {
-	devices, err := d.repository.GetByTenantId(tenantID)
-	if err != nil {
-		return []bbq.Device{}, err
-	}
+	cacheKey := fmt.Sprintf("bbq$devices$%s", tenantID.String())
 
-	return devices, nil
+	var devices []bbq.Device
+
+	if err := d.cache.GetItem(cacheKey, &devices); err == nil {
+		return devices, nil
+	} else {
+
+		devices, err := d.repository.GetByTenantId(tenantID)
+		if err != nil {
+			return []bbq.Device{}, err
+		}
+
+		d.cache.SetItem(cacheKey, devices, time.Minute*10)
+
+		return devices, nil
+	}
 }
 
 func (d *deviceService) GetDevice(tenantID uuid.UUID, deviceName string) (bbq.Device, error) {
-	device, err := d.repository.GetDevice(tenantID, deviceName)
-	if err != nil {
-		return bbq.Device{}, err
-	}
+	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenantID.String(), deviceName)
+	var device bbq.Device
 
-	return device, nil
+	if err := d.cache.GetItem(cacheKey, &device); err == nil {
+		return device, nil
+	} else {
+
+		device, err := d.repository.GetDevice(tenantID, deviceName)
+		if err != nil {
+			return bbq.Device{}, err
+		}
+
+		d.cache.SetItem(cacheKey, device, time.Minute*10)
+
+		return device, nil
+	}
 }
 
 func (d *deviceService) CreateDevice(tenantID uuid.UUID, newDevice bbq.Device) (bbq.Device, error) {
