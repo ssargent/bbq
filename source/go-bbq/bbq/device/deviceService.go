@@ -27,17 +27,17 @@ func (d *deviceService) GetDevices(tenantID uuid.UUID) ([]bbq.Device, error) {
 
 	if err := d.cache.GetItem(cacheKey, &devices); err == nil {
 		return devices, nil
-	} else {
+	}  
 
-		devices, err := d.repository.GetByTenantId(tenantID)
-		if err != nil {
-			return []bbq.Device{}, err
-		}
-
-		d.cache.SetItem(cacheKey, devices, time.Minute*10)
-
-		return devices, nil
+	devices, err := d.repository.GetByTenantID(tenantID)
+	if err != nil {
+		return []bbq.Device{}, err
 	}
+
+	d.cache.SetItem(cacheKey, devices, time.Minute*10)
+
+	return devices, nil
+	 
 }
 
 func (d *deviceService) GetDevice(tenantID uuid.UUID, deviceName string) (bbq.Device, error) {
@@ -46,17 +46,17 @@ func (d *deviceService) GetDevice(tenantID uuid.UUID, deviceName string) (bbq.De
 
 	if err := d.cache.GetItem(cacheKey, &device); err == nil {
 		return device, nil
-	} else {
+	} 
 
-		device, err := d.repository.GetDevice(tenantID, deviceName)
-		if err != nil {
-			return bbq.Device{}, err
-		}
-
-		d.cache.SetItem(cacheKey, device, time.Minute*10)
-
-		return device, nil
+	device, err := d.repository.GetDevice(tenantID, deviceName)
+	if err != nil {
+		return bbq.Device{}, err
 	}
+
+	d.cache.SetItem(cacheKey, device, time.Minute*10)
+
+	return device, nil
+	 
 }
 
 func (d *deviceService) CreateDevice(tenantID uuid.UUID, newDevice bbq.Device) (bbq.Device, error) {

@@ -22,7 +22,7 @@ type deviceHandler struct {
 	config  *config.Config
 }
 
-// NewAccountHandler will create an api Handler for a new account.
+// NewDeviceHandler will create an api Handler for a devices.
 func NewDeviceHandler(config *config.Config, service bbq.DeviceService) infrastructure.ApiHandler {
 	return &deviceHandler{service: service, config: config}
 }

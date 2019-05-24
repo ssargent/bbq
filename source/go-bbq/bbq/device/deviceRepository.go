@@ -13,14 +13,15 @@ type deviceRepository struct {
 	database *sql.DB
 }
 
+// NewDeviceRepository will return a repo for DeviceRepository
 func NewDeviceRepository(database *sql.DB) bbq.DeviceRepository {
 	return &deviceRepository{database: database}
 }
 
-func (d *deviceRepository) GetByTenantId(tenantId uuid.UUID) ([]bbq.Device, error) {
+func (d *deviceRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Device, error) {
 	var devices []bbq.Device
 	rows, err := d.database.Query(
-		"SELECT id, name, description, tenantid FROM bbq.devices  where tenantid = $1", tenantId)
+		"SELECT id, name, description, tenantid FROM bbq.devices  where tenantid = $1", tenantID)
 
 	if err != nil {
 		return nil, err
@@ -39,11 +40,11 @@ func (d *deviceRepository) GetByTenantId(tenantId uuid.UUID) ([]bbq.Device, erro
 	return devices, nil
 }
 
-func (d *deviceRepository) GetDevice(tenantId uuid.UUID, deviceName string) (bbq.Device, error) {
+func (d *deviceRepository) GetDevice(tenantID uuid.UUID, deviceName string) (bbq.Device, error) {
 	var dev bbq.Device
 	query := "select id, name, description, tenantid from bbq.devices where Name = $1 AND tenantid = $2"
 
-	err := d.database.QueryRow(query, deviceName, tenantId).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID)
+	err := d.database.QueryRow(query, deviceName, tenantID).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID)
 
 	if err != nil {
 		return bbq.Device{}, err

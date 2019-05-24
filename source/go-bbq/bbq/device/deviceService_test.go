@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 	"time"
+	"database/sql"
 
 	"github.com/google/uuid"
 
@@ -102,13 +103,46 @@ func TestGetDevice(t *testing.T) {
 		Description: "My device",
 		TenantID:    tenant,
 	}
-	var returnedLogin bbq.Device
+	var returnedDevice bbq.Device
 
 	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenant.String(), "My device")
 
 	mockRepo.EXPECT().GetDevice(tenant, "My device").Return(dev, nil).Times(1)
-	mockCacheService.EXPECT().GetItem(cacheKey, &returnedLogin).Return(errors.New("not found")).Times(1)
+	mockCacheService.EXPECT().GetItem(cacheKey, &returnedDevice).Return(errors.New("not found")).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, dev, time.Minute*10).Return(nil).Times(1)
 
 	deviceService.GetDevice(tenant, "My device")
+}
+
+func TestCreateDevice(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockRepo := mock_bbq.NewMockDeviceRepository(mockCtrl)
+	mockCacheSerivce := mock_infrastructure.MockCacheService(mockCtrl)
+	deviceService := NewDeviceService(mockCacheService, mockRepo)
+
+	tenant, err := uuid.NewGuid()
+
+	if err != null {
+		return
+	}
+
+	dev := bbq.Device {
+		Name: 			"My Device",
+		Description: 	"My Device",
+		TenantID: 		tenant,
+	}
+
+	notFoundErr := sql.ErrNoRows
+	var returnedDevice bbq.Device
+
+	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenant.String(), "My device")
+
+	mockRepo.EXPECT().GetDevice(tenant, "My Device").Return(bbq.Device{}, notFoundErr).Times(1)
+	mockRepo.EXPECT().Create(dev).Return(dev, nil).Times(1)
+	mockCacheSerivce.EXPECT().SetItem(cacheKey, dev, time.Minute*10).Return(nil).Times(1)
+
+	deviceService.CreateDevice(tenant, dev)
+
 }
