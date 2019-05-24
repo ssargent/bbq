@@ -14,6 +14,7 @@ require (
 	github.com/lib/pq v1.0.0
 	github.com/onsi/ginkgo v1.7.0 // indirect
 	github.com/onsi/gomega v1.4.3 // indirect
+	github.com/stretchr/testify v1.3.0
 	github.com/vmihailenco/msgpack v4.0.2+incompatible
 	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
 )

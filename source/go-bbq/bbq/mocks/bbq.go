@@ -160,19 +160,19 @@ func (mr *MockDeviceRepositoryMockRecorder) Delete(arg0 interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockDeviceRepository)(nil).Delete), arg0)
 }
 
-// GetByTenantId mocks base method
-func (m *MockDeviceRepository) GetByTenantId(arg0 uuid.UUID) ([]bbq.Device, error) {
+// GetByTenantID mocks base method
+func (m *MockDeviceRepository) GetByTenantID(arg0 uuid.UUID) ([]bbq.Device, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByTenantId", arg0)
+	ret := m.ctrl.Call(m, "GetByTenantID", arg0)
 	ret0, _ := ret[0].([]bbq.Device)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByTenantId indicates an expected call of GetByTenantId
-func (mr *MockDeviceRepositoryMockRecorder) GetByTenantId(arg0 interface{}) *gomock.Call {
+// GetByTenantID indicates an expected call of GetByTenantID
+func (mr *MockDeviceRepositoryMockRecorder) GetByTenantID(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByTenantId", reflect.TypeOf((*MockDeviceRepository)(nil).GetByTenantId), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByTenantID", reflect.TypeOf((*MockDeviceRepository)(nil).GetByTenantID), arg0)
 }
 
 // GetDevice mocks base method

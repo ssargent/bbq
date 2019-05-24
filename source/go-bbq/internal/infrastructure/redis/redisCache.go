@@ -33,3 +33,13 @@ func (r redisCacheService) GetItem(key string, object interface{}) error {
 
 	return nil
 }
+
+func (r redisCacheService) RemoveItem(key string) error {
+	err := r.config.Cache.Delete(key)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
