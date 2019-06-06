@@ -89,8 +89,6 @@ func disconnectedHandler(cancel func(), done chan struct{}) func() {
 
 // Code modified to remove hard coded things... obviously there's work here to be done to make it not-dumb.
 func recordReadings(temps []float64) {
-	url := "http://localhost:21337/v1/development/data/temperature/693cee93-8a39-4909-8462-2e0892bff1a8"
-
 	var tempReading reading
 
 	tempReading.probe0 = temps[0]
@@ -106,7 +104,7 @@ func recordReadings(temps []float64) {
 		fmt.Println(err)
 	}
 
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(tempReadingJson))
+	req, _ := http.NewRequest("POST", connection.Url, bytes.NewBuffer(tempReadingJson))
 
 	bearerToken := fmt.Sprintf("Bearer %s", connection.Token)
 	req.Header.Add("Content-Type", "application/json")
