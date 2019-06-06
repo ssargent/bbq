@@ -24,7 +24,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-ble/ble"
@@ -38,6 +40,24 @@ type reading struct {
 	probe2 float64 `json:"probe2"`
 	probe3 float64 `json:"probe3"`
 }
+
+type loginModel struct {
+	LoginName string `json:"loginName"`
+	Password  string `json:"password"`
+}
+
+type loginResult struct {
+	Success bool   `json:"success"`
+	Token   string `json:"token"`
+	Error   string `json:"error,omitempty"`
+}
+
+type bbqConnection struct {
+	Token string
+	Url   string
+}
+
+var connection bbqConnection
 
 func temperatureReceived(temperatures []float64) {
 	//(0°C × 9/5) + 32 = 32°F
@@ -69,7 +89,7 @@ func disconnectedHandler(cancel func(), done chan struct{}) func() {
 
 // Code modified to remove hard coded things... obviously there's work here to be done to make it not-dumb.
 func recordReadings(temps []float64) {
-	url := "http://localhost:21337/v1/development/data/temperature/0aa73e9b-f978-43cc-bc8b-ef8bc42467f9"
+	url := "http://localhost:21337/v1/development/data/temperature/693cee93-8a39-4909-8462-2e0892bff1a8"
 
 	var tempReading reading
 
@@ -88,8 +108,9 @@ func recordReadings(temps []float64) {
 
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(tempReadingJson))
 
+	bearerToken := fmt.Sprintf("Bearer %s", connection.Token)
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1ODY2ODk2NywiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU4NTY4OTY3LCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQiLCJ0ZW5hbnQiOiJjMjhmMTVhNy0yNGYzLTVlYWQtODQwMy1iNGQwODMxMjgwMWUifQ.LPKzI4MhAj1x6OJrbhad8LJD9n6A8YxPR4HC6EOtT80")
+	req.Header.Add("Authorization", bearerToken)
 	req.Header.Add("cache-control", "no-cache")
 
 	res, _ := http.DefaultClient.Do(req)
@@ -100,9 +121,27 @@ func recordReadings(temps []float64) {
 
 // Flesh this out more.. it should log in and grab a bearer token.
 func doLogin(loginname string, password string) (string, error) {
-	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImV4cCI6MTU1NzExOTgwOCwiZm4iOiJTY290dCBTYXJnZW50IiwiaWF0IjoxNTU3MDE5ODA4LCJpc3MiOiJodHRwczovL2JicS5rOHMuc3NhcmdlbnQubmV0LyIsImxvZ2luIjoic2NvdHQiLCJzdWIiOiJkY2U0YjI0Yy1mYzcwLTQwYzctOTJlZi1jYmNhYmNiYmFmMGQifQ.soc3hiRpoTGD1RI3vnC9ohJ_D5nkd9hXvs2O6asguV4"
+	url := "http://localhost:21337/v1/system/accounts/login"
 
-	return token, nil
+	login := loginModel{LoginName: loginname, Password: password}
+
+	payload, _ := json.Marshal(login)
+	req, _ := http.NewRequest("POST", url, strings.NewReader(string(payload)))
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("cache-control", "no-cache")
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+
+	var result loginResult
+
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		return "", err
+	}
+
+	return result.Token, nil
 }
 
 func findActiveSession(monitorAddress string) (string, error) {
@@ -113,23 +152,30 @@ func findActiveSession(monitorAddress string) (string, error) {
 
 func main() {
 
-	//bearerToken, err := doLogin("someUserName", "somePassword")
+	username := os.Args[1]
+	password := os.Args[2]
 
+	bearerToken, err := doLogin(username, password)
+
+	if err != nil {
+		fmt.Println("Login to bbq.k8s.ssargent.net failed")
+		return
+	}
+	url := "http://localhost:21337/v1/development/data/temperature/693cee93-8a39-4909-8462-2e0892bff1a8"
+
+	connection = bbqConnection{Token: bearerToken, Url: url}
+
+	fmt.Println("Bearer Token", connection.Token)
+	fmt.Println("Url", connection.Url)
+
+	//sessionId, err := findActiveSession("GetAddressFirstAndUseHere")
 	/*
-		if err != nil {
-			fmt.Println("Login to bbq.k8s.ssargent.net failed")
-			return
-		}
-
-		//sessionId, err := findActiveSession("GetAddressFirstAndUseHere")
-
 		if err != nil {
 			// we'll need to do something more interesting here. perhaps poll and wait for a session... but for now let's exit.
 			fmt.Println("Please create a session and rerun this")
 			return
-		}*/
-
-	var err error
+		}
+	*/
 
 	//logger.Debug("initializing context")
 	ctx1, cancel := context.WithCancel(context.Background())
