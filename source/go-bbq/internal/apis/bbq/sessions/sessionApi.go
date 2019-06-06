@@ -62,6 +62,7 @@ func New(configuration *config.Config) *Config {
 func (config *Config) TenantRoutes() *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/", config.getTenantSessions)
+	router.Get("/active", config.getActiveTenantSessions)
 	router.Get("/{sessionid}", config.getTenantSession)
 	router.Post("/", config.createTenantSession)
 	//router.Post("/{sessionid}/probe-data", config.recordProbeData)
@@ -83,6 +84,18 @@ func (config *Config) recordProbeData(w http.ResponseWriter, r *http.Request) {
 func (config *Config) getTenantSessions(w http.ResponseWriter, r *http.Request) {
 	tenantKey := chi.URLParam(r, "tenantkey")
 	sessions, err := getTenantSessions(config.Database, tenantKey)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, sessions)
+}
+
+func (config *Config) getActiveTenantSessions(w http.ResponseWriter, r *http.Request) {
+	tenantKey := chi.URLParam(r, "tenantkey")
+	sessions, err := getActiveTenantSessions(config.Database, tenantKey)
 
 	if err != nil {
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))

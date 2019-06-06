@@ -154,6 +154,7 @@ func main() {
 
 	username := os.Args[1]
 	password := os.Args[2]
+	session := os.Args[3]
 
 	bearerToken, err := doLogin(username, password)
 
@@ -161,7 +162,8 @@ func main() {
 		fmt.Println("Login to bbq.k8s.ssargent.net failed")
 		return
 	}
-	url := "http://localhost:21337/v1/development/data/temperature/693cee93-8a39-4909-8462-2e0892bff1a8"
+	urlF := "http://localhost:21337/v1/development/data/temperature/%s"
+	url := fmt.Sprintf(urlF, session)
 
 	connection = bbqConnection{Token: bearerToken, Url: url}
 

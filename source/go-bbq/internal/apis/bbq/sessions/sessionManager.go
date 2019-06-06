@@ -47,6 +47,38 @@ func getTenantSessions(db *sql.DB, tenantName string) ([]Session, error) {
 	return sessions, nil
 }
 
+func getActiveTenantSessions(db *sql.DB, tenantName string) ([]Session, error) {
+	tenant, err := tenants.GetTenantByKey(db, tenantName)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Found Tenant: ", tenant.ID, tenant.Name, tenant.URLKey)
+	rows, err := db.Query(
+		"SELECT * FROM bbq.vw_sessions where endtime is null and tenantid = $1", tenant.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	sessions := []Session{}
+
+	for rows.Next() {
+		s, err := scanSessionRows(rows)
+
+		if err != nil {
+			return nil, err
+		}
+
+		sessions = append(sessions, s)
+	}
+
+	return sessions, nil
+}
+
 func scanSessionRows(row *sql.Rows) (Session, error) {
 	var s Session
 	if err := row.Scan(&s.ID, &s.Name, &s.Description, &s.Subject, &s.Type, &s.Weight, &s.Device, &s.Monitor, &s.StartTime, &s.TenantID, &s.UID, &s.EndTime); err != nil {
