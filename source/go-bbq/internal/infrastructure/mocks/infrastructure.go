@@ -47,6 +47,20 @@ func (mr *MockCacheServiceMockRecorder) GetItem(arg0, arg1 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetItem", reflect.TypeOf((*MockCacheService)(nil).GetItem), arg0, arg1)
 }
 
+// RemoveItem mocks base method
+func (m *MockCacheService) RemoveItem(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RemoveItem", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RemoveItem indicates an expected call of RemoveItem
+func (mr *MockCacheServiceMockRecorder) RemoveItem(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveItem", reflect.TypeOf((*MockCacheService)(nil).RemoveItem), arg0)
+}
+
 // SetItem mocks base method
 func (m *MockCacheService) SetItem(arg0 string, arg1 interface{}, arg2 time.Duration) error {
 	m.ctrl.T.Helper()

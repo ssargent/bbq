@@ -1,6 +1,7 @@
 package device
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -82,10 +83,24 @@ func (d *deviceService) CreateDevice(tenantID uuid.UUID, newDevice bbq.Device) (
 
 func (d *deviceService) UpdateDevice(tenantID uuid.UUID, existingDevice bbq.Device) (bbq.Device, error) {
 	existingDevice.TenantID = tenantID
+	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenantID.String(), existingDevice.Name)
+
+	existingDevice, err := d.repository.GetDevice(tenantID, existingDevice.Name)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return bbq.Device{}, errors.New("Device not found.  You must create it first.")
+		}
+
+		return bbq.Device{}, err
+	}
+
 	device, err := d.repository.Update(existingDevice)
 	if err != nil {
 		return bbq.Device{}, err
 	}
+
+	d.cache.SetItem(cacheKey, device, time.Minute*10)
 
 	return device, nil
 
