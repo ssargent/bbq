@@ -247,6 +247,6 @@ func TestUpdateDeviceWhenDeviceDoesntExist(t *testing.T) {
 	returnedDevice, err := deviceService.UpdateDevice(tenant, dev)
 
 	assert.NotNil(t, err)
-	assert.Nil(t, returnedDevice)
+	assert.Equal(t, returnedDevice, bbq.Device{})
 
 }

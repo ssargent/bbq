@@ -2,7 +2,7 @@ package bbq
 
 import "github.com/google/uuid"
 
-//go:generate mockgen  -destination=./mocks/bbq.go  -self_package github.com/ssargent/go-bbq/bbq -package=mock_infrastructure github.com/ssargent/go-bbq/bbq DeviceRepository,MonitorRepository,DeviceService,MonitorService
+//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/go-bbq/bbq DeviceRepository,MonitorRepository,DeviceService,MonitorService
 
 //Device is
 type Device struct {

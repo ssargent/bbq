@@ -1,6 +1,9 @@
 package monitor
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/ssargent/go-bbq/bbq"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
@@ -17,11 +20,43 @@ func NewMonitorService(cache infrastructure.CacheService, repository bbq.Monitor
 }
 
 func (m *monitorService) GetMonitors(tenantID uuid.UUID) ([]bbq.Monitor, error) {
-	return nil, nil
+	cacheKey := fmt.Sprintf("bbq$monitors$%s", tenantID.String())
+
+	var monitors []bbq.Monitor
+
+	if err := m.cache.GetItem(cacheKey, &monitors); err == nil {
+		return monitors, nil
+	}
+
+	monitors, err := m.repository.GetByTenantID(tenantID)
+	if err != nil {
+		return []bbq.Monitor{}, err
+	}
+
+	m.cache.SetItem(cacheKey, monitors, time.Minute*10)
+
+	return monitors, nil
+
 }
+
 func (m *monitorService) GetMonitor(tenantID uuid.UUID, name string) (bbq.Monitor, error) {
-	return bbq.Monitor{}, nil
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenantID.String(), name)
+	var monitor bbq.Monitor
+
+	if err := m.cache.GetItem(cacheKey, &monitor); err == nil {
+		return monitor, nil
+	}
+
+	monitor, err := m.repository.GetByName(tenantID, name)
+	if err != nil {
+		return bbq.Monitor{}, err
+	}
+
+	m.cache.SetItem(cacheKey, monitor, time.Minute*10)
+
+	return monitor, nil
 }
+
 func (m *monitorService) CreateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (bbq.Monitor, error) {
 	return bbq.Monitor{}, nil
 }
