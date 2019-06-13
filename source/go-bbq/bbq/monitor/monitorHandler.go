@@ -4,23 +4,23 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
-	"github.com/google/uuid"
 
 	"github.com/ssargent/go-bbq/bbq"
 	"github.com/ssargent/go-bbq/config"
 	"github.com/ssargent/go-bbq/internal/infrastructure"
+	"github.com/ssargent/go-bbq/security"
 )
 
 type monitorHandler struct {
-	service bbq.MonitorService
-	config  *config.Config
+	service        bbq.MonitorService
+	authentication security.AuthenticationService
+	config         *config.Config
 }
 
 // NewDeviceHandler will create an api Handler for a devices.
-func NewMonitorHandler(config *config.Config, service bbq.MonitorService) infrastructure.ApiHandler {
-	return &monitorHandler{service: service, config: config}
+func NewMonitorHandler(config *config.Config, authentication security.AuthenticationService, service bbq.MonitorService) infrastructure.ApiHandler {
+	return &monitorHandler{service: service, authentication: authentication, config: config}
 }
 
 func (handler *monitorHandler) Routes() *chi.Mux {
@@ -36,16 +36,13 @@ func (handler *monitorHandler) Routes() *chi.Mux {
 }
 
 func (handler *monitorHandler) getMonitors(w http.ResponseWriter, r *http.Request) {
-	_, claims, _ := jwtauth.FromContext(r.Context())
-
-	tenantString := claims["tenant"].(string)
-	tenant, err := uuid.Parse(tenantString)
+	loginSession, err := handler.authentication.GetLoginSession(r)
 
 	if err != nil {
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
 		return
 	}
-	monitors, err := handler.service.GetMonitors(tenant)
+	monitors, err := handler.service.GetMonitors(loginSession.TenantId)
 
 	if err != nil {
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))

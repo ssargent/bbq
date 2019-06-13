@@ -43,7 +43,6 @@ func Routes(c *config.Config) *chi.Mux {
 		middleware.DefaultCompress,
 		middleware.Recoverer,
 		middleware.RequestID,
-		middleware.
 		cors.Handler)
 
 	healthAPI := health.New(c)
