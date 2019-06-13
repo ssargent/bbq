@@ -43,6 +43,7 @@ type DeviceRepository interface {
 type MonitorService interface {
 	GetMonitors(tenantID uuid.UUID) ([]Monitor, error)
 	GetMonitor(tenantID uuid.UUID, name string) (Monitor, error)
+	GetMonitorByAddress(tenantID uuid.UUID, address string) (Monitor, error)
 	CreateMonitor(tenantID uuid.UUID, entity Monitor) (Monitor, error)
 	UpdateMonitor(tenantID uuid.UUID, entity Monitor) (Monitor, error)
 	DeleteMonitor(tenantID uuid.UUID, entity Monitor) error
@@ -52,6 +53,7 @@ type MonitorService interface {
 type MonitorRepository interface {
 	GetByTenantID(tenantID uuid.UUID) ([]Monitor, error)
 	GetByName(tenantID uuid.UUID, name string) (Monitor, error)
+	GetByAddress(tenantID uuid.UUID, address string) (Monitor, error)
 	Create(entity Monitor) (Monitor, error)
 	Update(entity Monitor) (Monitor, error)
 	Delete(entity Monitor) error

@@ -24,6 +24,10 @@ func (m *monitorRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Moni
 	return bbq.Monitor{}, nil
 }
 
+func (m *monitorRepository) GetByAddress(tenantID uuid.UUID, address string) (bbq.Monitor, error) {
+	return bbq.Monitor{}, nil
+}
+
 func (m *monitorRepository) Create(entity bbq.Monitor) (bbq.Monitor, error) {
 	return bbq.Monitor{}, nil
 }

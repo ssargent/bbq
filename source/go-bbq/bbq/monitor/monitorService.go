@@ -59,6 +59,16 @@ func (m *monitorService) GetMonitor(tenantID uuid.UUID, name string) (bbq.Monito
 	return monitor, nil
 }
 
+func (m *monitorService) GetMonitorByAddress(tenantID uuid.UUID, address string) (bbq.Monitor, error) {
+
+	monitor, err := m.repository.GetByAddress(tenantID, address)
+	if err != nil {
+		return bbq.Monitor{}, err
+	}
+
+	return monitor, nil
+}
+
 func (m *monitorService) CreateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (bbq.Monitor, error) {
 	entity.TenantID = tenantID
 	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenantID.String(), entity.Name)

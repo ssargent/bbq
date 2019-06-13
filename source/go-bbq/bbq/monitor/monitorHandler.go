@@ -53,7 +53,20 @@ func (handler *monitorHandler) getMonitors(w http.ResponseWriter, r *http.Reques
 }
 
 func (handler *monitorHandler) getMonitorByAddress(w http.ResponseWriter, r *http.Request) {
+	loginSession, err := handler.authentication.GetLoginSession(r)
 
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+	monitor, err := handler.service.GetMonitorByAddress(loginSession.TenantId, chi.URLParam(r, "address"))
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, monitor)
 }
 
 func (handler *monitorHandler) getMonitorByName(w http.ResponseWriter, r *http.Request) {

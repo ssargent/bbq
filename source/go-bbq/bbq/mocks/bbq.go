@@ -160,6 +160,21 @@ func (mr *MockMonitorRepositoryMockRecorder) Delete(arg0 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockMonitorRepository)(nil).Delete), arg0)
 }
 
+// GetByAddress mocks base method
+func (m *MockMonitorRepository) GetByAddress(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByAddress", arg0, arg1)
+	ret0, _ := ret[0].(bbq.Monitor)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByAddress indicates an expected call of GetByAddress
+func (mr *MockMonitorRepositoryMockRecorder) GetByAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAddress", reflect.TypeOf((*MockMonitorRepository)(nil).GetByAddress), arg0, arg1)
+}
+
 // GetByName mocks base method
 func (m *MockMonitorRepository) GetByName(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
 	m.ctrl.T.Helper()
@@ -367,6 +382,21 @@ func (m *MockMonitorService) GetMonitor(arg0 uuid.UUID, arg1 string) (bbq.Monito
 func (mr *MockMonitorServiceMockRecorder) GetMonitor(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitor", reflect.TypeOf((*MockMonitorService)(nil).GetMonitor), arg0, arg1)
+}
+
+// GetMonitorByAddress mocks base method
+func (m *MockMonitorService) GetMonitorByAddress(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMonitorByAddress", arg0, arg1)
+	ret0, _ := ret[0].(bbq.Monitor)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMonitorByAddress indicates an expected call of GetMonitorByAddress
+func (mr *MockMonitorServiceMockRecorder) GetMonitorByAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitorByAddress", reflect.TypeOf((*MockMonitorService)(nil).GetMonitorByAddress), arg0, arg1)
 }
 
 // GetMonitors mocks base method
