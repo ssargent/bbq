@@ -33,7 +33,7 @@ func TestGetMonitors(t *testing.T) {
 		ID:          1,
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 	var returnedMonitors []bbq.Monitor
@@ -65,7 +65,7 @@ func TestGetMonitorsWhenCached(t *testing.T) {
 		ID:          1,
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 	var returnedMonitors []bbq.Monitor
@@ -97,12 +97,12 @@ func TestGetMonitor(t *testing.T) {
 		ID:          1,
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 	var returnedMonitor bbq.Monitor
 
-	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(),"My Monitor")
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
 
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(mon, nil).Times(1)
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedMonitor).Return(errors.New("not found")).Times(1)
@@ -128,14 +128,14 @@ func TestCreateMonitor(t *testing.T) {
 	mon := bbq.Monitor{
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
- 
-	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(),"My Monitor")
+
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
 
 	notFoundErr := sql.ErrNoRows
-	//var returnedDevice bbq.Device 
+	//var returnedDevice bbq.Device
 
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(bbq.Monitor{}, notFoundErr).Times(1)
 	mockRepo.EXPECT().Create(mon).Return(mon, nil).Times(1)
@@ -165,14 +165,14 @@ func TestCreateMonitorWhenItAlreadyExists(t *testing.T) {
 	mon := bbq.Monitor{
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 	//var returnedMonitor bbq.Monitor
 
-	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(),"My Monitor")
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
 
-	//var returnedDevice bbq.Device 
+	//var returnedDevice bbq.Device
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(mon, nil).Times(1)
 	mockRepo.EXPECT().Create(mon).Return(mon, nil).Times(0)
 	mockCacheService.EXPECT().SetItem(cacheKey, mon, time.Minute*10).Return(nil).Times(0)
@@ -181,7 +181,7 @@ func TestCreateMonitorWhenItAlreadyExists(t *testing.T) {
 
 	assert.NotNil(t, err)
 	assert.Equal(t, returnedMonitor, bbq.Monitor{})
-	assert.Equal(t, err, errors.New("monitor already exists"))
+	assert.Equal(t, err, errors.New("A monitor with that name already exists for your tenant"))
 
 }
 
@@ -202,11 +202,11 @@ func TestUpdateMonitor(t *testing.T) {
 	mon := bbq.Monitor{
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 
-	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(),"My Monitor")
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
 
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(mon, nil).Times(1)
 	mockRepo.EXPECT().Update(mon).Return(mon, nil).Times(1)
@@ -219,7 +219,7 @@ func TestUpdateMonitor(t *testing.T) {
 
 }
 
-func TestUpdateMonitorWhenDeviceDoesntExist(t *testing.T) {
+func TestUpdateMonitorWhenMonitorDoesntExist(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -236,20 +236,20 @@ func TestUpdateMonitorWhenDeviceDoesntExist(t *testing.T) {
 	mon := bbq.Monitor{
 		Name:        "My Monitor",
 		Description: "My Monitor",
-		Address:	 "deadbeef",
+		Address:     "deadbeef",
 		TenantID:    tenant,
 	}
 
-	 notFoundErr  := sql.ErrNoRows
-	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(),"My Monitor")
+	notFoundErr := sql.ErrNoRows
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
 
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(bbq.Monitor{}, notFoundErr).Times(1)
-	mockRepo.EXPECT().Update(mon).Return(mon, nil).Times(0)
+	mockRepo.EXPECT().Update(mon).Return(bbq.Monitor{}, nil).Times(0)
 	mockCacheService.EXPECT().SetItem(cacheKey, mon, time.Minute*10).Return(nil).Times(0)
 
 	returnedMonitor, err := monitorService.UpdateMonitor(tenant, mon)
 
 	assert.NotNil(t, err)
-	assert.Nil(t, returnedMonitor)
+	assert.Equal(t, bbq.Monitor{}, returnedMonitor)
 
 }

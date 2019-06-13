@@ -1,6 +1,8 @@
 package monitor
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -58,10 +60,47 @@ func (m *monitorService) GetMonitor(tenantID uuid.UUID, name string) (bbq.Monito
 }
 
 func (m *monitorService) CreateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (bbq.Monitor, error) {
-	return bbq.Monitor{}, nil
+	entity.TenantID = tenantID
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenantID.String(), entity.Name)
+
+	_, err := m.repository.GetByName(tenantID, entity.Name)
+
+	if err == nil {
+		return bbq.Monitor{}, errors.New("A monitor with that name already exists for your tenant")
+	}
+
+	monitor, err := m.repository.Create(entity)
+	if err != nil {
+		return bbq.Monitor{}, err
+	}
+
+	m.cache.SetItem(cacheKey, monitor, time.Minute*10)
+
+	return monitor, nil
 }
 func (m *monitorService) UpdateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (bbq.Monitor, error) {
-	return bbq.Monitor{}, nil
+	entity.TenantID = tenantID
+	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenantID.String(), entity.Name)
+
+	_, err := m.repository.GetByName(tenantID, entity.Name)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return bbq.Monitor{}, errors.New("Monitor not found.  You must create it first.")
+		}
+
+		return bbq.Monitor{}, err
+	}
+
+	monitor, err := m.repository.Update(entity)
+	if err != nil {
+		return bbq.Monitor{}, err
+	}
+
+	m.cache.SetItem(cacheKey, monitor, time.Minute*10)
+
+	return monitor, nil
+
 }
 func (m *monitorService) DeleteMonitor(tenantID uuid.UUID, entity bbq.Monitor) error {
 	return nil
