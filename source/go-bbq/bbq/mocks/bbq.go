@@ -369,21 +369,6 @@ func (mr *MockMonitorServiceMockRecorder) DeleteMonitor(arg0, arg1 interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMonitor", reflect.TypeOf((*MockMonitorService)(nil).DeleteMonitor), arg0, arg1)
 }
 
-// GetMonitor mocks base method
-func (m *MockMonitorService) GetMonitor(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMonitor", arg0, arg1)
-	ret0, _ := ret[0].(bbq.Monitor)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetMonitor indicates an expected call of GetMonitor
-func (mr *MockMonitorServiceMockRecorder) GetMonitor(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitor", reflect.TypeOf((*MockMonitorService)(nil).GetMonitor), arg0, arg1)
-}
-
 // GetMonitorByAddress mocks base method
 func (m *MockMonitorService) GetMonitorByAddress(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
 	m.ctrl.T.Helper()
@@ -397,6 +382,21 @@ func (m *MockMonitorService) GetMonitorByAddress(arg0 uuid.UUID, arg1 string) (b
 func (mr *MockMonitorServiceMockRecorder) GetMonitorByAddress(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitorByAddress", reflect.TypeOf((*MockMonitorService)(nil).GetMonitorByAddress), arg0, arg1)
+}
+
+// GetMonitorByName mocks base method
+func (m *MockMonitorService) GetMonitorByName(arg0 uuid.UUID, arg1 string) (bbq.Monitor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetMonitorByName", arg0, arg1)
+	ret0, _ := ret[0].(bbq.Monitor)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetMonitorByName indicates an expected call of GetMonitorByName
+func (mr *MockMonitorServiceMockRecorder) GetMonitorByName(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMonitorByName", reflect.TypeOf((*MockMonitorService)(nil).GetMonitorByName), arg0, arg1)
 }
 
 // GetMonitors mocks base method

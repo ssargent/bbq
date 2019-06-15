@@ -79,7 +79,7 @@ func TestGetMonitorsWhenCached(t *testing.T) {
 	monitorService.GetMonitors(tenant)
 }
 
-func TestGetMonitor(t *testing.T) {
+func TestGetMonitorByName(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -108,7 +108,7 @@ func TestGetMonitor(t *testing.T) {
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedMonitor).Return(errors.New("not found")).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, mon, time.Minute*10).Return(nil).Times(1)
 
-	monitorService.GetMonitor(tenant, "My Monitor")
+	monitorService.GetMonitorByName(tenant, "My Monitor")
 }
 
 func TestCreateMonitor(t *testing.T) {

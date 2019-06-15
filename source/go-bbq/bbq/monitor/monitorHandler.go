@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -28,9 +29,9 @@ func (handler *monitorHandler) Routes() *chi.Mux {
 
 	router.Get("/", handler.getMonitors)
 	router.Get("/address/{address}", handler.getMonitorByAddress)
-	router.Get("/{deviceName}", handler.getMonitorByName)
+	router.Get("/{monitorName}", handler.getMonitorByName)
 	router.Post("/", handler.createMonitor)
-	router.Delete("/{deviceid}", handler.deleteMonitor)
+	router.Delete("/{monitorId}", handler.deleteMonitor)
 
 	return router
 }
@@ -70,7 +71,22 @@ func (handler *monitorHandler) getMonitorByAddress(w http.ResponseWriter, r *htt
 }
 
 func (handler *monitorHandler) getMonitorByName(w http.ResponseWriter, r *http.Request) {
+	loginSession, err := handler.authentication.GetLoginSession(r)
 
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+	monitorName := strings.Replace(chi.URLParam(r, "monitorName"), "-", " ", -1)
+	monitorName = strings.ToLower(monitorName)
+	monitor, err := handler.service.GetMonitorByName(loginSession.TenantId, monitorName)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, monitor)
 }
 
 func (handler *monitorHandler) createMonitor(w http.ResponseWriter, r *http.Request) {

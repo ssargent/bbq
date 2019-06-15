@@ -131,3 +131,43 @@ func TestGetMonitorByAddressEndpoint(t *testing.T) {
 	assert.Equal(t, mon, monitorResult)
 
 }
+
+func TestGetMonitorByNameEndpoint(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	accountId, _ := uuid.NewUUID()
+	tenant, _ := uuid.NewUUID()
+
+	mon := getMonitorHelper(1, "My Monitor", "deadbeef", tenant)
+	loginSession := getLoginSessionHelper(accountId, tenant, "chef", "Chef Hetfield")
+
+	auth := jwtauth.New("HS256", []byte("password"), nil)
+
+	testConfig := config.Config{
+		TokenAuth: auth,
+	}
+
+	authenticationService := mock_security.NewMockAuthenticationService(mockCtrl)
+	monitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	monitorHandler := NewMonitorHandler(&testConfig, authenticationService, monitorService)
+
+	authenticationService.EXPECT().GetLoginSession(gomock.Any()).Return(loginSession, nil).Times(1)
+	monitorService.EXPECT().GetMonitorByName(tenant, "my monitor").Return(mon, nil).Times(1)
+
+	request, _ := http.NewRequest("GET", "/my-monitor", nil)
+	response := httptest.NewRecorder()
+	var monitorResult bbq.Monitor
+
+	monitorHandler.Routes().ServeHTTP(response, request)
+
+	if err := json.NewDecoder(response.Body).Decode(&monitorResult); err != nil {
+		t.Error("Cannot convert json to monitor")
+	}
+
+	assert.Equal(t, 200, response.Code, "OK response is expected")
+	assert.Equal(t, "application/json; charset=utf-8", response.Header().Get("Content-Type"))
+	assert.NotNil(t, monitorResult)
+	assert.Equal(t, mon, monitorResult)
+
+}

@@ -40,8 +40,11 @@ func (m *monitorService) GetMonitors(tenantID uuid.UUID) ([]bbq.Monitor, error) 
 	return monitors, nil
 
 }
+func (m *monitorService) GetMonitorById(tenantID uuid.UUID, id uuid.UUID) (bbq.Monitor, error) {
+	return bbq.Monitor{}, nil
+}
 
-func (m *monitorService) GetMonitor(tenantID uuid.UUID, name string) (bbq.Monitor, error) {
+func (m *monitorService) GetMonitorByName(tenantID uuid.UUID, name string) (bbq.Monitor, error) {
 	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenantID.String(), name)
 	var monitor bbq.Monitor
 

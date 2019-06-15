@@ -42,7 +42,8 @@ type DeviceRepository interface {
 // MonitorService is the service for devices
 type MonitorService interface {
 	GetMonitors(tenantID uuid.UUID) ([]Monitor, error)
-	GetMonitor(tenantID uuid.UUID, name string) (Monitor, error)
+	GetMonitorById(tenantID uuid.UUID, monitorId uuid.UUID) (Monitor, error)
+	GetMonitorByName(tenantID uuid.UUID, name string) (Monitor, error)
 	GetMonitorByAddress(tenantID uuid.UUID, address string) (Monitor, error)
 	CreateMonitor(tenantID uuid.UUID, entity Monitor) (Monitor, error)
 	UpdateMonitor(tenantID uuid.UUID, entity Monitor) (Monitor, error)
@@ -52,6 +53,7 @@ type MonitorService interface {
 // MonitorRepository is the repo for Devices
 type MonitorRepository interface {
 	GetByTenantID(tenantID uuid.UUID) ([]Monitor, error)
+	GetByID(tenantID uuid.UUID, monitorId uuid.UUID) (Monitor, error)
 	GetByName(tenantID uuid.UUID, name string) (Monitor, error)
 	GetByAddress(tenantID uuid.UUID, address string) (Monitor, error)
 	Create(entity Monitor) (Monitor, error)

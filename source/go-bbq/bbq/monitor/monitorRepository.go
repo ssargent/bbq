@@ -16,6 +16,10 @@ func NewMonitorRepository(database *sql.DB) bbq.MonitorRepository {
 	return &monitorRepository{database: database}
 }
 
+func (m *monitorRepository) GetById(tenantId uuid.UUID, id uuid.UUID) (bbq.Monitor, error) {
+	return bbq.Monitor{}, nil
+}
+
 func (m *monitorRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Monitor, error) {
 	return nil, nil
 }
