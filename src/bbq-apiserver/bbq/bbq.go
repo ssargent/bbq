@@ -1,8 +1,13 @@
 package bbq
 
-import "github.com/google/uuid"
+import (
+	"time"
 
-//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq DeviceRepository,MonitorRepository,DeviceService,MonitorService
+	"github.com/google/uuid"
+	"github.com/lib/pq"
+)
+
+//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SessionService,DeviceService,MonitorService
 
 //Device is
 type Device struct {
@@ -21,6 +26,22 @@ type Monitor struct {
 	Description string    `json:"description"`
 	Address     string    `json:"address"`
 	TenantID    uuid.UUID `json:"tenantid"`
+}
+
+// Session is
+type Session struct {
+	ID          int         `json:"id"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Subject     string      `json:"subject"`
+	Type        string      `json:"type"`
+	Weight      float64     `json:"weight"`
+	Device      string      `json:"device"`
+	Monitor     string      `json:"monitor"`
+	StartTime   time.Time   `json:"starttime"`
+	EndTime     pq.NullTime `json:"endtime"`
+	TenantID    uuid.UUID   `json:"tenantid"`
+	UID         uuid.UUID   `json:"uid"`
 }
 
 // DeviceService is the service for devices
@@ -43,7 +64,27 @@ type DeviceRepository interface {
 	Delete(device Device) error
 }
 
-// MonitorService is the service for devices
+// SessionService is the service for Sessions
+type SessionService interface {
+	GetSessions(tenantID uuid.UUID) ([]Session, error)
+	GetSessionByID(tenantID uuid.UUID, id uuid.UUID) (Session, error)
+	GetSessionByMonitorAddress(tenantID uuid.UUID, address string) (Session, error)
+	CreateSession(tenantID uuid.UUID, entity Session) (Session, error)
+	UpdateSession(tenantID uuid.UUID, entity Session) (Session, error)
+	DeleteSession(tenantID uuid.UUID, entity Session) error
+}
+
+// SessionRepository is the repo for Sessions
+type SessionRepository interface {
+	GetByTenantID(tenantID uuid.UUID) ([]Session, error)
+	GetByID(tenantID uuid.UUID, id uuid.UUID) (Session, error)
+	GetByMonitorAddress(tenantID uuid.UUID, address string) (Session, error)
+	Create(tenantID uuid.UUID, entity Session) (Session, error)
+	Update(tenantID uuid.UUID, entity Session) (Session, error)
+	Delete(tenantID uuid.UUID, entity Session) error
+}
+
+// MonitorService is the service for monitors
 type MonitorService interface {
 	GetMonitors(tenantID uuid.UUID) ([]Monitor, error)
 	GetMonitorByID(tenantID uuid.UUID, monitorId uuid.UUID) (Monitor, error)
