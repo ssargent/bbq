@@ -1,1 +1,0 @@
-drop table data.bbq_temp_rollup;
