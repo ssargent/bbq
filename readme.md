@@ -12,8 +12,8 @@ This was the repo for the BBQ Coding Challenge. If you're looking for that, its 
 ## The Parts
 
  1. monitor-cli is a golang based monitor program that will pull the data off of the bluetooth thermometer and send it to the api server hosted in kubernetes (go-bbq)
- 2. go-bbq is an api server that supports rest apis now and grpc future.  It's currently a monolithic api server that provides multi-tenant support for: 
-	 -  Managing BBQ Devices (Grills, Smokers etc..) 
+ 2. bbq-apiserver is an api server that supports rest apis now and grpc future.  It's currently a monolithic api server that provides multi-tenant support for: 
+	 - Managing BBQ Devices (Grills, Smokers etc..) 
 	 - Managing BBQ Monitors (Thermometers)
 	 - Recording and Querying Thermometer Data 
 	 - Managing Accounts

@@ -1,6 +1,6 @@
-# go-bbq
+# bbq-apiserver
 
-Go BBQ - a golang backend for the most over engineered bbq thermometer ever project.
+bbq-apiserver - a golang backend for the most over engineered bbq thermometer ever project.
 
 ## To Run Locally
 
