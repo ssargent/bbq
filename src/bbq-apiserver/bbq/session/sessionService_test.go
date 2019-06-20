@@ -1,240 +1,110 @@
 package session
 
 import (
-	"reflect"
+	
 	"testing"
+	"time"
+	"fmt"
+	"errors"
 
+	"github.com/golang/mock/gomock"
+	"github.com/lib/pq"
 	"github.com/google/uuid"
 	"github.com/ssargent/bbq/bbq-apiserver/bbq"
-	"github.com/ssargent/bbq/bbq-apiserver/internal/infrastructure"
+	mock_bbq "github.com/ssargent/bbq/bbq-apiserver/bbq/mocks"
+	mock_infrastructure "github.com/ssargent/bbq/bbq-apiserver/internal/infrastructure/mocks"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestNewSessionService(t *testing.T) {
-	type args struct {
-		cache      infrastructure.CacheService
-		repository bbq.SessionRepository
-	}
-	tests := []struct {
-		name string
-		args args
-		want bbq.SessionService
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewSessionService(tt.args.cache, tt.args.repository); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewSessionService() = %v, want %v", got, tt.want)
-			}
-		})
+func getSession(id int, tenant uuid.UUID, uid uuid.UUID) bbq.Session {
+	nt := pq.NullTime{}
+
+	return bbq.Session{
+		ID:	id,
+		Name: "My Session",
+		Description: "My Session",
+		Subject: "Pulled Pork",
+		Type: 	"Pulled Pork",
+		Weight: 9.2,
+		Device: "Large Big Green Egg",
+		Monitor: "My Great Monitor",
+		StartTime: time.Now(),
+		EndTime: nt,
+		TenantID: tenant,
+		UID: uid,
 	}
 }
 
-func Test_sessionService_GetSessions(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
+func TestGetSessions(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockRepo := mock_bbq.NewMockSessionRepository(mockCtrl)
+	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, mockRepo)
+
+	tenant, err := uuid.NewUUID()
+
+	if err != nil {
+		return;
 	}
-	type args struct {
-		tenantID uuid.UUID
+ 
+	sessionid, err := uuid.NewUUID()
+
+	if err != nil {
+		return;
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    []bbq.Session
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			got, err := s.GetSessions(tt.args.tenantID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.GetSessions() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("sessionService.GetSessions() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+ 
+	session := getSession(1, tenant, sessionid)
+
+	var returnedSessions []bbq.Session
+
+	cacheKey := fmt.Sprintf("bbq$sessions$%s", tenant.String())
+
+	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.Session{session}, nil).Times(1)
+	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSessions).Return(errors.New("not found")).Times(1)
+	mockCacheService.EXPECT().SetItem(cacheKey, []bbq.Session{session}, time.Minute*10).Return(nil).Times(1)
+
+	sessions, err := sessionService.GetSessions(tenant)
+
+	assert.NotNil(t, sessions)
+	assert.NotEmpty(t, sessions)
+	assert.ElementsMatch(t, []bbq.Session{session}, sessions)
+	assert.Nil(t, err)
+
 }
 
-func Test_sessionService_GetSessionByID(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
-	}
-	type args struct {
-		tenantID uuid.UUID
-		id       uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bbq.Session
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			got, err := s.GetSessionByID(tt.args.tenantID, tt.args.id)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.GetSessionByID() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("sessionService.GetSessionByID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+func TestGetCachedSessions(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
-func Test_sessionService_GetSessionByMonitorAddress(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
-	}
-	type args struct {
-		tenantID uuid.UUID
-		address  string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bbq.Session
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			got, err := s.GetSessionByMonitorAddress(tt.args.tenantID, tt.args.address)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.GetSessionByMonitorAddress() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("sessionService.GetSessionByMonitorAddress() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	mockRepo := mock_bbq.NewMockSessionRepository(mockCtrl)
+	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, mockRepo)
 
-func Test_sessionService_CreateSession(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
-	}
-	type args struct {
-		tenantID uuid.UUID
-		entity   bbq.Session
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bbq.Session
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			got, err := s.CreateSession(tt.args.tenantID, tt.args.entity)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.CreateSession() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("sessionService.CreateSession() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	tenant, err := uuid.NewUUID()
 
-func Test_sessionService_UpdateSession(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
+	if err != nil {
+		return;
 	}
-	type args struct {
-		tenantID uuid.UUID
-		entity   bbq.Session
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bbq.Session
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			got, err := s.UpdateSession(tt.args.tenantID, tt.args.entity)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.UpdateSession() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("sessionService.UpdateSession() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+ 
+	sessionid, err := uuid.NewUUID()
 
-func Test_sessionService_DeleteSession(t *testing.T) {
-	type fields struct {
-		repository bbq.SessionRepository
-		cache      infrastructure.CacheService
+	if err != nil {
+		return;
 	}
-	type args struct {
-		tenantID uuid.UUID
-		entity   bbq.Session
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			s := &sessionService{
-				repository: tt.fields.repository,
-				cache:      tt.fields.cache,
-			}
-			if err := s.DeleteSession(tt.args.tenantID, tt.args.entity); (err != nil) != tt.wantErr {
-				t.Errorf("sessionService.DeleteSession() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+ 
+	session := getSession(1, tenant, sessionid)
+
+	var returnedSessions []bbq.Session
+
+	cacheKey := fmt.Sprintf("bbq$sessions$%s", tenant.String())
+
+	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.Session{session}, nil).Times(0)
+	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSessions).Return(nil).Times(1)
+	mockCacheService.EXPECT().SetItem(cacheKey, []bbq.Session{session}, time.Minute*10).Return(nil).Times(0)
+ //   returnedSessions = []bbq.Session{session} 
+	  sessionService.GetSessions(tenant)
+
+ 
 }
