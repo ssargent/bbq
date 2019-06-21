@@ -7,7 +7,7 @@ import (
 	"github.com/lib/pq"
 )
 
-//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SessionService,DeviceService,MonitorService
+//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SubjectRepository,SessionService,DeviceService,MonitorService
 
 //Device is
 type Device struct {

@@ -39,7 +39,7 @@ func createUnitOfWork(c *gomock.Controller) bbq.BBQUnitOfWork {
 
 	unitofwork.Monitor = mock_bbq.NewMockMonitorRepository(c)
 	unitofwork.Device = mock_bbq.NewMockDeviceRepository(c)
-	//unitofwork.Subject = mock_bbq.NewMockSubjectRepository(c)
+	unitofwork.Subject = mock_bbq.NewMockSubjectRepository(c)
 	unitofwork.Session = mock_bbq.NewMockSessionRepository(c)
 
 	return unitofwork
