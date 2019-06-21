@@ -10,13 +10,13 @@ import (
 )
 
 type sessionService struct {
-	repository bbq.SessionRepository
+	unitOfWork bbq.BBQUnitOfWork
 	cache      infrastructure.CacheService
 }
 
 // NewSessionService will create an SessionService
-func NewSessionService(cache infrastructure.CacheService, repository bbq.SessionRepository) bbq.SessionService {
-	return &sessionService{repository: repository, cache: cache}
+func NewSessionService(cache infrastructure.CacheService, unitOfWork bbq.BBQUnitOfWork) bbq.SessionService {
+	return &sessionService{unitOfWork: unitOfWork, cache: cache}
 }
 
 func (s *sessionService) GetSessions(tenantID uuid.UUID) ([]bbq.Session, error) {
@@ -28,7 +28,7 @@ func (s *sessionService) GetSessions(tenantID uuid.UUID) ([]bbq.Session, error) 
 		return sessions, nil
 	}
 
-	sessions, err := s.repository.GetByTenantID(tenantID)
+	sessions, err := s.unitOfWork.Session.GetByTenantID(tenantID)
 	if err != nil {
 		return []bbq.Session{}, err
 	}
@@ -39,11 +39,32 @@ func (s *sessionService) GetSessions(tenantID uuid.UUID) ([]bbq.Session, error) 
 }
 
 func (s *sessionService) GetSessionByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Session, error) {
-	panic("not implemented")
+	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenantID.String(), id.String())
+
+	var session bbq.Session
+
+	if err := s.cache.GetItem(cacheKey, &session); err == nil {
+		return session, nil
+	}
+
+	session, err := s.unitOfWork.Session.GetByID(tenantID, id)
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	s.cache.SetItem(cacheKey, session, time.Minute*10)
+
+	return session, nil
 }
 
 func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address string) (bbq.Session, error) {
-	panic("not implemented")
+	session, err := s.unitOfWork.Session.GetByMonitorAddress(tenantID, address)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	return session, nil
 }
 
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {

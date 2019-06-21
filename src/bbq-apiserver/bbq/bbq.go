@@ -18,6 +18,15 @@ type Device struct {
 	TenantID    uuid.UUID `json:"tenantid"`
 }
 
+//Subject is the thing thats being cooked.
+type Subject struct {
+	ID          int       `json:"id"`
+	Uid         uuid.UUID `json:"uid"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	TenantID    uuid.UUID `json:"tenantid"`
+}
+
 //Monitor is
 type Monitor struct {
 	ID          int       `json:"id"`
@@ -42,6 +51,20 @@ type Session struct {
 	EndTime     pq.NullTime `json:"endtime"`
 	TenantID    uuid.UUID   `json:"tenantid"`
 	UID         uuid.UUID   `json:"uid"`
+}
+
+type SessionRecord struct {
+	ID          int         `json:"id"`
+	DeviceID    int         `json:"deviceid"`
+	MonitorID   int         `json:"monitorid"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	StartTime   time.Time   `json:"starttime"`
+	SubjectID   int         `json:"subjectid"`
+	Weight      float64     `json:"weight"`
+	TenantID    uuid.UUID   `json:"tenantid"`
+	UID         uuid.UUID   `json:"uid"`
+	EndTime     pq.NullTime `json:"endtime"`
 }
 
 // DeviceService is the service for devices
@@ -104,4 +127,19 @@ type MonitorRepository interface {
 	Create(entity Monitor) (Monitor, error)
 	Update(entity Monitor) (Monitor, error)
 	Delete(entity Monitor) error
+}
+
+type SubjectRepository interface {
+	GetByID(tenantID uuid.UUID, subjectID uuid.UUID) (Subject, error)
+	GetByName(tenantID uuid.UUID, name string) (Subject, error)
+	Create(entity Subject) (Subject, error)
+	Update(entity Subject) (Subject, error)
+	Delete(entity Subject) error
+}
+
+type BBQUnitOfWork struct {
+	Monitor MonitorRepository
+	Device  DeviceRepository
+	Session SessionRepository
+	Subject SubjectRepository
 }
