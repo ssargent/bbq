@@ -102,8 +102,8 @@ type SessionRepository interface {
 	GetByTenantID(tenantID uuid.UUID) ([]Session, error)
 	GetByID(tenantID uuid.UUID, id uuid.UUID) (Session, error)
 	GetByMonitorAddress(tenantID uuid.UUID, address string) (Session, error)
-	Create(tenantID uuid.UUID, entity Session) (Session, error)
-	Update(tenantID uuid.UUID, entity Session) (Session, error)
+	Create(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
+	Update(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
 	Delete(tenantID uuid.UUID, entity Session) error
 }
 

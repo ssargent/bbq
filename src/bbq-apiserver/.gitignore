@@ -12,6 +12,8 @@
 *.out
 
 go-bbq
+bbq-apiserver
+bbq-apiserver.exe
 
 secrets/*.txt
 run-bbq.bat

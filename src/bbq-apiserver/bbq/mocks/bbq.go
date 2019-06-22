@@ -35,10 +35,10 @@ func (m *MockSessionRepository) EXPECT() *MockSessionRepositoryMockRecorder {
 }
 
 // Create mocks base method
-func (m *MockSessionRepository) Create(arg0 uuid.UUID, arg1 bbq.Session) (bbq.Session, error) {
+func (m *MockSessionRepository) Create(arg0 uuid.UUID, arg1 bbq.SessionRecord) (bbq.SessionRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0, arg1)
-	ret0, _ := ret[0].(bbq.Session)
+	ret0, _ := ret[0].(bbq.SessionRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -109,10 +109,10 @@ func (mr *MockSessionRepositoryMockRecorder) GetByTenantID(arg0 interface{}) *go
 }
 
 // Update mocks base method
-func (m *MockSessionRepository) Update(arg0 uuid.UUID, arg1 bbq.Session) (bbq.Session, error) {
+func (m *MockSessionRepository) Update(arg0 uuid.UUID, arg1 bbq.SessionRecord) (bbq.SessionRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0, arg1)
-	ret0, _ := ret[0].(bbq.Session)
+	ret0, _ := ret[0].(bbq.SessionRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -11,7 +11,7 @@ type sessionRepository struct {
 	database *sql.DB
 }
 
-// NewMonitorRepository will return a repo for MonitorRepository
+// NewSessionRepository will return a repo for MonitorRepository
 func NewSessionRepository(database *sql.DB) bbq.SessionRepository {
 	return &sessionRepository{database: database}
 }
@@ -28,11 +28,11 @@ func (s *sessionRepository) GetByMonitorAddress(tenantID uuid.UUID, address stri
 	panic("not implemented")
 }
 
-func (s *sessionRepository) Create(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
+func (s *sessionRepository) Create(tenantID uuid.UUID, entity bbq.SessionRecord) (bbq.SessionRecord, error) {
 	panic("not implemented")
 }
 
-func (s *sessionRepository) Update(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
+func (s *sessionRepository) Update(tenantID uuid.UUID, entity bbq.SessionRecord) (bbq.SessionRecord, error) {
 	panic("not implemented")
 }
 
