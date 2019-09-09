@@ -16,7 +16,8 @@ class Devices extends React.Component {
     }
 
     componentDidMount() {
-        axios.get("https://bbq.k8s.ssargent.net/v1/development/bbq/devices")
+        axios.get("https://bbq.k8s.ssargent.net/v1/bbq/devices",
+        { withCredentials: true })
             .then(resp => this.setState({ devices: resp.data }))
             .catch(err => console.log(err));
     }
