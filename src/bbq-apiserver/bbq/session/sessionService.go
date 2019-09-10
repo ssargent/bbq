@@ -67,8 +67,38 @@ func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address 
 	return session, nil
 }
 
+func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session, error) {
+	return bbq.Session{},nil
+}
+
+func (s *sessionService) convertToRecord(record bbq.Session) (bbq.SessionRecord, error) {
+	return bbq.SessionRecord{},nil
+}
+
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
-	panic("not implemented")
+	record, err := s.convertToRecord(entity)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	createdRecord, err := s.unitOfWork.Session.Create(tenantID, record)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	createdSession, err := s.convertToSession(createdRecord)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenantID.String(), createdSession.UID.String())
+
+	s.cache.SetItem(cacheKey, createdSession, time.Minute*10)
+
+	return createdSession, nil
 }
 
 func (s *sessionService) UpdateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
