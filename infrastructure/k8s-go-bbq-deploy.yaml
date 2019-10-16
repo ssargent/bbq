@@ -1,8 +1,11 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: go-bbq
 spec:
+  selector:
+    matchLabels:
+      app: go-bbq
   template:
     metadata:
       labels:
@@ -18,8 +21,8 @@ spec:
               path: /v1/health/livecheck
               port: 21337
               httpHeaders:
-              - name: Custom-Header
-                value: Awesome
+                - name: Custom-Header
+                  value: Awesome
             initialDelaySeconds: 3
             periodSeconds: 3
           env:
@@ -52,6 +55,6 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: bbq-redis
-                  key: redis-password          
+                  key: redis-password
       imagePullSecrets:
         - name: myfamilycooks

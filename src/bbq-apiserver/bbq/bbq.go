@@ -7,7 +7,7 @@ import (
 	"github.com/lib/pq"
 )
 
-//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SubjectRepository,SessionService,DeviceService,MonitorService
+//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SubjectRepository,SessionService,DeviceService,MonitorService,SubjectService
 
 //Device is
 type Device struct {
@@ -129,8 +129,12 @@ type MonitorRepository interface {
 	Delete(entity Monitor) error
 }
 
+type SubjectService interface {
+	GetOrCreateSubject(tenantID uuid.UUID, name string, description string) (Subject, error)
+}
+
 type SubjectRepository interface {
-	GetByID(tenantID uuid.UUID, subjectID uuid.UUID) (Subject, error)
+	GetByID(subjectID uuid.UUID) (Subject, error)
 	GetByName(tenantID uuid.UUID, name string) (Subject, error)
 	Create(entity Subject) (Subject, error)
 	Update(entity Subject) (Subject, error)

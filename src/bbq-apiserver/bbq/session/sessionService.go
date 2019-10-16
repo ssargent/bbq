@@ -10,13 +10,16 @@ import (
 )
 
 type sessionService struct {
-	unitOfWork bbq.BBQUnitOfWork
-	cache      infrastructure.CacheService
+	unitOfWork     bbq.BBQUnitOfWork
+	cache          infrastructure.CacheService
+	deviceService  bbq.DeviceService
+	monitorService bbq.MonitorService
+	subjectService bbq.SubjectService
 }
 
 // NewSessionService will create an SessionService
-func NewSessionService(cache infrastructure.CacheService, unitOfWork bbq.BBQUnitOfWork) bbq.SessionService {
-	return &sessionService{unitOfWork: unitOfWork, cache: cache}
+func NewSessionService(cache infrastructure.CacheService, unitOfWork bbq.BBQUnitOfWork, deviceService bbq.DeviceService, monitorService bbq.MonitorService, subjectService bbq.SubjectService) bbq.SessionService {
+	return &sessionService{unitOfWork: unitOfWork, cache: cache, subjectService: subjectService, monitorService: monitorService, deviceService: deviceService}
 }
 
 func (s *sessionService) GetSessions(tenantID uuid.UUID) ([]bbq.Session, error) {
@@ -68,15 +71,74 @@ func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address 
 }
 
 func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session, error) {
-	return bbq.Session{},nil
+	return bbq.Session{}, nil
 }
 
-func (s *sessionService) convertToRecord(record bbq.Session) (bbq.SessionRecord, error) {
-	return bbq.SessionRecord{},nil
+func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session) (bbq.SessionRecord, error) {
+	device, err := s.deviceService.GetDeviceByName(tenantID, record.Device)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	monitor, err := s.monitorService.GetMonitorByName(tenantID, record.Monitor)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	subject, err := s.subjectService.GetOrCreateSubject(tenantID, record.Subject, record.Subject)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	/*
+			type Session struct {
+			ID          int         `json:"id"`
+			Name        string      `json:"name"`
+			Description string      `json:"description"`
+			Subject     string      `json:"subject"`
+			Type        string      `json:"type"`
+			Weight      float64     `json:"weight"`
+			Device      string      `json:"device"`
+			Monitor     string      `json:"monitor"`
+			StartTime   time.Time   `json:"starttime"`
+			EndTime     pq.NullTime `json:"endtime"`
+			TenantID    uuid.UUID   `json:"tenantid"`
+			UID         uuid.UUID   `json:"uid"`
+		}
+
+		type SessionRecord struct {
+			ID          int         `json:"id"`
+			DeviceID    int         `json:"deviceid"`
+			MonitorID   int         `json:"monitorid"`
+			Name        string      `json:"name"`
+			Description string      `json:"description"`
+			StartTime   time.Time   `json:"starttime"`
+			SubjectID   int         `json:"subjectid"`
+			Weight      float64     `json:"weight"`
+			TenantID    uuid.UUID   `json:"tenantid"`
+			UID         uuid.UUID   `json:"uid"`
+			EndTime     pq.NullTime `json:"endtime"`
+		}
+	*/
+	return bbq.SessionRecord{
+		MonitorID:   monitor.ID,
+		DeviceID:    device.ID,
+		Name:        record.Name,
+		Description: record.Description,
+		StartTime:   record.StartTime,
+		SubjectID:   subject.ID,
+		Weight:      record.Weight,
+		TenantID:    tenantID,
+		EndTime:     record.EndTime,
+	}, nil
+
 }
 
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
-	record, err := s.convertToRecord(entity)
+	record, err := s.convertToRecord(tenantID, entity)
 
 	if err != nil {
 		return bbq.Session{}, err

@@ -36,19 +36,19 @@ func getSession(id int, tenant uuid.UUID, uid uuid.UUID) bbq.Session {
 
 func getSessionRecord(id int, tenant uuid.UUID, uid uuid.UUID) bbq.SessionRecord {
 	nt := pq.NullTime{}
- 
+
 	return bbq.SessionRecord{
-		ID:				id,
-		DeviceID: 		2,
-		MonitorID:		2,
-		Name:			"Pulled Pork",
-		Description:	"Pulled Pork",
-		StartTime:		time.Now(),
-		SubjectID:		2,
-		Weight:			9.2,
-		TenantID:		tenant,
-		UID:			uid,
-		EndTime: 		nt,
+		ID:          id,
+		DeviceID:    2,
+		MonitorID:   2,
+		Name:        "Pulled Pork",
+		Description: "Pulled Pork",
+		StartTime:   time.Now(),
+		SubjectID:   2,
+		Weight:      9.2,
+		TenantID:    tenant,
+		UID:         uid,
+		EndTime:     nt,
 	}
 }
 
@@ -58,7 +58,7 @@ func createUnitOfWork(c *gomock.Controller) bbq.BBQUnitOfWork {
 	unitofwork.Monitor = mock_bbq.NewMockMonitorRepository(c)
 	unitofwork.Device = mock_bbq.NewMockDeviceRepository(c)
 	unitofwork.Subject = mock_bbq.NewMockSubjectRepository(c)
-	unitofwork.Session = mock_bbq.NewMockSessionRepository(c) 
+	unitofwork.Session = mock_bbq.NewMockSessionRepository(c)
 
 	return unitofwork
 }
@@ -71,7 +71,10 @@ func TestGetSessions(t *testing.T) {
 
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
 
@@ -112,7 +115,10 @@ func TestGetCachedSessions(t *testing.T) {
 
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
 
@@ -148,7 +154,10 @@ func TestGetSessionByID(t *testing.T) {
 
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
 
@@ -187,7 +196,10 @@ func TestGetCachedSessionByID(t *testing.T) {
 
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
 
@@ -221,9 +233,12 @@ func TestGetSessionByAddress(t *testing.T) {
 
 	unitOfWork := createUnitOfWork(mockCtrl)
 
-	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
+	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
 
@@ -256,7 +271,7 @@ func TestCreateSession(t *testing.T) {
 	tenant, err := uuid.NewUUID()
 
 	if err != nil {
-		assert.Fail(t, "Failed to get UUID") 
+		assert.Fail(t, "Failed to get UUID")
 	}
 
 	sessionid, err := uuid.NewUUID()
@@ -267,13 +282,16 @@ func TestCreateSession(t *testing.T) {
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenant.String(), sessionid.String())
 
-	session := getSession(42, tenant,  sessionid)
+	session := getSession(42, tenant, sessionid)
 	sessionRecord := getSessionRecord(42, tenant, sessionid)
 
 	unitOfWork := createUnitOfWork(mockCtrl)
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)
-	sessionService := NewSessionService(mockCacheService, unitOfWork)
+	mockDeviceService := mock_bbq.NewMockDeviceService(mockCtrl)
+	mockMonitorService := mock_bbq.NewMockMonitorService(mockCtrl)
+	mockSubjectService := mock_bbq.NewMockSubjectService(mockCtrl)
+	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	mockRepo.EXPECT().Create(tenant, sessionRecord).Return(sessionRecord, nil).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, session, time.Minute*10).Return(nil).Times(1)
@@ -284,4 +302,3 @@ func TestCreateSession(t *testing.T) {
 	assert.NotNil(t, createdSession)
 	assert.Equal(t, session, createdSession)
 }
-
