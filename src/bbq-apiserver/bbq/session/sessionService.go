@@ -71,29 +71,7 @@ func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address 
 }
 
 func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session, error) {
-	return bbq.Session{}, nil
-}
-
-func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session) (bbq.SessionRecord, error) {
-	device, err := s.deviceService.GetDeviceByName(tenantID, record.Device)
-
-	if err != nil {
-		return bbq.SessionRecord{}, err
-	}
-
-	monitor, err := s.monitorService.GetMonitorByName(tenantID, record.Monitor)
-
-	if err != nil {
-		return bbq.SessionRecord{}, err
-	}
-
-	subject, err := s.subjectService.GetOrCreateSubject(tenantID, record.Subject, record.Subject)
-
-	if err != nil {
-		return bbq.SessionRecord{}, err
-	}
-
-	/*
+/*
 			type Session struct {
 			ID          int         `json:"id"`
 			Name        string      `json:"name"`
@@ -123,6 +101,36 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 			EndTime     pq.NullTime `json:"endtime"`
 		}
 	*/
+
+	return bbq.Session{
+		ID:  record.ID,
+		UID: record.UID,
+		Name: record.Name,
+		Description: record.Description,
+		Subject: ,
+	}, nil
+}
+
+func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session) (bbq.SessionRecord, error) {
+	device, err := s.deviceService.GetDeviceByName(tenantID, record.Device)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	monitor, err := s.monitorService.GetMonitorByName(tenantID, record.Monitor)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	subject, err := s.subjectService.GetOrCreateSubject(tenantID, record.Subject, record.Subject)
+
+	if err != nil {
+		return bbq.SessionRecord{}, err
+	}
+
+	
 	return bbq.SessionRecord{
 		MonitorID:   monitor.ID,
 		DeviceID:    device.ID,
@@ -133,6 +141,8 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 		Weight:      record.Weight,
 		TenantID:    tenantID,
 		EndTime:     record.EndTime,
+		ID:          record.ID,
+		UID:         record.UID,
 	}, nil
 
 }
