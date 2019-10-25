@@ -29,7 +29,7 @@ class Login extends React.Component {
       };
 
       axios
-        .post("https://bbq.k8s.ssargent.net/v1/system/accounts/signin", loginModel)
+        .post("https://bbq.k8s.ssargent.net/v1/system/accounts/login", loginModel)
         .then(resp => {
           if(resp.data.success === true) {
             localStorage.setItem("bbq-authenticated", JSON.stringify(resp.data))

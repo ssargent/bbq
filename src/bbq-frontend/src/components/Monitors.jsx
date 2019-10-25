@@ -1,7 +1,7 @@
 //@flow
 
 import React from "react";
-import axios from "axios";
+import { transport } from "../transport";
 
 //type State = {
 //    devices: Array<Object>
@@ -16,7 +16,7 @@ class Monitors extends React.Component {
     }
 
     componentDidMount() {
-        axios.get("https://bbq.k8s.ssargent.net/v1/development/bbq/monitors")
+        transport.get("https://bbq.k8s.ssargent.net/v1/bbq/monitors")
             .then(resp => this.setState({ monitors: resp.data }))
             .catch(err => console.log(err));
     }

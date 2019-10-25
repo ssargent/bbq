@@ -1,7 +1,7 @@
 //@flow
 
 import React from "react";
-import axios from "axios";
+import { transport } from "../transport";
 
 //type State = {
 //    devices: Array<Object>
@@ -16,8 +16,8 @@ class Devices extends React.Component {
     }
 
     componentDidMount() {
-        axios.get("https://bbq.k8s.ssargent.net/v1/bbq/devices",
-        { withCredentials: true })
+        transport.get("https://bbq.k8s.ssargent.net/v1/bbq/devices"
+        )
             .then(resp => this.setState({ devices: resp.data }))
             .catch(err => console.log(err));
     }
