@@ -18,32 +18,38 @@ import (
 func getSession(id int, tenant uuid.UUID, uid uuid.UUID) bbq.Session {
 	nt := pq.NullTime{}
 
+	t1, _ := time.Parse(
+		time.RFC3339,
+		"2012-11-01T22:08:41+00:00")
 	return bbq.Session{
 		ID:          id,
 		Name:        "Pulled Pork",
 		Description: "Pulled Pork",
 		Subject:     "Pulled Pork",
-		Type:        "Pulled Pork",
-		Weight:      9.2,
-		Device:      "Large Big Green Egg",
-		Monitor:     "My Great Monitor",
-		StartTime:   time.Now(),
-		EndTime:     nt,
-		TenantID:    tenant,
-		UID:         uid,
+		//Type:        "Pulled Pork",
+		Weight:    9.2,
+		Device:    "Large Big Green Egg",
+		Monitor:   "My Great Monitor",
+		StartTime: t1,
+		EndTime:   nt,
+		TenantID:  tenant,
+		UID:       uid,
 	}
 }
 
 func getSessionRecord(id int, tenant uuid.UUID, uid uuid.UUID) bbq.SessionRecord {
 	nt := pq.NullTime{}
 
+	t1, _ := time.Parse(
+		time.RFC3339,
+		"2012-11-01T22:08:41+00:00")
 	return bbq.SessionRecord{
 		ID:          id,
 		DeviceID:    2,
 		MonitorID:   2,
 		Name:        "Pulled Pork",
 		Description: "Pulled Pork",
-		StartTime:   time.Now(),
+		StartTime:   t1,
 		SubjectID:   2,
 		Weight:      9.2,
 		TenantID:    tenant,
@@ -315,8 +321,11 @@ func TestCreateSession(t *testing.T) {
 	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	mockDeviceService.EXPECT().GetDeviceByName(tenant, dev.Name).Return(dev, nil).Times(1)
+	mockDeviceService.EXPECT().GetDeviceByID(tenant, dev.Uid).Return(dev, nil).Times(1)
 	mockMonitorService.EXPECT().GetMonitorByName(tenant, mon.Name).Return(mon, nil).Times(1)
+	mockMonitorService.EXPECT().GetMonitorByID(tenant, mon.Uid).Return(mon, nil).Times(1)
 	mockSubjectService.EXPECT().GetOrCreateSubject(tenant, sub.Name, sub.Description).Return(sub, nil).Times(1)
+	mockSubjectService.EXPECT().GetSubjectByID(tenant, sub.Uid).Return(sub, nil).Times(1)
 	mockRepo.EXPECT().Create(tenant, sessionRecord).Return(sessionRecord, nil).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, session, time.Minute*10).Return(nil).Times(1)
 

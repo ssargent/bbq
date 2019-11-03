@@ -56,11 +56,14 @@ type Session struct {
 type SessionRecord struct {
 	ID          int         `json:"id"`
 	DeviceID    int         `json:"deviceid"`
+	DeviceUID   uuid.UUID   `json:"deviceuid"`
 	MonitorID   int         `json:"monitorid"`
+	MonitorUID  uuid.UUID   `json:"monitoruid"`
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	StartTime   time.Time   `json:"starttime"`
 	SubjectID   int         `json:"subjectid"`
+	SubjectUID  uuid.UUID   `json:"subjectuid"`
 	Weight      float64     `json:"weight"`
 	TenantID    uuid.UUID   `json:"tenantid"`
 	UID         uuid.UUID   `json:"uid"`
@@ -131,6 +134,7 @@ type MonitorRepository interface {
 
 type SubjectService interface {
 	GetOrCreateSubject(tenantID uuid.UUID, name string, description string) (Subject, error)
+	GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (Subject, error)
 }
 
 type SubjectRepository interface {

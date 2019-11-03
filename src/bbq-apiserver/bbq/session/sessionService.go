@@ -71,7 +71,7 @@ func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address 
 }
 
 func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session, error) {
-/*
+	/*
 			type Session struct {
 			ID          int         `json:"id"`
 			Name        string      `json:"name"`
@@ -101,13 +101,38 @@ func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session
 			EndTime     pq.NullTime `json:"endtime"`
 		}
 	*/
+	device, err := s.deviceService.GetDeviceByID(record.TenantID, record.DeviceUID)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	monitor, err := s.monitorService.GetMonitorByID(record.TenantID, record.MonitorUID)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	subject, err := s.subjectService.GetSubjectByID(record.TenantID, record.SubjectUID)
+
+	if err != nil {
+		return bbq.Session{}, err
+	}
 
 	return bbq.Session{
-		ID:  record.ID,
-		UID: record.UID,
-		Name: record.Name,
+		ID:          record.ID,
+		UID:         record.UID,
+		Name:        record.Name,
 		Description: record.Description,
-		Subject: ,
+		Subject:     subject.Name,
+		Device:      device.Name,
+		Monitor:     monitor.Name,
+		Weight:      record.Weight,
+		StartTime:   record.StartTime,
+		EndTime:     record.EndTime,
+		TenantID:    record.TenantID,
+		//	Type:        record.Type
+		//	Subject: ,
 	}, nil
 }
 
@@ -130,14 +155,16 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 		return bbq.SessionRecord{}, err
 	}
 
-	
 	return bbq.SessionRecord{
 		MonitorID:   monitor.ID,
+		MonitorUID:  monitor.Uid,
 		DeviceID:    device.ID,
+		DeviceUID:   device.Uid,
 		Name:        record.Name,
 		Description: record.Description,
 		StartTime:   record.StartTime,
 		SubjectID:   subject.ID,
+		SubjectUID:  subject.Uid,
 		Weight:      record.Weight,
 		TenantID:    tenantID,
 		EndTime:     record.EndTime,

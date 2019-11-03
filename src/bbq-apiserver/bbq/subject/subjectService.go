@@ -36,3 +36,15 @@ func (s *subjectService) GetOrCreateSubject(tenantID uuid.UUID, name string, des
 
 	return subject, err
 }
+
+func (s *subjectService) GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (bbq.Subject, error) {
+	subject, err := s.repository.GetByID(subjectId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return bbq.Subject{}, err
+		}
+	}
+
+	return subject, nil
+}

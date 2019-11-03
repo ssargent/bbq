@@ -26,7 +26,18 @@ type SubjectRepository interface {
 */
 
 func (s *subjectRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Subject, error) {
-	panic("not implemented")
+	var sub bbq.Subject
+	query := `select id, uid, name, description, tenantid from bbq.subjects
+		      where uid = $2 and tenantid = $1
+				`
+
+	err := s.database.QueryRow(query, tenantID, id).Scan(&sub.ID, sub.Uid, sub.Name, sub.Description, sub.TenantID)
+
+	if err != nil {
+		return bbq.Subject{}, err
+	}
+
+	return sub, nil
 }
 
 func (s *subjectRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Subject, error) {

@@ -847,3 +847,18 @@ func (mr *MockSubjectServiceMockRecorder) GetOrCreateSubject(arg0, arg1, arg2 in
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrCreateSubject", reflect.TypeOf((*MockSubjectService)(nil).GetOrCreateSubject), arg0, arg1, arg2)
 }
+
+// GetSubjectByID mocks base method
+func (m *MockSubjectService) GetSubjectByID(arg0, arg1 uuid.UUID) (bbq.Subject, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSubjectByID", arg0, arg1)
+	ret0, _ := ret[0].(bbq.Subject)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSubjectByID indicates an expected call of GetSubjectByID
+func (mr *MockSubjectServiceMockRecorder) GetSubjectByID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubjectByID", reflect.TypeOf((*MockSubjectService)(nil).GetSubjectByID), arg0, arg1)
+}
