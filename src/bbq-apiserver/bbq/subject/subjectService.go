@@ -38,7 +38,7 @@ func (s *subjectService) GetOrCreateSubject(tenantID uuid.UUID, name string, des
 }
 
 func (s *subjectService) GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (bbq.Subject, error) {
-	subject, err := s.repository.GetByID(subjectId)
+	subject, err := s.repository.GetByID(tenantID, subjectId)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

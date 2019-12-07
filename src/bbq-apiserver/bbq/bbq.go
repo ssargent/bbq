@@ -102,12 +102,12 @@ type SessionService interface {
 
 // SessionRepository is the repo for Sessions
 type SessionRepository interface {
-	GetByTenantID(tenantID uuid.UUID) ([]Session, error)
-	GetByID(tenantID uuid.UUID, id uuid.UUID) (Session, error)
-	GetByMonitorAddress(tenantID uuid.UUID, address string) (Session, error)
+	GetByTenantID(tenantID uuid.UUID) ([]SessionRecord, error)
+	GetByID(tenantID uuid.UUID, id uuid.UUID) (SessionRecord, error)
+	GetByMonitorAddress(tenantID uuid.UUID, address string) (SessionRecord, error)
 	Create(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
 	Update(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
-	Delete(tenantID uuid.UUID, entity Session) error
+	Delete(tenantID uuid.UUID, entity SessionRecord) error
 }
 
 // MonitorService is the service for monitors
@@ -138,7 +138,7 @@ type SubjectService interface {
 }
 
 type SubjectRepository interface {
-	GetByID(subjectID uuid.UUID) (Subject, error)
+	GetByID(tenantID uuid.UUID, subjectID uuid.UUID) (Subject, error)
 	GetByName(tenantID uuid.UUID, name string) (Subject, error)
 	Create(entity Subject) (Subject, error)
 	Update(entity Subject) (Subject, error)

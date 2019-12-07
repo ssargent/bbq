@@ -13,6 +13,10 @@ type subjectRepository struct {
 	database *sql.DB
 }
 
+func NewSubjectRepository(database *sql.DB) bbq.SubjectRepository {
+	return &subjectRepository{database: database}
+}
+
 /*
 
 type SubjectRepository interface {
@@ -28,7 +32,7 @@ type SubjectRepository interface {
 func (s *subjectRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Subject, error) {
 	var sub bbq.Subject
 	query := `select id, uid, name, description, tenantid from bbq.subjects
-		      where uid = $2 and tenantid = $1
+		      where uid = $2 and (tenantid = $1 or tenantid is null)
 				`
 
 	err := s.database.QueryRow(query, tenantID, id).Scan(&sub.ID, sub.Uid, sub.Name, sub.Description, sub.TenantID)
@@ -55,7 +59,7 @@ func (s *subjectRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Subj
 	return sub, nil
 }
 
-func (s *subjectRepository) Create(tenantID uuid.UUID, entity bbq.Subject) (bbq.Subject, error) {
+func (s *subjectRepository) Create(entity bbq.Subject) (bbq.Subject, error) {
 	insertStatement := "insert into bbq.subjects (name, description, tenantid) values ($1, $2, $3) returning *"
 
 	var sub bbq.Subject
@@ -75,10 +79,10 @@ func (s *subjectRepository) Create(tenantID uuid.UUID, entity bbq.Subject) (bbq.
 	return sub, nil
 }
 
-func (s *subjectRepository) Update(tenantID uuid.UUID, entity bbq.Subject) (bbq.Subject, error) {
+func (s *subjectRepository) Update(entity bbq.Subject) (bbq.Subject, error) {
 	panic("not implemented")
 }
 
-func (s *subjectRepository) Delete(tenantID uuid.UUID, entity bbq.Subject) error {
+func (s *subjectRepository) Delete(entity bbq.Subject) error {
 	panic("not implemented")
 }

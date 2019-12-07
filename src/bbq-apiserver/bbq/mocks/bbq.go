@@ -50,7 +50,7 @@ func (mr *MockSessionRepositoryMockRecorder) Create(arg0, arg1 interface{}) *gom
 }
 
 // Delete mocks base method
-func (m *MockSessionRepository) Delete(arg0 uuid.UUID, arg1 bbq.Session) error {
+func (m *MockSessionRepository) Delete(arg0 uuid.UUID, arg1 bbq.SessionRecord) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -64,10 +64,10 @@ func (mr *MockSessionRepositoryMockRecorder) Delete(arg0, arg1 interface{}) *gom
 }
 
 // GetByID mocks base method
-func (m *MockSessionRepository) GetByID(arg0, arg1 uuid.UUID) (bbq.Session, error) {
+func (m *MockSessionRepository) GetByID(arg0, arg1 uuid.UUID) (bbq.SessionRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", arg0, arg1)
-	ret0, _ := ret[0].(bbq.Session)
+	ret0, _ := ret[0].(bbq.SessionRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,10 +79,10 @@ func (mr *MockSessionRepositoryMockRecorder) GetByID(arg0, arg1 interface{}) *go
 }
 
 // GetByMonitorAddress mocks base method
-func (m *MockSessionRepository) GetByMonitorAddress(arg0 uuid.UUID, arg1 string) (bbq.Session, error) {
+func (m *MockSessionRepository) GetByMonitorAddress(arg0 uuid.UUID, arg1 string) (bbq.SessionRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByMonitorAddress", arg0, arg1)
-	ret0, _ := ret[0].(bbq.Session)
+	ret0, _ := ret[0].(bbq.SessionRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -94,10 +94,10 @@ func (mr *MockSessionRepositoryMockRecorder) GetByMonitorAddress(arg0, arg1 inte
 }
 
 // GetByTenantID mocks base method
-func (m *MockSessionRepository) GetByTenantID(arg0 uuid.UUID) ([]bbq.Session, error) {
+func (m *MockSessionRepository) GetByTenantID(arg0 uuid.UUID) ([]bbq.SessionRecord, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByTenantID", arg0)
-	ret0, _ := ret[0].([]bbq.Session)
+	ret0, _ := ret[0].([]bbq.SessionRecord)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -415,18 +415,18 @@ func (mr *MockSubjectRepositoryMockRecorder) Delete(arg0 interface{}) *gomock.Ca
 }
 
 // GetByID mocks base method
-func (m *MockSubjectRepository) GetByID(arg0 uuid.UUID) (bbq.Subject, error) {
+func (m *MockSubjectRepository) GetByID(arg0, arg1 uuid.UUID) (bbq.Subject, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", arg0)
+	ret := m.ctrl.Call(m, "GetByID", arg0, arg1)
 	ret0, _ := ret[0].(bbq.Subject)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID
-func (mr *MockSubjectRepositoryMockRecorder) GetByID(arg0 interface{}) *gomock.Call {
+func (mr *MockSubjectRepositoryMockRecorder) GetByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockSubjectRepository)(nil).GetByID), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockSubjectRepository)(nil).GetByID), arg0, arg1)
 }
 
 // GetByName mocks base method

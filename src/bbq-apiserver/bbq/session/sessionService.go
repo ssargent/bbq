@@ -1,6 +1,7 @@
 package session
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -31,9 +32,22 @@ func (s *sessionService) GetSessions(tenantID uuid.UUID) ([]bbq.Session, error) 
 		return sessions, nil
 	}
 
-	sessions, err := s.unitOfWork.Session.GetByTenantID(tenantID)
+	sessionRecs, err := s.unitOfWork.Session.GetByTenantID(tenantID)
 	if err != nil {
+		fmt.Println("No Sessions", tenantID)
 		return []bbq.Session{}, err
+	}
+
+	for _, element := range sessionRecs {
+		session, err := s.convertToSession(element)
+
+		if err != nil {
+			fmt.Println("Cannot Convert Session ", element.UID)
+
+			return []bbq.Session{}, err
+		}
+
+		sessions = append(sessions, session)
 	}
 
 	s.cache.SetItem(cacheKey, sessions, time.Minute*10)
@@ -50,7 +64,13 @@ func (s *sessionService) GetSessionByID(tenantID uuid.UUID, id uuid.UUID) (bbq.S
 		return session, nil
 	}
 
-	session, err := s.unitOfWork.Session.GetByID(tenantID, id)
+	sessionRec, err := s.unitOfWork.Session.GetByID(tenantID, id)
+	if err != nil {
+		return bbq.Session{}, err
+	}
+
+	session, err = s.convertToSession(sessionRec)
+
 	if err != nil {
 		return bbq.Session{}, err
 	}
@@ -61,62 +81,35 @@ func (s *sessionService) GetSessionByID(tenantID uuid.UUID, id uuid.UUID) (bbq.S
 }
 
 func (s *sessionService) GetSessionByMonitorAddress(tenantID uuid.UUID, address string) (bbq.Session, error) {
-	session, err := s.unitOfWork.Session.GetByMonitorAddress(tenantID, address)
+	sessionRec, err := s.unitOfWork.Session.GetByMonitorAddress(tenantID, address)
 
 	if err != nil {
 		return bbq.Session{}, err
 	}
+
+	session, err := s.convertToSession(sessionRec)
 
 	return session, nil
 }
 
 func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session, error) {
-	/*
-			type Session struct {
-			ID          int         `json:"id"`
-			Name        string      `json:"name"`
-			Description string      `json:"description"`
-			Subject     string      `json:"subject"`
-			Type        string      `json:"type"`
-			Weight      float64     `json:"weight"`
-			Device      string      `json:"device"`
-			Monitor     string      `json:"monitor"`
-			StartTime   time.Time   `json:"starttime"`
-			EndTime     pq.NullTime `json:"endtime"`
-			TenantID    uuid.UUID   `json:"tenantid"`
-			UID         uuid.UUID   `json:"uid"`
-		}
 
-		type SessionRecord struct {
-			ID          int         `json:"id"`
-			DeviceID    int         `json:"deviceid"`
-			MonitorID   int         `json:"monitorid"`
-			Name        string      `json:"name"`
-			Description string      `json:"description"`
-			StartTime   time.Time   `json:"starttime"`
-			SubjectID   int         `json:"subjectid"`
-			Weight      float64     `json:"weight"`
-			TenantID    uuid.UUID   `json:"tenantid"`
-			UID         uuid.UUID   `json:"uid"`
-			EndTime     pq.NullTime `json:"endtime"`
-		}
-	*/
 	device, err := s.deviceService.GetDeviceByID(record.TenantID, record.DeviceUID)
 
 	if err != nil {
-		return bbq.Session{}, err
+		return bbq.Session{}, errors.New("Cannot get device for session")
 	}
 
 	monitor, err := s.monitorService.GetMonitorByID(record.TenantID, record.MonitorUID)
 
 	if err != nil {
-		return bbq.Session{}, err
+		return bbq.Session{}, errors.New("Cannot get monitor for session")
 	}
 
 	subject, err := s.subjectService.GetSubjectByID(record.TenantID, record.SubjectUID)
 
 	if err != nil {
-		return bbq.Session{}, err
+		return bbq.Session{}, errors.New("Cannot get subject for sesson")
 	}
 
 	return bbq.Session{

@@ -83,7 +83,26 @@ func TestGetSessions(t *testing.T) {
 	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
+	dev := bbq.Device{
+		Name:        "Large Big Green Egg",
+		Description: "My Device",
+		TenantID:    tenant,
+		ID:          2,
+	}
 
+	mon := bbq.Monitor{
+		Name:        "My Great Monitor",
+		Description: "My Great Monitor",
+		TenantID:    tenant,
+		ID:          2,
+	}
+
+	sub := bbq.Subject{
+		Name:        "Pulled Pork",
+		Description: "Pulled Pork",
+		TenantID:    tenant,
+		ID:          2,
+	}
 	if err != nil {
 		assert.Fail(t, "Failed to get UUID")
 	}
@@ -95,12 +114,17 @@ func TestGetSessions(t *testing.T) {
 	}
 
 	session := getSession(1, tenant, sessionid)
+	sessionRecord := getSessionRecord(1, tenant, sessionid)
 
 	var returnedSessions []bbq.Session
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s", tenant.String())
 
-	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.Session{session}, nil).Times(1)
+	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.SessionRecord{sessionRecord}, nil).Times(1)
+	mockDeviceService.EXPECT().GetDeviceByID(tenant, dev.Uid).Return(dev, nil).Times(1)
+	mockMonitorService.EXPECT().GetMonitorByID(tenant, mon.Uid).Return(mon, nil).Times(1)
+	mockSubjectService.EXPECT().GetSubjectByID(tenant, sub.Uid).Return(sub, nil).Times(1)
+
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSessions).Return(errors.New("not found")).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, []bbq.Session{session}, time.Minute*10).Return(nil).Times(1)
 
@@ -139,12 +163,13 @@ func TestGetCachedSessions(t *testing.T) {
 	}
 
 	session := getSession(1, tenant, sessionid)
+	sessionRecord := getSessionRecord(1, tenant, sessionid)
 
 	var returnedSessions []bbq.Session
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s", tenant.String())
 
-	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.Session{session}, nil).Times(0)
+	mockRepo.EXPECT().GetByTenantID(tenant).Return([]bbq.SessionRecord{sessionRecord}, nil).Times(0)
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSessions).Return(nil).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, []bbq.Session{session}, time.Minute*10).Return(nil).Times(0)
 	//   returnedSessions = []bbq.Session{session}
@@ -166,7 +191,26 @@ func TestGetSessionByID(t *testing.T) {
 	sessionService := NewSessionService(mockCacheService, unitOfWork, mockDeviceService, mockMonitorService, mockSubjectService)
 
 	tenant, err := uuid.NewUUID()
+	dev := bbq.Device{
+		Name:        "Large Big Green Egg",
+		Description: "My Device",
+		TenantID:    tenant,
+		ID:          2,
+	}
 
+	mon := bbq.Monitor{
+		Name:        "My Great Monitor",
+		Description: "My Great Monitor",
+		TenantID:    tenant,
+		ID:          2,
+	}
+
+	sub := bbq.Subject{
+		Name:        "Pulled Pork",
+		Description: "Pulled Pork",
+		TenantID:    tenant,
+		ID:          2,
+	}
 	if err != nil {
 		assert.Fail(t, "Failed to get UUID")
 	}
@@ -178,12 +222,17 @@ func TestGetSessionByID(t *testing.T) {
 	}
 
 	session := getSession(1, tenant, sessionid)
+	sessionRecord := getSessionRecord(1, tenant, sessionid)
 
 	var returnedSession bbq.Session
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenant.String(), sessionid.String())
 
-	mockRepo.EXPECT().GetByID(tenant, sessionid).Return(session, nil).Times(1)
+	mockRepo.EXPECT().GetByID(tenant, sessionid).Return(sessionRecord, nil).Times(1)
+	mockDeviceService.EXPECT().GetDeviceByID(tenant, dev.Uid).Return(dev, nil).Times(1)
+	mockMonitorService.EXPECT().GetMonitorByID(tenant, mon.Uid).Return(mon, nil).Times(1)
+	mockSubjectService.EXPECT().GetSubjectByID(tenant, sub.Uid).Return(sub, nil).Times(1)
+
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSession).Return(errors.New("not found")).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, session, time.Minute*10).Return(nil).Times(1)
 
@@ -220,12 +269,13 @@ func TestGetCachedSessionByID(t *testing.T) {
 	}
 
 	session := getSession(1, tenant, sessionid)
+	sessionRecord := getSessionRecord(1, tenant, sessionid)
 
 	var returnedSession bbq.Session
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenant.String(), sessionid.String())
 
-	mockRepo.EXPECT().GetByID(tenant, sessionid).Return(session, nil).Times(0)
+	mockRepo.EXPECT().GetByID(tenant, sessionid).Return(sessionRecord, nil).Times(0)
 	mockCacheService.EXPECT().GetItem(cacheKey, &returnedSession).Return(nil).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, session, time.Minute*10).Return(nil).Times(0)
 
@@ -248,6 +298,27 @@ func TestGetSessionByAddress(t *testing.T) {
 
 	tenant, err := uuid.NewUUID()
 
+	dev := bbq.Device{
+		Name:        "Large Big Green Egg",
+		Description: "My Device",
+		TenantID:    tenant,
+		ID:          2,
+	}
+
+	mon := bbq.Monitor{
+		Name:        "My Great Monitor",
+		Description: "My Great Monitor",
+		TenantID:    tenant,
+		ID:          2,
+	}
+
+	sub := bbq.Subject{
+		Name:        "Pulled Pork",
+		Description: "Pulled Pork",
+		TenantID:    tenant,
+		ID:          2,
+	}
+
 	if err != nil {
 		assert.Fail(t, "Failed to get UUID")
 	}
@@ -260,8 +331,12 @@ func TestGetSessionByAddress(t *testing.T) {
 
 	address := "deadbeefdeadbeef"
 	session := getSession(1, tenant, sessionid)
+	sessionRecord := getSessionRecord(1, tenant, sessionid)
 
-	mockRepo.EXPECT().GetByMonitorAddress(tenant, address).Return(session, nil).Times(1)
+	mockRepo.EXPECT().GetByMonitorAddress(tenant, address).Return(sessionRecord, nil).Times(1)
+	mockDeviceService.EXPECT().GetDeviceByID(tenant, dev.Uid).Return(dev, nil).Times(1)
+	mockMonitorService.EXPECT().GetMonitorByID(tenant, mon.Uid).Return(mon, nil).Times(1)
+	mockSubjectService.EXPECT().GetSubjectByID(tenant, sub.Uid).Return(sub, nil).Times(1)
 
 	mySession, err := sessionService.GetSessionByMonitorAddress(tenant, address)
 
