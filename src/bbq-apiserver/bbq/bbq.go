@@ -7,7 +7,7 @@ import (
 	"github.com/lib/pq"
 )
 
-//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SubjectRepository,SessionService,DeviceService,MonitorService
+//go:generate mockgen  -destination=./mocks/bbq.go -package=mock_bbq github.com/ssargent/bbq/bbq-apiserver/bbq SessionRepository,DeviceRepository,MonitorRepository,SubjectRepository,SessionService,DeviceService,MonitorService,SubjectService
 
 //Device is
 type Device struct {
@@ -56,11 +56,14 @@ type Session struct {
 type SessionRecord struct {
 	ID          int         `json:"id"`
 	DeviceID    int         `json:"deviceid"`
+	DeviceUID   uuid.UUID   `json:"deviceuid"`
 	MonitorID   int         `json:"monitorid"`
+	MonitorUID  uuid.UUID   `json:"monitoruid"`
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	StartTime   time.Time   `json:"starttime"`
 	SubjectID   int         `json:"subjectid"`
+	SubjectUID  uuid.UUID   `json:"subjectuid"`
 	Weight      float64     `json:"weight"`
 	TenantID    uuid.UUID   `json:"tenantid"`
 	UID         uuid.UUID   `json:"uid"`
@@ -99,12 +102,12 @@ type SessionService interface {
 
 // SessionRepository is the repo for Sessions
 type SessionRepository interface {
-	GetByTenantID(tenantID uuid.UUID) ([]Session, error)
-	GetByID(tenantID uuid.UUID, id uuid.UUID) (Session, error)
-	GetByMonitorAddress(tenantID uuid.UUID, address string) (Session, error)
+	GetByTenantID(tenantID uuid.UUID) ([]SessionRecord, error)
+	GetByID(tenantID uuid.UUID, id uuid.UUID) (SessionRecord, error)
+	GetByMonitorAddress(tenantID uuid.UUID, address string) (SessionRecord, error)
 	Create(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
 	Update(tenantID uuid.UUID, entity SessionRecord) (SessionRecord, error)
-	Delete(tenantID uuid.UUID, entity Session) error
+	Delete(tenantID uuid.UUID, entity SessionRecord) error
 }
 
 // MonitorService is the service for monitors
@@ -127,6 +130,11 @@ type MonitorRepository interface {
 	Create(entity Monitor) (Monitor, error)
 	Update(entity Monitor) (Monitor, error)
 	Delete(entity Monitor) error
+}
+
+type SubjectService interface {
+	GetOrCreateSubject(tenantID uuid.UUID, name string, description string) (Subject, error)
+	GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (Subject, error)
 }
 
 type SubjectRepository interface {
