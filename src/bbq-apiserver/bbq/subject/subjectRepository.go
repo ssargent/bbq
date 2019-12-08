@@ -50,7 +50,7 @@ func (s *subjectRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Subj
 		      where name = $1 and (tenantid = $2 or tenantid is null)
 				`
 
-	err := s.database.QueryRow(query, name, tenantID).Scan(&sub.ID, sub.Uid, sub.Name, sub.Description, sub.TenantID)
+	err := s.database.QueryRow(query, name, tenantID).Scan(&sub.ID, &sub.Uid, &sub.Name, &sub.Description, &sub.TenantID)
 
 	if err != nil {
 		return bbq.Subject{}, err
@@ -63,7 +63,7 @@ func (s *subjectRepository) Create(entity bbq.Subject) (bbq.Subject, error) {
 	insertStatement := "insert into bbq.subjects (name, description, tenantid) values ($1, $2, $3) returning *"
 
 	var sub bbq.Subject
-	err := s.database.QueryRow(insertStatement, entity.Name, entity.Description, entity.TenantID).Scan(&sub.ID, sub.Uid, sub.Name, sub.Description, sub.TenantID)
+	err := s.database.QueryRow(insertStatement, entity.Name, entity.Description, entity.TenantID).Scan(&sub.ID, &sub.Uid, &sub.Name, &sub.Description, &sub.TenantID)
 
 	if err != nil {
 		// There must be a more elegant way of doing this...  but for now...

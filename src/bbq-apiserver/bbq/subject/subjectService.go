@@ -2,6 +2,7 @@ package subject
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/ssargent/bbq/bbq-apiserver/bbq"
@@ -31,7 +32,7 @@ func (s *subjectService) GetOrCreateSubject(tenantID uuid.UUID, name string, des
 
 			return subject, err
 		}
-		return bbq.Subject{}, err
+		return bbq.Subject{}, fmt.Errorf("Error in GetOrCreateSubject %s", err.Error())
 	}
 
 	return subject, err

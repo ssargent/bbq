@@ -1,6 +1,7 @@
 package session
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -28,9 +29,9 @@ func (handler *sessionHandler) Routes() *chi.Mux {
 
 	router.Get("/", handler.getSessions)
 	router.Get("/address/{address}", handler.getSessionsByMonitorAddress)
-	/*	router.Post("/", handler.createMonitor)
-		router.Delete("/{monitorName}", handler.deleteMonitor)
-	*/
+	router.Post("/", handler.createSession)
+	/*	router.Delete("/{monitorName}", handler.deleteMonitor)
+	 */
 	return router
 }
 
@@ -59,6 +60,26 @@ func (handler *sessionHandler) getSessionsByMonitorAddress(w http.ResponseWriter
 		return
 	}
 	monitor, err := handler.service.GetSessionByMonitorAddress(loginSession.TenantId, chi.URLParam(r, "address"))
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, monitor)
+}
+
+func (handler *sessionHandler) createSession(w http.ResponseWriter, r *http.Request) {
+	loginSession, err := handler.authentication.GetLoginSession(r)
+
+	data := bbq.Session{}
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	monitor, err := handler.service.CreateSession(loginSession.TenantId, data)
 
 	if err != nil {
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))

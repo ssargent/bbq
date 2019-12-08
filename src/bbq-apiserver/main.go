@@ -50,9 +50,6 @@ func Routes(c *config.Config) *chi.Mux {
 		cors.Handler)
 
 	healthAPI := health.New(c)
-	//devicesAPI := devices.New(c)
-	//monitorsAPI := monitors.New(c)
-	//sessionsAPI := sessions.New(c)
 	temperatureAPI := temperature.New(c)
 
 	caching := redis.NewRedisCacheService(c)
@@ -80,14 +77,6 @@ func Routes(c *config.Config) *chi.Mux {
 
 	sessionRepository := session.NewSessionRepository(c.Database)
 
-	/*
-			type BBQUnitOfWork struct {
-			Monitor MonitorRepository
-			Device  DeviceRepository
-			Session SessionRepository
-			Subject SubjectRepository
-		}
-	*/
 	unitOfWork := bbq.BBQUnitOfWork{
 		Monitor: monitorRepository,
 		Device:  deviceRepository,
@@ -109,9 +98,6 @@ func Routes(c *config.Config) *chi.Mux {
 			r.Mount("/bbq/devices", deviceHandler.Routes())
 			r.Mount("/bbq/monitors", monitorHandler.Routes())
 			r.Mount("/bbq/sessions", sessionHandler.Routes())
-			//	r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
-			//	r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
-			//	r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
 			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
 		})
 

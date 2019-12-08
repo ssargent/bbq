@@ -1,7 +1,6 @@
 package session
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -97,19 +96,19 @@ func (s *sessionService) convertToSession(record bbq.SessionRecord) (bbq.Session
 	device, err := s.deviceService.GetDeviceByID(record.TenantID, record.DeviceUID)
 
 	if err != nil {
-		return bbq.Session{}, errors.New("Cannot get device for session")
+		return bbq.Session{}, fmt.Errorf("Error Retrieving Device for Session %s", err.Error())
 	}
 
 	monitor, err := s.monitorService.GetMonitorByID(record.TenantID, record.MonitorUID)
 
 	if err != nil {
-		return bbq.Session{}, errors.New("Cannot get monitor for session")
+		return bbq.Session{}, fmt.Errorf("Error Retrieving Monitor for Session %s", err.Error())
 	}
 
 	subject, err := s.subjectService.GetSubjectByID(record.TenantID, record.SubjectUID)
 
 	if err != nil {
-		return bbq.Session{}, errors.New("Cannot get subject for sesson")
+		return bbq.Session{}, fmt.Errorf("Error Retrieving Subject for Session %s", err.Error())
 	}
 
 	return bbq.Session{
@@ -133,19 +132,19 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 	device, err := s.deviceService.GetDeviceByName(tenantID, record.Device)
 
 	if err != nil {
-		return bbq.SessionRecord{}, err
+		return bbq.SessionRecord{}, fmt.Errorf("Error Retrieving Device %s", err.Error())
 	}
 
 	monitor, err := s.monitorService.GetMonitorByName(tenantID, record.Monitor)
 
 	if err != nil {
-		return bbq.SessionRecord{}, err
+		return bbq.SessionRecord{}, fmt.Errorf("Error Retrieving Monitor %s", err.Error())
 	}
 
 	subject, err := s.subjectService.GetOrCreateSubject(tenantID, record.Subject, record.Subject)
 
 	if err != nil {
-		return bbq.SessionRecord{}, err
+		return bbq.SessionRecord{}, fmt.Errorf("Error Retrieving Subject %s", err.Error())
 	}
 
 	return bbq.SessionRecord{
@@ -168,6 +167,9 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 }
 
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
+
+	entity.StartTime = time.Now()
+
 	record, err := s.convertToRecord(tenantID, entity)
 
 	if err != nil {
