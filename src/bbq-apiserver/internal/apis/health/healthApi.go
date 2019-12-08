@@ -20,6 +20,7 @@ type HealthStatus struct {
 	ApiServer string `json:"apiServer"`
 	Database  string `json:"database"`
 	Cache     string `json:"cache"`
+	Happy     string `json:"happy"`
 }
 
 // New returns a new instance of a config
@@ -70,6 +71,7 @@ func (api *HealthApi) LiveCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	health.ApiServer = apiServer
+	health.Happy = "Like a High Hobbit"
 
 	render.JSON(w, r, health)
 }
