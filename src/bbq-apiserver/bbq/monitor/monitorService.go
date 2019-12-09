@@ -99,7 +99,7 @@ func (m *monitorService) UpdateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return bbq.Monitor{}, errors.New("Monitor not found.  You must create it first.")
+			return bbq.Monitor{}, errors.New("monitor not found.  You must create it first")
 		}
 
 		return bbq.Monitor{}, err

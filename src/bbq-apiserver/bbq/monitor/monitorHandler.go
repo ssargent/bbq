@@ -20,7 +20,7 @@ type monitorHandler struct {
 	config         *config.Config
 }
 
-// NewDeviceHandler will create an api Handler for a devices.
+// NewMonitorHandler will create an api Handler for a devices.
 func NewMonitorHandler(config *config.Config, authentication security.AuthenticationService, service bbq.MonitorService) infrastructure.ApiHandler {
 	return &monitorHandler{service: service, authentication: authentication, config: config}
 }

@@ -19,10 +19,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getLoginSessionHelper(accountId uuid.UUID, tenantId uuid.UUID, login string, name string) security.LoginSession {
+func getLoginSessionHelper(accountID uuid.UUID, tenantID uuid.UUID, login string, name string) security.LoginSession {
 	claims := jwt.MapClaims{
-		"sub":    accountId,
-		"tenant": tenantId,
+		"sub":    accountID,
+		"tenant": tenantID,
 		"iss":    "https://bbq.k8s.ssargent.net/",
 		"aud":    "https://bbq.k8s.ssargent.net/",
 		"exp":    time.Now().Add(time.Second * time.Duration(100000)).Unix(),
@@ -32,8 +32,8 @@ func getLoginSessionHelper(accountId uuid.UUID, tenantId uuid.UUID, login string
 	}
 
 	loginSession := security.LoginSession{
-		AccountId: accountId,
-		TenantId:  tenantId,
+		AccountId: accountID,
+		TenantId:  tenantID,
 		LoginName: "chef",
 		FullName:  "Chef Hetfield",
 		Claims:    claims,
@@ -56,11 +56,11 @@ func TestGetMonitorsEndpoint(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	accountId, _ := uuid.NewUUID()
+	accountID, _ := uuid.NewUUID()
 	tenant, _ := uuid.NewUUID()
 
 	mon := getMonitorHelper(1, "My Monitor", "deadbeef", tenant)
-	loginSession := getLoginSessionHelper(accountId, tenant, "chef", "Chef Hetfield")
+	loginSession := getLoginSessionHelper(accountID, tenant, "chef", "Chef Hetfield")
 
 	auth := jwtauth.New("HS256", []byte("password"), nil)
 
@@ -96,11 +96,11 @@ func TestGetMonitorByAddressEndpoint(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	accountId, _ := uuid.NewUUID()
+	accountID, _ := uuid.NewUUID()
 	tenant, _ := uuid.NewUUID()
 
 	mon := getMonitorHelper(1, "My Monitor", "deadbeef", tenant)
-	loginSession := getLoginSessionHelper(accountId, tenant, "chef", "Chef Hetfield")
+	loginSession := getLoginSessionHelper(accountID, tenant, "chef", "Chef Hetfield")
 
 	auth := jwtauth.New("HS256", []byte("password"), nil)
 
@@ -136,11 +136,11 @@ func TestGetMonitorByNameEndpoint(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	accountId, _ := uuid.NewUUID()
+	accountID, _ := uuid.NewUUID()
 	tenant, _ := uuid.NewUUID()
 
 	mon := getMonitorHelper(1, "My Monitor", "deadbeef", tenant)
-	loginSession := getLoginSessionHelper(accountId, tenant, "chef", "Chef Hetfield")
+	loginSession := getLoginSessionHelper(accountID, tenant, "chef", "Chef Hetfield")
 
 	auth := jwtauth.New("HS256", []byte("password"), nil)
 
