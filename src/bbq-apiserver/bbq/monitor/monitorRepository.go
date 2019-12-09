@@ -20,7 +20,7 @@ func NewMonitorRepository(database *sql.DB) bbq.MonitorRepository {
 
 func (m *monitorRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Monitor, error) {
 	var mon bbq.Monitor
-	query := "select id, uid, address, name, description, tenantid from bbq.devices where Uid = $1 AND tenantid = $2"
+	query := "select id, uid, address, name, description, tenantid from bbq.monitors where Uid = $1 AND tenantid = $2"
 
 	err := m.database.QueryRow(query, id, tenantID).Scan(&mon.ID, &mon.Uid, &mon.Address, &mon.Name, &mon.Description, &mon.TenantID)
 
@@ -35,7 +35,7 @@ func (m *monitorRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Monit
 func (m *monitorRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Monitor, error) {
 	var monitors []bbq.Monitor
 	rows, err := m.database.Query(
-		"select id, uid, address, name, description, tenantid from bbq.devices where tenantid = $1", tenantID)
+		"select id, uid, address, name, description, tenantid from bbq.monitors where tenantid = $1", tenantID)
 
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (m *monitorRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Monitor, er
 
 func (m *monitorRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Monitor, error) {
 	var mon bbq.Monitor
-	query := "select id, uid, address, name, description, tenantid from bbq.devices where Name = $1 AND tenantid = $2"
+	query := "select id, uid, address, name, description, tenantid from bbq.monitors where Name = $1 AND tenantid = $2"
 
 	err := m.database.QueryRow(query, name, tenantID).Scan(&mon.ID, &mon.Uid, &mon.Address, &mon.Name, &mon.Description, &mon.TenantID)
 
@@ -70,7 +70,7 @@ func (m *monitorRepository) GetByName(tenantID uuid.UUID, name string) (bbq.Moni
 
 func (m *monitorRepository) GetByAddress(tenantID uuid.UUID, address string) (bbq.Monitor, error) {
 	var mon bbq.Monitor
-	query := "select id, uid, address, name, description, tenantid from bbq.devices where Address = $1 AND tenantid = $2"
+	query := "select id, uid, address, name, description, tenantid from bbq.monitors where Address = $1 AND tenantid = $2"
 
 	err := m.database.QueryRow(query, address, tenantID).Scan(&mon.ID, &mon.Uid, &mon.Address, &mon.Name, &mon.Description, &mon.TenantID)
 

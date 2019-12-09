@@ -1,0 +1,16 @@
+apiVersion: skaffold/v1beta15
+kind: Config
+build:
+  artifacts:
+  - image: bbq-apiserver
+    context: src/bbq-apiserver
+  tagPolicy:
+    sha256: {}
+deploy:
+  kubectl:
+    manifests:
+    - kubernetes-manifests/**
+profiles:
+- name: cloudbuild
+  build:
+    googleCloudBuild: {}

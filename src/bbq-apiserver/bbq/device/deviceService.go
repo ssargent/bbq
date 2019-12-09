@@ -65,7 +65,8 @@ func (d *deviceService) GetDeviceByName(tenantID uuid.UUID, deviceName string) (
 	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenantID.String(), deviceName)
 	var device bbq.Device
 
-	if err := d.cache.GetItem(cacheKey, &device); err == nil {
+	if err := d.cache.GetItem(cacheKey, &device); (err == nil && device != bbq.Device{}) {
+		fmt.Println("Cache Hit for Device (%s)", device.Uid, device)
 		return device, nil
 	}
 

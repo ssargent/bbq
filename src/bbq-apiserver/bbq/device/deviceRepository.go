@@ -3,6 +3,7 @@ package device
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -42,12 +43,12 @@ func (d *deviceRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Device, erro
 
 func (d *deviceRepository) GetByName(tenantID uuid.UUID, deviceName string) (bbq.Device, error) {
 	var dev bbq.Device
-	query := "select id, name, description, tenantid from bbq.devices where Name = $1 AND tenantid = $2"
+	query := "select id, name, description, tenantid, uid from bbq.devices where Name = $1 AND tenantid = $2"
 
-	err := d.database.QueryRow(query, deviceName, tenantID).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID)
+	err := d.database.QueryRow(query, deviceName, tenantID).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID, &dev.Uid)
 
 	if err != nil {
-		return bbq.Device{}, err
+		return bbq.Device{}, fmt.Errorf("Cannot find device %s (tenant: %s) - %s", deviceName, tenantID, err.Error())
 	}
 
 	return dev, nil
@@ -56,9 +57,9 @@ func (d *deviceRepository) GetByName(tenantID uuid.UUID, deviceName string) (bbq
 
 func (d *deviceRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Device, error) {
 	var dev bbq.Device
-	query := "select id, name, description, tenantid from bbq.devices where uid = $1 AND tenantid = $2"
+	query := "select id, name, description, tenantid, Uid from bbq.devices where uid = $1 AND tenantid = $2"
 
-	err := d.database.QueryRow(query, id, tenantID).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID)
+	err := d.database.QueryRow(query, id, tenantID).Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID, &dev.Uid)
 
 	if err != nil {
 		return bbq.Device{}, err

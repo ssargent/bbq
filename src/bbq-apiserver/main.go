@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 
+	"github.com/ssargent/bbq/bbq-apiserver/bbq"
 	"github.com/ssargent/bbq/bbq-apiserver/config"
 	"github.com/ssargent/bbq/bbq-apiserver/internal/apis/data/temperature"
 	"github.com/ssargent/bbq/bbq-apiserver/internal/apis/health"
@@ -20,6 +21,8 @@ import (
 
 	"github.com/ssargent/bbq/bbq-apiserver/bbq/device"
 	"github.com/ssargent/bbq/bbq-apiserver/bbq/monitor"
+	"github.com/ssargent/bbq/bbq-apiserver/bbq/session"
+	"github.com/ssargent/bbq/bbq-apiserver/bbq/subject"
 
 	//"github.com/ssargent/bbq/bbq-apiserver/system"
 	"github.com/ssargent/bbq/bbq-apiserver/system/account"
@@ -47,9 +50,6 @@ func Routes(c *config.Config) *chi.Mux {
 		cors.Handler)
 
 	healthAPI := health.New(c)
-	//devicesAPI := devices.New(c)
-	//monitorsAPI := monitors.New(c)
-	//sessionsAPI := sessions.New(c)
 	temperatureAPI := temperature.New(c)
 
 	caching := redis.NewRedisCacheService(c)
@@ -72,6 +72,21 @@ func Routes(c *config.Config) *chi.Mux {
 	tenantService := tenant.NewTenantService(c, tenantRepository)
 	tenantHandler := tenant.NewTenantHandler(c, tenantService, accountService)
 
+	subjectRepository := subject.NewSubjectRepository(c.Database)
+	subjectService := subject.NewSubjectService(caching, subjectRepository)
+
+	sessionRepository := session.NewSessionRepository(c.Database)
+
+	unitOfWork := bbq.BBQUnitOfWork{
+		Monitor: monitorRepository,
+		Device:  deviceRepository,
+		Session: sessionRepository,
+		Subject: subjectRepository,
+	}
+
+	sessionService := session.NewSessionService(caching, unitOfWork, deviceService, monitorService, subjectService)
+	sessionHandler := session.NewSessionHandler(c, authentication, sessionService)
+
 	router.Route("/v1", func(r chi.Router) {
 		//	r.Mount("/bbq/devices", devicesAPI.Routes())
 		r.Mount("/health", healthAPI.HealthRoutes())
@@ -82,9 +97,7 @@ func Routes(c *config.Config) *chi.Mux {
 
 			r.Mount("/bbq/devices", deviceHandler.Routes())
 			r.Mount("/bbq/monitors", monitorHandler.Routes())
-			//	r.Mount("/{tenantkey}/bbq/devices", devicesAPI.TenantRoutes())
-			//	r.Mount("/{tenantkey}/bbq/monitors", monitorsAPI.TenantRoutes())
-			//	r.Mount("/{tenantkey}/bbq/sessions", sessionsAPI.TenantRoutes())
+			r.Mount("/bbq/sessions", sessionHandler.Routes())
 			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
 		})
 
