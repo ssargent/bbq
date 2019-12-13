@@ -11,6 +11,9 @@ require (
 	github.com/go-chi/render v1.0.1 // indirect
 	github.com/go-redis/cache v6.4.0+incompatible // indirect
 	github.com/go-redis/redis v6.15.6+incompatible // indirect
+	github.com/golang/mock v1.3.1 // indirect
+	github.com/google/uuid v1.1.1 // indirect
+	github.com/lib/pq v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
@@ -18,6 +21,7 @@ require (
 	github.com/onsi/ginkgo v1.10.3 // indirect
 	github.com/onsi/gomega v1.7.1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/sworisbreathing/go-ibbq v0.0.0-20180730004824-dde41cf01044
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/net v0.0.0-20191207000613-e7e4b65ae663 // indirect
