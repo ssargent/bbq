@@ -44,7 +44,7 @@ func (m *monitorService) GetMonitorByID(tenantID uuid.UUID, id uuid.UUID) (bbq.M
 	monitor, err := m.repository.GetByID(tenantID, id)
 
 	if err != nil {
-		return bbq.Monitor{}, fmt.Errorf("Error retrieving monitor by id %", err.Error())
+		return bbq.Monitor{}, fmt.Errorf("Error retrieving monitor by id %s", err.Error())
 	}
 
 	return monitor, nil

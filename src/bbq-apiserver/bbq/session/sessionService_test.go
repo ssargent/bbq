@@ -387,6 +387,9 @@ func TestCreateSession(t *testing.T) {
 	session := getSession(42, tenant, sessionid)
 	sessionRecord := getSessionRecord(42, tenant, sessionid)
 
+	// make sure times match for test records.
+	sessionRecord.StartTime = session.StartTime
+
 	unitOfWork := createUnitOfWork(mockCtrl)
 	mockRepo := unitOfWork.Session.(*mock_bbq.MockSessionRepository)
 	mockCacheService := mock_infrastructure.NewMockCacheService(mockCtrl)

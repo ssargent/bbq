@@ -75,7 +75,7 @@ func TestGetSessionsEndpoint(t *testing.T) {
 	accountId, _ := uuid.NewUUID()
 	tenant, _ := uuid.NewUUID()
 
-	mon := getSimpleSessionHelper(tenant)
+	session := getSimpleSessionHelper(tenant)
 	loginSession := getLoginSessionHelper(accountId, tenant, "chef", "Chef Hetfield")
 
 	auth := jwtauth.New("HS256", []byte("password"), nil)
@@ -85,25 +85,25 @@ func TestGetSessionsEndpoint(t *testing.T) {
 	}
 
 	authenticationService := mock_security.NewMockAuthenticationService(mockCtrl)
-	monitorService := mock_bbq.NewMockMonitorService(mockCtrl)
-	monitorHandler := NewSessionHandler(&testConfig, authenticationService, monitorService)
+	sessionService := mock_bbq.NewMockSessionService(mockCtrl)
+	sessionHandler := NewSessionHandler(&testConfig, authenticationService, sessionService)
 
 	authenticationService.EXPECT().GetLoginSession(gomock.Any()).Return(loginSession, nil).Times(1)
-	monitorService.EXPECT().GetMonitors(tenant).Return([]bbq.Monitor{mon}, nil).Times(1)
+	sessionService.EXPECT().GetSessions(tenant).Return([]bbq.Session{session}, nil).Times(1)
 
 	request, _ := http.NewRequest("GET", "/", nil)
 	response := httptest.NewRecorder()
-	var monitorsResult []bbq.Monitor
+	var sessionResult []bbq.Session
 
-	monitorHandler.Routes().ServeHTTP(response, request)
+	sessionHandler.Routes().ServeHTTP(response, request)
 
-	if err := json.NewDecoder(response.Body).Decode(&monitorsResult); err != nil {
-		t.Error("Cannot convert json to monitor collection")
+	if err := json.NewDecoder(response.Body).Decode(&sessionResult); err != nil {
+		t.Error("Cannot convert json to session collection")
 	}
 
 	assert.Equal(t, 200, response.Code, "OK response is expected")
 	assert.Equal(t, "application/json; charset=utf-8", response.Header().Get("Content-Type"))
 	assert.NotEqual(t, "[]", response.Body.String())
-	assert.NotEmpty(t, monitorsResult)
-	assert.ElementsMatch(t, []bbq.Monitor{mon}, monitorsResult)
+	assert.NotEmpty(t, sessionResult)
+	assert.ElementsMatch(t, []bbq.Session{session}, sessionResult)
 }
