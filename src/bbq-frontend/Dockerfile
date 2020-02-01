@@ -1,5 +1,5 @@
 # stage: 1
-FROM node:8 as react-build
+FROM node:latest as react-build
 WORKDIR /app
 COPY . ./
 RUN yarn

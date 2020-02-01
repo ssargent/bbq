@@ -16,7 +16,7 @@ class Devices extends React.Component {
     }
 
     componentDidMount() {
-        transport.get("https://bbq.k8s.ssargent.net/v1/bbq/devices"
+        transport.get("https://bbq.k8s.mythicalcodelabs.com/v1/bbq/devices"
         )
             .then(resp => this.setState({ devices: resp.data }))
             .catch(err => console.log(err));

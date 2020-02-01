@@ -22,14 +22,24 @@ class Login extends React.Component {
       }));
     };
 
+
+
     login = () => {
       const loginModel = {
         loginname: this.state.loginName,
         password: this.state.password
       };
 
+      let url = "";
+    
+      if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+          url = "https://bbq.k8s.mythicalcodelabs.com/v1/system/accounts/login"
+      } else {
+          url = "https://bbq.k8s.mythicalcodelabs.com/v1/system/accounts/signin"
+      }
+
       axios
-        .post("https://bbq.k8s.ssargent.net/v1/system/accounts/login", loginModel)
+        .post(url, loginModel)
         .then(resp => {
           if(resp.data.success === true) {
             localStorage.setItem("bbq-authenticated", JSON.stringify(resp.data))
@@ -73,7 +83,7 @@ class Login extends React.Component {
               </form>            
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" onClick={this.login}>Login</Button>{' '}
+              <Button color="primary" onClick={this.login}>Login</Button>
               <Button color="secondary" onClick={this.toggle}>Cancel</Button>
             </ModalFooter>
           </Modal>

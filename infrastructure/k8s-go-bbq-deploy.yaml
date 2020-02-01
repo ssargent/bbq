@@ -54,7 +54,7 @@ spec:
             - name: BBQ_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bbq-redis
+                  name: bbq-cache-redis
                   key: redis-password
       imagePullSecrets:
         - name: myfamilycooks

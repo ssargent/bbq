@@ -1,5 +1,11 @@
 {
     "cloudcode.profile-cluster-map": {
         "[default]": "minikube"
+    },
+    "cloudcode.last-used-context": {
+        "Run on Kubernetes": {
+            "kubeConfigPath": "/home/scott/.kube/config",
+            "contextName": "minikube"
+        }
     }
 }

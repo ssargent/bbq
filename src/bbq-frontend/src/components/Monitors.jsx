@@ -16,7 +16,7 @@ class Monitors extends React.Component {
     }
 
     componentDidMount() {
-        transport.get("https://bbq.k8s.ssargent.net/v1/bbq/monitors")
+        transport.get("https://bbq.k8s.mythicalcodelabs.com/v1/bbq/monitors")
             .then(resp => this.setState({ monitors: resp.data }))
             .catch(err => console.log(err));
     }

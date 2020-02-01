@@ -2,6 +2,8 @@ apiVersion: skaffold/v1beta15
 kind: Config
 build:
   artifacts:
+  - image: bbq-frontend
+    context: src/bbq-frontend
   - image: bbq-apiserver
     context: src/bbq-apiserver
   tagPolicy:

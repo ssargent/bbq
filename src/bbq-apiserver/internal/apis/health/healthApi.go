@@ -71,7 +71,7 @@ func (api *HealthApi) LiveCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	health.ApiServer = apiServer
-	health.Happy = "Like a High Hobbit"
+	health.Happy = "Very Happy"
 
 	render.JSON(w, r, health)
 }
