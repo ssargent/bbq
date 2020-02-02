@@ -3,9 +3,10 @@
 import React from "react";
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import Dashboard from "./components/dashboard";
-import Devices from "./components/Devices";
-import Monitors from "./components/Monitors";
- 
+import Devices from "./components/devices";
+import Monitors from "./components/monitors";
+import Sessions from "./components/sessions";
+
 export default function PageContent({}) {
     return (
     <Router> 
@@ -28,10 +29,7 @@ export default function PageContent({}) {
             <Link className="nav-link" to="/monitors">Monitors</Link> 
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="#">
-                <span data-feather="users"></span>
-                Sessions
-              </a>
+            <Link className="nav-link" to="/sessions">Sessions</Link> 
             </li>
 
           </ul>
@@ -52,7 +50,8 @@ export default function PageContent({}) {
         path="/monitors" 
         component={Monitors}
        />
-  
+       <Route path="/sessions"
+       component={Sessions} />
         
               </main>
     </div>
