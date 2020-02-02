@@ -3,6 +3,7 @@
 import React from "react"
 import axios from "axios"
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { API_SERVER } from "../config"
 
 class Login extends React.Component {
     constructor(props) {
@@ -23,7 +24,6 @@ class Login extends React.Component {
     };
 
 
-
     login = () => {
       const loginModel = {
         loginname: this.state.loginName,
@@ -33,9 +33,9 @@ class Login extends React.Component {
       let url = "";
     
       if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-          url = "https://bbq.k8s.mythicalcodelabs.com/v1/system/accounts/login"
+          url = `${API_SERVER}v1/system/accounts/login`
       } else {
-          url = "https://bbq.k8s.mythicalcodelabs.com/v1/system/accounts/signin"
+          url = `${API_SERVER}v1/system/accounts/signin`
       }
 
       axios
@@ -52,13 +52,25 @@ class Login extends React.Component {
         });
     };
 
+    logout = () => {
+
+    };
+
     componentDidMount() {
       if(localStorage.getItem("bbq-authenticated") === null) {
+        this.isAuthenticated = false;
         this.setState({ showLoginModal: true });
       }
+      else
+        this.isAuthenticated = true;
     }
 
     render() {
+
+      if(this.isAuthenticated) {
+        return <button onClick={() => localStorage.removeItem("bbq-authenticated")}>Logout</button>
+      }
+
       return (
         <div>
           <a onClick={this.toggle}>Login</a>

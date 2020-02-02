@@ -33,7 +33,7 @@ spec:
               httpHeaders:
                 - name: Custom-Header
                   value: Awesome
-            initialDelaySeconds: 3
+            initialDelaySeconds: 15
             periodSeconds: 3
           env:
             - name: BBQ_DB_HOST
@@ -64,7 +64,7 @@ spec:
             - name: BBQ_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bbq-cache-redis
+                  name: bbq-redis
                   key: redis-password
       imagePullSecrets:
         - name: myfamilycooks

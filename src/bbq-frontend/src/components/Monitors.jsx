@@ -2,7 +2,7 @@
 
 import React from "react";
 import { transport } from "../transport";
-
+import { API_SERVER } from "../config";
 //type State = {
 //    devices: Array<Object>
 //}
@@ -16,7 +16,7 @@ class Monitors extends React.Component {
     }
 
     componentDidMount() {
-        transport.get("https://bbq.k8s.mythicalcodelabs.com/v1/bbq/monitors")
+        transport.get(`${API_SERVER}v1/bbq/monitors`)
             .then(resp => this.setState({ monitors: resp.data }))
             .catch(err => console.log(err));
     }

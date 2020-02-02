@@ -40,19 +40,10 @@ func (api *HealthApi) HealthRoutes() *chi.Mux {
 func (api *HealthApi) LiveCheck(w http.ResponseWriter, r *http.Request) {
 
 	health := &HealthStatus{}
-	database := "ready"
 	cacheStatus := "ready"
 	apiServer := "ready"
 
-	rows, err := api.config.Database.Query(
-		"SELECT 1")
-
-	defer rows.Close()
-	if err != nil {
-		database = "not-ready"
-	}
-
-	err = api.config.Cache.Set(&cache.Item{
+	err := api.config.Cache.Set(&cache.Item{
 		Key:        "HEALTH$CHECK",
 		Object:     "health-check",
 		Expiration: time.Minute * 10,
@@ -63,15 +54,13 @@ func (api *HealthApi) LiveCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	health.Cache = cacheStatus
-	health.Database = database
 
-	if health.Cache != "ready" || health.Database != "ready" {
+	if health.Cache != "ready" {
 		apiServer = "not-ready"
 		w.WriteHeader(500)
 	}
 
 	health.ApiServer = apiServer
-	health.Happy = "Very Happy"
 
 	render.JSON(w, r, health)
 }

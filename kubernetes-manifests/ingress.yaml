@@ -24,7 +24,7 @@ spec:
             backend:
               serviceName: go-bbq
               servicePort: 80
-    - host: database.k8s.ssargent.net
+    - host: database.k8s.mythicalcodelabs.com
       http:
         paths:
           - path: /

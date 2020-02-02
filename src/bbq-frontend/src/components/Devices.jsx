@@ -2,6 +2,7 @@
 
 import React from "react";
 import { transport } from "../transport";
+import { API_SERVER } from "../config";
 
 //type State = {
 //    devices: Array<Object>
@@ -16,8 +17,7 @@ class Devices extends React.Component {
     }
 
     componentDidMount() {
-        transport.get("https://bbq.k8s.mythicalcodelabs.com/v1/bbq/devices"
-        )
+        transport.get(`${API_SERVER}v1/bbq/devices`)
             .then(resp => this.setState({ devices: resp.data }))
             .catch(err => console.log(err));
     }
