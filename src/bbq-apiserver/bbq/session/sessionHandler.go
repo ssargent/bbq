@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"github.com/google/uuid"
 
 	"github.com/ssargent/bbq/bbq-apiserver/bbq"
 	"github.com/ssargent/bbq/bbq-apiserver/config"
@@ -28,8 +29,10 @@ func (handler *sessionHandler) Routes() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/", handler.getSessions)
+	router.Get("/{sessionid}", handler.getSessionById)
 	router.Get("/address/{address}", handler.getSessionsByMonitorAddress)
 	router.Post("/", handler.createSession)
+
 	/*	router.Delete("/{monitorName}", handler.deleteMonitor)
 	 */
 	return router
@@ -67,6 +70,27 @@ func (handler *sessionHandler) getSessionsByMonitorAddress(w http.ResponseWriter
 	}
 
 	render.JSON(w, r, monitor)
+}
+
+func (handler *sessionHandler) getSessionById(w http.ResponseWriter, r *http.Request) {
+	loginSession, err := handler.authentication.GetLoginSession(r)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	sessionIdString := chi.URLParam(r, "sessionid")
+	sessionid, err := uuid.Parse(sessionIdString)
+
+	session, err := handler.service.GetSessionByID(loginSession.TenantId, sessionid)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, session)
 }
 
 func (handler *sessionHandler) createSession(w http.ResponseWriter, r *http.Request) {

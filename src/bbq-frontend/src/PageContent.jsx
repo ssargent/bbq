@@ -6,6 +6,7 @@ import Dashboard from "./components/dashboard";
 import Devices from "./components/devices";
 import Monitors from "./components/monitors";
 import Sessions from "./components/sessions";
+import Session from "./components/session";
 
 export default function PageContent({}) {
     return (
@@ -31,7 +32,7 @@ export default function PageContent({}) {
             <li className="nav-item">
             <Link className="nav-link" to="/sessions">Sessions</Link> 
             </li>
-
+             
           </ul>
         </div>
       </nav>
@@ -52,7 +53,7 @@ export default function PageContent({}) {
        />
        <Route path="/sessions"
        component={Sessions} />
-        
+      <Route path="/cookingsession/:sessionid" component={Session} />
               </main>
     </div>
   </div>

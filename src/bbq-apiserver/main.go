@@ -24,6 +24,8 @@ import (
 	"github.com/ssargent/bbq/bbq-apiserver/bbq/session"
 	"github.com/ssargent/bbq/bbq-apiserver/bbq/subject"
 
+	"github.com/ssargent/bbq/bbq-apiserver/data/sensors"
+
 	//"github.com/ssargent/bbq/bbq-apiserver/system"
 	"github.com/ssargent/bbq/bbq-apiserver/system/account"
 	"github.com/ssargent/bbq/bbq-apiserver/system/tenant"
@@ -55,6 +57,10 @@ func Routes(c *config.Config) *chi.Mux {
 	caching := redis.NewRedisCacheService(c)
 
 	authentication := claims.NewClaimsAuthenticationService()
+
+	sensorReadingRepository := sensors.NewSensorReadingRepository(c.Database)
+	sensorReadingService := sensors.NewSensorReadingService(caching, sensorReadingRepository)
+	sensorReadingHandler := sensors.NewSensorReadingHandler(c, authentication, sensorReadingService)
 
 	deviceRepository := device.NewDeviceRepository(c.Database)
 	deviceService := device.NewDeviceService(caching, deviceRepository)
@@ -99,6 +105,8 @@ func Routes(c *config.Config) *chi.Mux {
 			r.Mount("/bbq/monitors", monitorHandler.Routes())
 			r.Mount("/bbq/sessions", sessionHandler.Routes())
 			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
+
+			r.Mount("/data/sensors", sensorReadingHandler.Routes())
 		})
 
 		r.Mount("/system/accounts", accountHandler.Routes())

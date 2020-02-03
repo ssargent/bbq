@@ -1,4 +1,4 @@
-package sensor
+package sensors
 
 import (
 	"github.com/google/uuid"
@@ -12,8 +12,8 @@ type sensorReadingService struct {
 	cache      infrastructure.CacheService
 }
 
-// NewDeviceService will create an DeviceService
-func NewDeviceService(cache infrastructure.CacheService, repository data.SensorReadingRepository) data.SensorReadingService {
+// NewSensorReadingService will create an DeviceService
+func NewSensorReadingService(cache infrastructure.CacheService, repository data.SensorReadingRepository) data.SensorReadingService {
 	return &sensorReadingService{repository: repository, cache: cache}
 }
 
@@ -37,4 +37,14 @@ func (s *sensorReadingService) GetReadings(tenantID uuid.UUID, sessionid uuid.UU
 	}
 
 	return sensorReadings, nil
+}
+
+func (s *sensorReadingService) GetRawReadings(tenantID uuid.UUID, sessionid uuid.UUID) ([]data.ThermalSensorRecord, error) {
+	rawReadingData, error := s.repository.GetThermalReadings(tenantID, sessionid)
+
+	if error != nil {
+		return []data.ThermalSensorRecord{}, error
+	}
+
+	return rawReadingData, nil
 }

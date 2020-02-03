@@ -31,6 +31,7 @@ type ThermalSensorRecord struct {
 // SensorReadingService gets structure-of-arrays data about a cooking session
 type SensorReadingService interface {
 	GetReadings(tenantID uuid.UUID, sessionid uuid.UUID) (SensorReadings, error)
+	GetRawReadings(tenantID uuid.UUID, sessionid uuid.UUID) ([]ThermalSensorRecord, error)
 }
 
 //SensorReadingRepository gets the raw array-of-structures data about a cooking sessin

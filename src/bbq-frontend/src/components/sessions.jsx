@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
+
+import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import { transport } from "../transport";
 import { API_SERVER } from "../config";
 
@@ -26,6 +28,7 @@ export default function Sessions() {
                   <th scope="col">Description</th>
                   <th scope="col">Device</th>
                   <th scope="col">Monitor</th>
+                  <th></th>
               </tr>
           </thead>
           <tbody>
@@ -36,6 +39,7 @@ export default function Sessions() {
                   <td>{s.description}</td>
                   <td>{s.device}</td>
                   <td>{s.monitor}</td>
+                  <td><Link className="btn btn-link btn-xs" to={`/cookingsession/${s.uid}`}>Chart</Link> </td>
               </tr> 
           ))}
           </tbody>
