@@ -96,6 +96,9 @@ func (d *deviceService) CreateDevice(tenantID uuid.UUID, newDevice bbq.Device) (
 		return bbq.Device{}, err
 	}
 
+	// remove the tenant-devices as we just added one.
+	d.cache.RemoveItem(fmt.Sprintf("bbq$devices$%s", tenantID.String()))
+
 	d.cache.SetItem(cacheKey, device, time.Minute*10)
 
 	return device, nil

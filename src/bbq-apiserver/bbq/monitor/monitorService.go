@@ -93,6 +93,7 @@ func (m *monitorService) CreateMonitor(tenantID uuid.UUID, entity bbq.Monitor) (
 		return bbq.Monitor{}, err
 	}
 
+	m.cache.RemoveItem(fmt.Sprintf("bbq$monitors$%s", tenantID.String()))
 	m.cache.SetItem(cacheKey, monitor, time.Minute*10)
 
 	return monitor, nil

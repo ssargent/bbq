@@ -7,4 +7,4 @@ for filename in ./secrets/*.txt; do
      
 done
 
-./go-bbq
+./bbq-apiserver

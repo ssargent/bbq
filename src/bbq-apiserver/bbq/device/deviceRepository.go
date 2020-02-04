@@ -73,7 +73,7 @@ func (d *deviceRepository) Create(device bbq.Device) (bbq.Device, error) {
 	insertStatement := "insert into bbq.devices (name, description, tenantid) values ($1, $2, $3) returning *"
 
 	var createdDevice bbq.Device
-	err := d.database.QueryRow(insertStatement, device.Name, device.Description, device.TenantID).Scan(&createdDevice.ID, &createdDevice.Name, &createdDevice.Description, &createdDevice.TenantID)
+	err := d.database.QueryRow(insertStatement, device.Name, device.Description, device.TenantID).Scan(&createdDevice.ID, &createdDevice.Name, &createdDevice.Description, &createdDevice.TenantID, &createdDevice.Uid)
 
 	if err != nil {
 		// There must be a more elegant way of doing this...  but for now...
