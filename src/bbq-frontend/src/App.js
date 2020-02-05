@@ -1,7 +1,26 @@
 import React, { Component } from "react";
-import TopNav from "./TopNav";
-import PageContent from "./PageContent";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
+import AuthRoutes from "./layouts/auth/authRoutes";
+import BbqRoutes from "./layouts/bbq/bbqRoutes";
+import Dashboard from "./components/dashboard";
+import PageLogin from "./components/pageLogin";
 import "./App.css";
+
+class DebugRouter extends Router {
+  constructor(props) {
+    super(props);
+    console.log("initial history is: ", JSON.stringify(this.history, null, 2));
+    this.history.listen((location, action) => {
+      console.log(
+        `The current URL is ${location.pathname}${location.search}${location.hash}`
+      );
+      console.log(
+        `The last navigation action was ${action}`,
+        JSON.stringify(this.history, null, 2)
+      );
+    });
+  }
+}
 
 class App extends Component {
   constructor(props) {
@@ -14,10 +33,12 @@ class App extends Component {
 
   render() {
     return (
-      <React.Fragment>
-        <TopNav />
-        <PageContent />
-      </React.Fragment>
+      <DebugRouter>
+        <Switch>
+          <AuthRoutes exact path="/login" component={PageLogin} />
+          <BbqRoutes path="/" component={Dashboard} />
+        </Switch>
+      </DebugRouter>
     );
   }
 }

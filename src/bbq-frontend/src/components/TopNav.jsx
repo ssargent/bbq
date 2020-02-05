@@ -1,7 +1,7 @@
 //@flow
 import React from "react";
 import "./TopNav.css";
-import Login from "./components/login";
+import Login from "./login";
 
 export default function TopNav() {
   return (

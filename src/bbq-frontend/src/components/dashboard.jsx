@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Login from "./login";
 
 export default function Dashboard() {
@@ -23,6 +24,7 @@ export default function Dashboard() {
         </button>
         <Login />
       </div>
+      <Link to="/devices">Devices</Link>
     </div>
   );
 }
