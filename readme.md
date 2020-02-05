@@ -6,6 +6,7 @@
 ## What is this?
 
   
+If you would like a more readable explanation of what this is then please check our wiki.  https://github.com/ssargent/bbq/wiki  It will do a better job of putting things into plain english than we can do here.
 
 This was the repo for the BBQ Coding Challenge. If you're looking for that, its still around just on an branch. https://github.com/ssargent/bbq/tree/dotnet-core-bbq-app This however is no longer the bbq coding challenge. See I overcooked christmas dinner. My solution? Build a kubernetes based bbq thermometer.
 
