@@ -6,6 +6,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "antd": "^3.26.8",
     "axios": "^0.18.1",
     "bootstrap": "^4.3.1",
     "javascript-serialize": "^1.6.1",
@@ -14,6 +15,7 @@
     "react-dom": "^16.8.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.1",
+    "react-textselect": "^0.2.0",
     "reactstrap": "^7.1.0",
     "recharts": "^2.0.0-beta.1"
   },
@@ -35,5 +37,6 @@
   "devDependencies": {
     "eslint-plugin-prettier": "^3.1.2",
     "prettier": "1.19.1"
-  }
+  },
+  "proxy": "https://bbq.k8s.mythicalcodelabs.com/"
 }

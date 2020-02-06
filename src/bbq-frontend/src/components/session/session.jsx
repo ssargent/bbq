@@ -13,7 +13,7 @@ export default function Sessions() {
   useEffect(() => {
     const fetchData = async () => {
       const result = await transport.get(
-        `${API_SERVER}v1/bbq/sessions/${sessionid}`
+        `${API_SERVER}/v1/bbq/sessions/${sessionid}`
       );
       setData(result.data);
     };

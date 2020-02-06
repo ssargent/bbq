@@ -33,12 +33,12 @@ class App extends Component {
 
   render() {
     return (
-      <DebugRouter>
+      <Router>
         <Switch>
           <AuthRoutes exact path="/login" component={PageLogin} />
           <BbqRoutes path="/" component={Dashboard} />
         </Switch>
-      </DebugRouter>
+      </Router>
     );
   }
 }

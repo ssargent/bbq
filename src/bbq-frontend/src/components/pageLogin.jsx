@@ -21,11 +21,7 @@ export default function PageLogin({}) {
 
     let url = "";
 
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-      url = `${API_SERVER}v1/system/accounts/login`;
-    } else {
-      url = `${API_SERVER}v1/system/accounts/signin`;
-    }
+    url = `${API_SERVER}v1/system/accounts/signin`;
 
     axios
       .post(url, loginModel)
@@ -46,13 +42,17 @@ export default function PageLogin({}) {
 
   return (
     <div className="row">
-      <div className="col-md-4 offset-md-4" style={{ paddingTop: "300px" }}>
-        <form className="form-login">
+      <div className="col-md-3 offset-md-4" style={{ paddingTop: "300px" }}>
+        <div>
+          <h4>The World's Most Over Engineered BBQ Thermometer</h4>
+          <div>Please Login</div>
+        </div>
+        <form className="form-login" style={{ paddingTop: "15px" }}>
           <div className="form-group">
             <input
               type="text"
               className="form-control"
-              placeholder="Your Email"
+              placeholder="Your Login"
               onChange={e => setLogin(e.target.value)}
               value={login}
             />

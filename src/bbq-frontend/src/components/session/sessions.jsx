@@ -5,6 +5,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { transport } from "../../transport";
 import { API_SERVER } from "../../config";
+import AdvancedCreateSession from "./advancedCreateSession";
 
 export default function Sessions() {
   const [data, setData] = useState([]);
@@ -22,6 +23,16 @@ export default function Sessions() {
     <div>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
         <h1 className="h2">Cooking Sessions</h1>
+      </div>
+      <div className="bbq-button-strip">
+        <AdvancedCreateSession
+          buttonClassName="btn btn-outline-success btn-sm margin-bottom-10"
+          buttonText="Start Cooking!"
+          title="Let's Cook Something"
+          saveSession={m => {
+            this.createMonitor(m);
+          }}
+        />
       </div>
       <table className="table">
         <thead className="thread-dark">

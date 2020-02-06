@@ -20,7 +20,7 @@ export default function ThermalSensorReadings({ sessionid }) {
 
     const fetchData = async () => {
       const result = await transport.get(
-        `${API_SERVER}v1/data/sensors/${sessionid}/raw`
+        `${API_SERVER}/v1/data/sensors/${sessionid}/raw`
       );
       setData(result.data);
     };
@@ -29,6 +29,8 @@ export default function ThermalSensorReadings({ sessionid }) {
   }, [sessionid]);
 
   console.log(data);
+
+  if (data == undefined || data == null) return <div>Loading...</div>;
   return (
     <div>
       <LineChart
