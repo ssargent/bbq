@@ -133,12 +133,15 @@ func TestCreateMonitor(t *testing.T) {
 	}
 
 	cacheKey := fmt.Sprintf("bbq$monitors$%s$%s", tenant.String(), "My Monitor")
+	tenantMonitorsCacheKey := fmt.Sprintf("bbq$monitors$%s", tenant.String())
 
 	notFoundErr := sql.ErrNoRows
 	//var returnedDevice bbq.Device
 
 	mockRepo.EXPECT().GetByName(tenant, "My Monitor").Return(bbq.Monitor{}, notFoundErr).Times(1)
 	mockRepo.EXPECT().Create(mon).Return(mon, nil).Times(1)
+	mockCacheService.EXPECT().RemoveItem(tenantMonitorsCacheKey).Return(nil).Times(1)
+
 	mockCacheService.EXPECT().SetItem(cacheKey, mon, time.Minute*10).Return(nil).Times(1)
 
 	returnedMonitor, err := monitorService.CreateMonitor(tenant, mon)

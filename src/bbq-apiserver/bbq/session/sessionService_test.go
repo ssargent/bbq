@@ -383,6 +383,7 @@ func TestCreateSession(t *testing.T) {
 	}
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenant.String(), sessionid.String())
+	tenantSessionCacheKey := fmt.Sprintf("bbq$sessions$%s", tenant.String())
 
 	session := getSession(42, tenant, sessionid)
 	sessionRecord := getSessionRecord(42, tenant, sessionid)
@@ -405,6 +406,7 @@ func TestCreateSession(t *testing.T) {
 	mockSubjectService.EXPECT().GetOrCreateSubject(tenant, sub.Name, sub.Description).Return(sub, nil).Times(1)
 	mockSubjectService.EXPECT().GetSubjectByID(tenant, sub.Uid).Return(sub, nil).Times(1)
 	mockRepo.EXPECT().Create(tenant, sessionRecord).Return(sessionRecord, nil).Times(1)
+	mockCacheService.EXPECT().RemoveItem(tenantSessionCacheKey).Return(nil).Times(1)
 	mockCacheService.EXPECT().SetItem(cacheKey, session, time.Minute*10).Return(nil).Times(1)
 
 	createdSession, err := sessionService.CreateSession(tenant, session)

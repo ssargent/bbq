@@ -138,9 +138,11 @@ func TestCreateDevice(t *testing.T) {
 	//var returnedDevice bbq.Device
 
 	cacheKey := fmt.Sprintf("bbq$devices$%s$%s", tenant.String(), "My Device")
+	tenantDevicesCacheKey := fmt.Sprintf("bbq$devices$%s", tenant.String())
 
 	mockRepo.EXPECT().GetByName(tenant, "My Device").Return(bbq.Device{}, notFoundErr).Times(1)
 	mockRepo.EXPECT().Create(dev).Return(dev, nil).Times(1)
+	mockCacheService.EXPECT().RemoveItem(tenantDevicesCacheKey)
 	mockCacheService.EXPECT().SetItem(cacheKey, dev, time.Minute*10).Return(nil).Times(1)
 
 	returnedDevice, err := deviceService.CreateDevice(tenant, dev)

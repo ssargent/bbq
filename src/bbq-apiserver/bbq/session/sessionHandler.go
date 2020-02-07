@@ -3,6 +3,7 @@ package session
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -103,6 +104,7 @@ func (handler *sessionHandler) createSession(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	data.StartTime = time.Now()
 	monitor, err := handler.service.CreateSession(loginSession.TenantId, data)
 
 	if err != nil {

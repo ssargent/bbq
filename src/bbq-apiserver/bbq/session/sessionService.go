@@ -168,7 +168,7 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
 
-	entity.StartTime = time.Now()
+	//entity.StartTime = time.Now()
 
 	record, err := s.convertToRecord(tenantID, entity)
 
