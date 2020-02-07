@@ -13,6 +13,7 @@ type subjectRepository struct {
 	database *sql.DB
 }
 
+// NewSubjectRepository wtse-1
 func NewSubjectRepository(database *sql.DB) bbq.SubjectRepository {
 	return &subjectRepository{database: database}
 }
@@ -28,6 +29,34 @@ type SubjectRepository interface {
 }
 
 */
+
+func (s *subjectRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Subject, error) {
+	var subjects []bbq.Subject
+	query := `select id, uid, name, description, tenantid from bbq.subjects
+		      where (tenantid = $1 or tenantid is null)`
+
+	rows, err := s.database.Query(query, tenantID) //.Scan(&sub.ID, sub.Uid, sub.Name, sub.Description, sub.TenantID)
+
+	if err != nil {
+		return []bbq.Subject{}, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var sub bbq.Subject
+		if err := rows.Scan(&sub.ID, &sub.Uid, &sub.Name, &sub.Description, &sub.TenantID); err != nil {
+			return nil, err
+		}
+		subjects = append(subjects, sub)
+	}
+
+	return subjects, nil
+}
 
 func (s *subjectRepository) GetByID(tenantID uuid.UUID, id uuid.UUID) (bbq.Subject, error) {
 	var sub bbq.Subject

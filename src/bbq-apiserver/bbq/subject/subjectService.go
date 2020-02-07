@@ -3,6 +3,7 @@ package subject
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/ssargent/bbq/bbq-apiserver/bbq"
@@ -17,6 +18,25 @@ type subjectService struct {
 // NewSubjectService will create an MonitorService
 func NewSubjectService(cache infrastructure.CacheService, repository bbq.SubjectRepository) bbq.SubjectService {
 	return &subjectService{repository: repository, cache: cache}
+}
+
+func (s *subjectService) GetSubjects(tenantID uuid.UUID) ([]bbq.Subject, error) {
+	cacheKey := fmt.Sprintf("bbq$subjects$%s", tenantID.String())
+
+	var subjects []bbq.Subject
+
+	if err := s.cache.GetItem(cacheKey, &subjects); err == nil {
+		return subjects, nil
+	}
+
+	subjects, err := s.repository.GetByTenantID(tenantID)
+	if err != nil {
+		return []bbq.Subject{}, err
+	}
+
+	s.cache.SetItem(cacheKey, subjects, time.Minute*10)
+
+	return subjects, nil
 }
 
 func (s *subjectService) GetOrCreateSubject(tenantID uuid.UUID, name string, description string) (bbq.Subject, error) {
@@ -38,8 +58,8 @@ func (s *subjectService) GetOrCreateSubject(tenantID uuid.UUID, name string, des
 	return subject, err
 }
 
-func (s *subjectService) GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (bbq.Subject, error) {
-	subject, err := s.repository.GetByID(tenantID, subjectId)
+func (s *subjectService) GetSubjectByID(tenantID uuid.UUID, subjectID uuid.UUID) (bbq.Subject, error) {
+	subject, err := s.repository.GetByID(tenantID, subjectID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

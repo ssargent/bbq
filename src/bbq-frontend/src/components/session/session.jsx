@@ -21,18 +21,27 @@ export default function Sessions() {
     fetchData();
   }, [sessionid]);
 
-  const endTime = data.endtime ? moment(data.endtime.Time) : moment();
-  const startTime = moment(data.starttime);
+  let duration = {};
 
-  var duration = moment.duration(endTime.diff(startTime));
+  if (data.endtime && data.endtime.Valid) {
+    const endTime = data.endtime ? moment(data.endtime.Time) : moment();
+    const startTime = moment(data.starttime);
+    duration = moment.duration(endTime.diff(startTime));
+  } else {
+    const endTime = moment();
+    const startTime = moment(data.starttime);
+    duration = moment.duration(endTime.diff(startTime));
+  }
 
   return (
     <div style={{ marginTop: "50px" }}>
+      <h1>{data.name}</h1>
+      {(!data.endtime || data.endtime.Valid == false) && (
+        <div className="alert alert-info">
+          This cook has no endtime and is likely still in progress.
+        </div>
+      )}
       <table className="table">
-        <tr>
-          <th>Name</th>
-          <td>{data.name}</td>
-        </tr>
         <tr>
           <th>Description</th>
           <td>{data.description}</td>

@@ -444,6 +444,21 @@ func (mr *MockSubjectRepositoryMockRecorder) GetByName(arg0, arg1 interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByName", reflect.TypeOf((*MockSubjectRepository)(nil).GetByName), arg0, arg1)
 }
 
+// GetByTenantID mocks base method
+func (m *MockSubjectRepository) GetByTenantID(arg0 uuid.UUID) ([]bbq.Subject, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByTenantID", arg0)
+	ret0, _ := ret[0].([]bbq.Subject)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByTenantID indicates an expected call of GetByTenantID
+func (mr *MockSubjectRepositoryMockRecorder) GetByTenantID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByTenantID", reflect.TypeOf((*MockSubjectRepository)(nil).GetByTenantID), arg0)
+}
+
 // Update mocks base method
 func (m *MockSubjectRepository) Update(arg0 bbq.Subject) (bbq.Subject, error) {
 	m.ctrl.T.Helper()
@@ -861,4 +876,19 @@ func (m *MockSubjectService) GetSubjectByID(arg0, arg1 uuid.UUID) (bbq.Subject, 
 func (mr *MockSubjectServiceMockRecorder) GetSubjectByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubjectByID", reflect.TypeOf((*MockSubjectService)(nil).GetSubjectByID), arg0, arg1)
+}
+
+// GetSubjects mocks base method
+func (m *MockSubjectService) GetSubjects(arg0 uuid.UUID) ([]bbq.Subject, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSubjects", arg0)
+	ret0, _ := ret[0].([]bbq.Subject)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSubjects indicates an expected call of GetSubjects
+func (mr *MockSubjectServiceMockRecorder) GetSubjects(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubjects", reflect.TypeOf((*MockSubjectService)(nil).GetSubjects), arg0)
 }

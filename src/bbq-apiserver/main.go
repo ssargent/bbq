@@ -80,6 +80,7 @@ func Routes(c *config.Config) *chi.Mux {
 
 	subjectRepository := subject.NewSubjectRepository(c.Database)
 	subjectService := subject.NewSubjectService(caching, subjectRepository)
+	subjectHandler := subject.NewSubjectHandler(c, authentication, subjectService)
 
 	sessionRepository := session.NewSessionRepository(c.Database)
 
@@ -104,6 +105,7 @@ func Routes(c *config.Config) *chi.Mux {
 			r.Mount("/bbq/devices", deviceHandler.Routes())
 			r.Mount("/bbq/monitors", monitorHandler.Routes())
 			r.Mount("/bbq/sessions", sessionHandler.Routes())
+			r.Mount("/bbq/subjects", subjectHandler.Routes())
 			r.Mount("/{tenantkey}/data/temperature", temperatureAPI.TenantRoutes())
 
 			r.Mount("/data/sensors", sensorReadingHandler.Routes())

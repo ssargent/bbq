@@ -22,7 +22,7 @@ func NewDeviceRepository(database *sql.DB) bbq.DeviceRepository {
 func (d *deviceRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Device, error) {
 	var devices []bbq.Device
 	rows, err := d.database.Query(
-		"SELECT id, name, description, tenantid FROM bbq.devices  where tenantid = $1", tenantID)
+		"SELECT id, name, description, tenantid, uid FROM bbq.devices  where tenantid = $1", tenantID)
 
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (d *deviceRepository) GetByTenantID(tenantID uuid.UUID) ([]bbq.Device, erro
 
 	for rows.Next() {
 		var dev bbq.Device
-		if err := rows.Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID); err != nil {
+		if err := rows.Scan(&dev.ID, &dev.Name, &dev.Description, &dev.TenantID, &dev.Uid); err != nil {
 			return nil, err
 		}
 		devices = append(devices, dev)

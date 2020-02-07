@@ -8,6 +8,8 @@ import { API_SERVER } from "../../config";
 export default function AdvancedCreateSession(props) {
   const [showModal, setShowModal] = useState(false);
   const [devices, setDevices] = useState([]);
+  const [error, setError] = useState({});
+  const [subjects, setSubjects] = useState([]);
 
   const toggle = () => {
     setShowModal(!showModal);
@@ -15,8 +17,17 @@ export default function AdvancedCreateSession(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await transport.get(`${API_SERVER}v1/bbq/devices`);
-      setDevices(result.data);
+      try {
+        const result = await transport.get(`${API_SERVER}v1/bbq/devices`);
+        setDevices(result.data);
+
+        const subjectsResult = await transport.get(
+          `${API_SERVER}v1/bbq/subjects`
+        );
+        setSubjects(subjectsResult.data);
+      } catch (apiError) {
+        setError(apiError);
+      }
     };
 
     fetchData();

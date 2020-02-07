@@ -133,11 +133,13 @@ type MonitorRepository interface {
 }
 
 type SubjectService interface {
+	GetSubjects(tenantID uuid.UUID) ([]Subject, error)
 	GetOrCreateSubject(tenantID uuid.UUID, name string, description string) (Subject, error)
 	GetSubjectByID(tenantID uuid.UUID, subjectId uuid.UUID) (Subject, error)
 }
 
 type SubjectRepository interface {
+	GetByTenantID(tenantID uuid.UUID) ([]Subject, error)
 	GetByID(tenantID uuid.UUID, subjectID uuid.UUID) (Subject, error)
 	GetByName(tenantID uuid.UUID, name string) (Subject, error)
 	Create(entity Subject) (Subject, error)

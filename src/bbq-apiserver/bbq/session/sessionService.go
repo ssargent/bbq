@@ -168,7 +168,7 @@ func (s *sessionService) convertToRecord(tenantID uuid.UUID, record bbq.Session)
 
 func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (bbq.Session, error) {
 
-	//entity.StartTime = time.Now()
+	entity.StartTime = time.Now()
 
 	record, err := s.convertToRecord(tenantID, entity)
 
@@ -187,6 +187,9 @@ func (s *sessionService) CreateSession(tenantID uuid.UUID, entity bbq.Session) (
 	if err != nil {
 		return bbq.Session{}, err
 	}
+
+	// drop the tenant level cache
+	s.cache.RemoveItem(fmt.Sprintf("bbq$sessions$%s", tenantID.String()))
 
 	cacheKey := fmt.Sprintf("bbq$sessions$%s$%s", tenantID.String(), createdSession.UID.String())
 

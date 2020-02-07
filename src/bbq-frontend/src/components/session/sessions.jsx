@@ -5,32 +5,37 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { transport } from "../../transport";
 import { API_SERVER } from "../../config";
-import AdvancedCreateSession from "./advancedCreateSession";
+import CreateSession from "./createSession";
 
 export default function Sessions() {
   const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await transport.get(`${API_SERVER}v1/bbq/sessions`);
-      setData(result.data);
-    };
 
+  const fetchData = async () => {
+    const result = await transport.get(`${API_SERVER}v1/bbq/sessions`);
+    setData(result.data);
+  };
+  useEffect(() => {
     fetchData();
   }, []);
 
-  console.log(data);
+  const createSession = async s => {
+    const resp = await transport.post("v1/bbq/sessions", s);
+    await fetchData();
+    return true;
+  };
+
   return (
     <div>
       <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
         <h1 className="h2">Cooking Sessions</h1>
       </div>
       <div className="bbq-button-strip">
-        <AdvancedCreateSession
+        <CreateSession
           buttonClassName="btn btn-outline-success btn-sm margin-bottom-10"
           buttonText="Start Cooking!"
           title="Let's Cook Something"
-          saveSession={m => {
-            this.createMonitor(m);
+          saveSession={s => {
+            return createSession(s);
           }}
         />
       </div>

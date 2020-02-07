@@ -5,6 +5,7 @@ import axios from "axios";
 import { useHistory, useLocation } from "react-router-dom";
 import { Button } from "reactstrap";
 import { API_SERVER } from "../config";
+import "./pageLogin.css";
 
 export default function PageLogin({}) {
   let history = useHistory();
@@ -41,37 +42,41 @@ export default function PageLogin({}) {
   };
 
   return (
-    <div className="row">
-      <div className="col-md-3 offset-md-4" style={{ paddingTop: "300px" }}>
-        <div>
-          <h4>The World's Most Over Engineered BBQ Thermometer</h4>
-          <div>Please Login</div>
-        </div>
-        <form className="form-login" style={{ paddingTop: "15px" }}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Your Login"
-              onChange={e => setLogin(e.target.value)}
-              value={login}
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Your Password"
-              onChange={e => setPassword(e.target.value)}
-              value={password}
-            />
-          </div>
-        </form>
+    <div className="container h-100" style={{ marginTop: "300px" }}>
+      <div className="row h-100 justify-content-center align-items-center">
+        <div className="card text-white bg-secondary  mb-3  ">
+          <div className="card-header">Please Login</div>
+          <div class="card-body">
+            <div>
+              <h4>The World's Most Over Engineered BBQ Thermometer</h4>
+            </div>
+            <form className="form-login" style={{ paddingTop: "15px" }}>
+              <div className="form-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Your Login"
+                  onChange={e => setLogin(e.target.value)}
+                  value={login}
+                />
+              </div>
+              <div className="form-group">
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Your Password"
+                  onChange={e => setPassword(e.target.value)}
+                  value={password}
+                />
+              </div>
+            </form>
 
-        <div className="pull-right">
-          <Button color="primary" onClick={onLogin}>
-            Login
-          </Button>
+            <div className="text-right">
+              <Button color="primary" onClick={onLogin}>
+                Login
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
