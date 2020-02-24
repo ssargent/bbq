@@ -24,7 +24,6 @@ export default function BbqLayout() {
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
             <Switch>
               <PrivateRoute path="/devices" comp={Devices} />
-
               <PrivateRoute path="/" exact={true} comp={Dashboard} />
               <PrivateRoute path="/monitors" exact={true} comp={Monitors} />
               <PrivateRoute path="/sessions" exact={true} comp={Sessions} />
