@@ -1,23 +1,27 @@
-# BBQ Store
+
+# The World's Most Over Engineered BBQ Thermometer
+
+  
 
 ## What is this?
 
-This is my version of a coding challenge that we ask new applicants to complete at the company where I work. I thought it would be fun to complete it and let my coworkers see what it was.
+  
+If you would like a more readable explanation of what this is then please check our wiki.  https://github.com/ssargent/bbq/wiki  It will do a better job of putting things into plain english than we can do here.
 
-### The Challenge
+This was the repo for the BBQ Coding Challenge. If you're looking for that, its still around just on an branch. https://github.com/ssargent/bbq/tree/dotnet-core-bbq-app This however is no longer the bbq coding challenge. See I overcooked christmas dinner. My solution? Build a kubernetes based bbq thermometer.
 
-Here's what we send to our applicants
+## The Parts
 
-We're in need of a simple three page website for one of our customers to be able to order ~~tropical fruit~~ **BBQ** for a school fund raiser. We are expecting up to 100 orders.
-
-What we need is:
-
-- Page 1: Product list page to show a list of ~~tropical fruit~~ **BBQ**
-  - There are 5 fruit total and each of them had a title, price, and a button to "Add to ~~Fruit~~ **BBQ** Cart". Other data is ok but not required.
-- Page 2: ~~Fruit~~ **BBQ** Cart. This page shows a list of the items that have been added to the ~~Fruit~~ **BBQ** cart.
-  - \_ There is field to ask for the person's name, and a button to "Order ~~Fruit~~ **BBQ** now".
-  - Just knowing the person's name is enough
-- Page 3:
-  - A thank you page that confirms that the order was completed
-
-Using your favorite tools, frameworks, platform, libraries, coding language, flat file or database, can you create this 3 page school website, and provide us with a working example, including source code? The only requirement is that you don’t pick an existing ecommerce solution to build this with.
+ 1. monitor-cli is a golang based monitor program that will pull the data off of the bluetooth thermometer and send it to the api server hosted in kubernetes (go-bbq)
+ 2. bbq-apiserver is an api server that supports rest apis now and grpc future.  It's currently a monolithic api server that provides multi-tenant support for: 
+	 - Managing BBQ Devices (Grills, Smokers etc..) 
+	 - Managing BBQ Monitors (Thermometers)
+	 - Recording and Querying Thermometer Data 
+	 - Managing Accounts
+	 - Managing Tenants
+	 - Temperature Alerts (future work)
+	 - ML Based Fault Detection - understand when a probe has failed, the grill has failed or is open etc.. (future work)
+ 3. bbq-frontend is a react based web application that lets you fully interact with your bbq thermometer.  This will be a modern and responsive web ui that will let you manage devices, monitors, accounts, alerts.
+ 4. bbq-ml will be the service that performs all machine learning (future work)
+## How do I use it
+Eventually this will be delivered as software as a service.  You buy a bluetooth thermometer and have a linux computer to run the monitor software (eventually a raspberry pi that runs headless).  But that's in the future.  Currently it works but its very much developers only.  You're welcome to try it but you'll have to know how to compile and run a golang web and cli application.  I hope to have documentation explaining this soon.
