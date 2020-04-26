@@ -1,6 +1,7 @@
 package sensors
 
 import (
+	"encoding/json"
 	"net/http"
 
 	//	"strconv"
@@ -33,6 +34,7 @@ func (handler *sensorReadingHandler) Routes() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/{sessionid}", handler.getSensorReadings)
+	router.Post("/{sessionid}", handler.addSensorReading)
 	router.Get("/{sessionid}/raw", handler.getRawSensorReadings)
 
 	return router
@@ -52,6 +54,37 @@ func (handler *sensorReadingHandler) getSensorReadings(w http.ResponseWriter, r 
 		return
 	}
 	sessionData, err := handler.service.GetReadings(tenant, sessionid)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	render.JSON(w, r, sessionData)
+}
+
+func (handler *sensorReadingHandler) addSensorReading(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+
+	tenantString := claims["tenant"].(string)
+	tenant, err := uuid.Parse(tenantString)
+
+	sessionidString := chi.URLParam(r, "sessionid")
+	sessionid, err := uuid.Parse(sessionidString)
+
+	if err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	reading := data.ThermalSensorRecord{}
+
+	if err := json.NewDecoder(r.Body).Decode(&reading); err != nil {
+		render.Render(w, r, infrastructure.ErrInvalidRequest(err))
+		return
+	}
+
+	err := handler.service.AddSensorReading(tenant, reading)
 
 	if err != nil {
 		render.Render(w, r, infrastructure.ErrInvalidRequest(err))

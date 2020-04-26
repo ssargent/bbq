@@ -48,3 +48,10 @@ func (s *sensorReadingService) GetRawReadings(tenantID uuid.UUID, sessionid uuid
 
 	return rawReadingData, nil
 }
+
+func (s *sensorReadingService) AddSensorReading(tenantID uuid.UUID, reading data.ThermalSensorRecord) error {
+	// Validate session is open and active
+	// Validate user can write to session
+	// Put reading in redis.
+	return s.repository.InsertSensorReading(tenantID, reading)
+}

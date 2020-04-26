@@ -57,3 +57,16 @@ func scanReadingRows(row *sql.Rows) (data.ThermalSensorRecord, error) {
 
 	return t, nil
 }
+
+func (s *sensorReadingRepository) InsertSensorReading(tenantID uuid.UUID, reading data.ThermalSensorRecord) error {
+
+	insertStatement := `insert into data.bbq_temp_readings
+	(probe0, probe1, probe2, probe3, recordedat, sessionid)
+	values 
+	($1, $2, $3, $4, now(), $5)
+	`
+	_, err := s.database.Exec(insertStatement, reading.Probe0, reading.Probe1, reading.Probe2, reading.Probe3, reading.SessionId)
+	//.Scan(&createdDevice.ID, &createdDevice.Name, &createdDevice.Description, &createdDevice.TenantID, &createdDevice.Uid)
+
+	return err
+}

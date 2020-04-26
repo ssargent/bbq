@@ -21,6 +21,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -119,7 +120,7 @@ func recordReadings(temps []float64) {
 
 // Flesh this out more.. it should log in and grab a bearer token.
 func doLogin(loginname string, password string) (string, error) {
-	url := "http://localhost:21337/v1/system/accounts/login"
+	url := "https://bbq.k8s.mythicalcodelabs.com/v1/system/accounts/login"
 
 	login := loginModel{LoginName: loginname, Password: password}
 
@@ -129,8 +130,13 @@ func doLogin(loginname string, password string) (string, error) {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("cache-control", "no-cache")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
 
+	if err != nil {
+		fmt.Println(err.Error())
+
+		return "", err
+	}
 	defer res.Body.Close()
 
 	var result loginResult
@@ -150,6 +156,13 @@ func findActiveSession(monitorAddress string) (string, error) {
 
 func main() {
 
+	cfg := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+	http.DefaultClient.Transport = &http.Transport{
+		TLSClientConfig: cfg,
+	}
+
 	username := os.Args[1]
 	password := os.Args[2]
 	session := os.Args[3]
@@ -160,7 +173,7 @@ func main() {
 		fmt.Println("Login to bbq.k8s.ssargent.net failed")
 		return
 	}
-	urlF := "http://localhost:21337/v1/development/data/temperature/%s"
+	urlF := "https://bbq.k8s.mythicalcodelabs.com/v1/development/data/temperature/%s"
 	url := fmt.Sprintf(urlF, session)
 
 	connection = bbqConnection{Token: bearerToken, Url: url}
