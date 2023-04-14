@@ -1,2 +1,0 @@
-docker run --name docker-nginx -p 8080:80 -d -v D:/source/github.com/ssargent/bbq/source/bbq-frontend/build:/usr/share/nginx/html -v D:/source/github.com/ssargent/bbq/source/bbq-frontend/default.conf:/etc/nginx/conf.d/default.conf  nginx
- 
