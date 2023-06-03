@@ -1,3 +1,18 @@
+# github.com/JuulLabs-OSS/cbgo v0.0.1
+## explicit; go 1.14
+github.com/JuulLabs-OSS/cbgo
+# github.com/go-ble/ble v0.0.0-20230130210458-dd4b07d15402
+## explicit; go 1.13
+github.com/go-ble/ble
+github.com/go-ble/ble/darwin
+github.com/go-ble/ble/linux
+github.com/go-ble/ble/linux/adv
+github.com/go-ble/ble/linux/att
+github.com/go-ble/ble/linux/gatt
+github.com/go-ble/ble/linux/hci
+github.com/go-ble/ble/linux/hci/cmd
+github.com/go-ble/ble/linux/hci/evt
+github.com/go-ble/ble/linux/hci/socket
 # github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0
 ## explicit; go 1.13
 github.com/go-task/slim-sprig
@@ -11,6 +26,21 @@ github.com/google/pprof/profile
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+## explicit
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/mattn/go-colorable v0.1.6
+## explicit; go 1.13
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.12
+## explicit; go 1.12
+github.com/mattn/go-isatty
+# github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b
+## explicit
+github.com/mgutz/ansi
+# github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab
+## explicit
+github.com/mgutz/logxi/v1
 # github.com/onsi/ginkgo/v2 v2.2.0
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2/config
@@ -29,6 +59,9 @@ github.com/onsi/ginkgo/v2/internal/interrupt_handler
 github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
+# github.com/pkg/errors v0.8.1
+## explicit
+github.com/pkg/errors
 # github.com/quic-go/qtls-go1-19 v0.2.1
 ## explicit; go 1.19
 github.com/quic-go/qtls-go1-19
@@ -51,12 +84,22 @@ github.com/quic-go/quic-go/internal/utils/linkedlist
 github.com/quic-go/quic-go/internal/wire
 github.com/quic-go/quic-go/logging
 github.com/quic-go/quic-go/quicvarint
+# github.com/raff/goble v0.0.0-20190909174656-72afc67d6a99
+## explicit
+github.com/raff/goble/xpc
+# github.com/sirupsen/logrus v1.5.0
+## explicit; go 1.13
+github.com/sirupsen/logrus
 # github.com/spf13/cobra v1.7.0
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
+# github.com/sworisbreathing/go-ibbq/v2 v2.0.0-20220601123153-2891c9740049
+## explicit; go 1.12
+github.com/sworisbreathing/go-ibbq/v2
+github.com/sworisbreathing/go-ibbq/v2/os
 # go.uber.org/atomic v1.7.0
 ## explicit; go 1.13
 go.uber.org/atomic
