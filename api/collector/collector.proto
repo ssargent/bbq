@@ -1,0 +1,26 @@
+syntax = "proto3";
+package collector;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/ssargent/bbq/baste/pkg/bbqpb"
+
+message Sensor {
+    string name = 1;
+    string manufacturer = 2;
+    int32 sensor_count = 3;
+    string temperature_unit = 4;
+    string sensor_id = 5;
+}
+
+message SensorReading {
+    int32 sensor_number = 1;
+    float temperature = 2;
+}
+
+message Reading {
+    Sensor sensor = 1;
+    repeated SensorReading = 2;
+    google.protobuf.Timestamp recorded_at = 3;
+}
+

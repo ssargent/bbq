@@ -1,0 +1,20 @@
+syntax = "proto3";
+package collector;
+
+import "google/protobuf/timestamp.proto";
+import "./collector.proto";
+
+option go_package = "github.com/ssargent/bbq/baste/pkg/bbqpb"
+
+message RecordRequest {
+    Reading reading = 1;
+}
+
+message RecordResponse {
+    string session_id = 1;
+    google.protobuf.Timestamp recorded_at = 2;
+}
+
+service CollectorService {
+    rpc Record(RecordRequest) returns (RecordResponse) {}
+}
