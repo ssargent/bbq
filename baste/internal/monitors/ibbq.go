@@ -57,6 +57,7 @@ func BbqRunMain() {
 	if err = bbq.Connect(); err != nil {
 		fmt.Printf("Error connecting to device %s, %+v\n", "err", err)
 	}
+
 	fmt.Printf("Connected to device\n")
 	<-ctx.Done()
 	<-done
