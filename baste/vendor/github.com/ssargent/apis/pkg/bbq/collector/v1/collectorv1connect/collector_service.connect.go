@@ -35,11 +35,15 @@ const (
 const (
 	// CollectorServiceRecordProcedure is the fully-qualified name of the CollectorService's Record RPC.
 	CollectorServiceRecordProcedure = "/bbq.collector.v1.CollectorService/Record"
+	// CollectorServiceSessionProcedure is the fully-qualified name of the CollectorService's Session
+	// RPC.
+	CollectorServiceSessionProcedure = "/bbq.collector.v1.CollectorService/Session"
 )
 
 // CollectorServiceClient is a client for the bbq.collector.v1.CollectorService service.
 type CollectorServiceClient interface {
 	Record(context.Context, *connect_go.Request[v1.RecordRequest]) (*connect_go.Response[v1.RecordResponse], error)
+	Session(context.Context, *connect_go.Request[v1.SessionRequest]) (*connect_go.Response[v1.SessionResponse], error)
 }
 
 // NewCollectorServiceClient constructs a client for the bbq.collector.v1.CollectorService service.
@@ -57,12 +61,18 @@ func NewCollectorServiceClient(httpClient connect_go.HTTPClient, baseURL string,
 			baseURL+CollectorServiceRecordProcedure,
 			opts...,
 		),
+		session: connect_go.NewClient[v1.SessionRequest, v1.SessionResponse](
+			httpClient,
+			baseURL+CollectorServiceSessionProcedure,
+			opts...,
+		),
 	}
 }
 
 // collectorServiceClient implements CollectorServiceClient.
 type collectorServiceClient struct {
-	record *connect_go.Client[v1.RecordRequest, v1.RecordResponse]
+	record  *connect_go.Client[v1.RecordRequest, v1.RecordResponse]
+	session *connect_go.Client[v1.SessionRequest, v1.SessionResponse]
 }
 
 // Record calls bbq.collector.v1.CollectorService.Record.
@@ -70,9 +80,15 @@ func (c *collectorServiceClient) Record(ctx context.Context, req *connect_go.Req
 	return c.record.CallUnary(ctx, req)
 }
 
+// Session calls bbq.collector.v1.CollectorService.Session.
+func (c *collectorServiceClient) Session(ctx context.Context, req *connect_go.Request[v1.SessionRequest]) (*connect_go.Response[v1.SessionResponse], error) {
+	return c.session.CallUnary(ctx, req)
+}
+
 // CollectorServiceHandler is an implementation of the bbq.collector.v1.CollectorService service.
 type CollectorServiceHandler interface {
 	Record(context.Context, *connect_go.Request[v1.RecordRequest]) (*connect_go.Response[v1.RecordResponse], error)
+	Session(context.Context, *connect_go.Request[v1.SessionRequest]) (*connect_go.Response[v1.SessionResponse], error)
 }
 
 // NewCollectorServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -87,6 +103,11 @@ func NewCollectorServiceHandler(svc CollectorServiceHandler, opts ...connect_go.
 		svc.Record,
 		opts...,
 	))
+	mux.Handle(CollectorServiceSessionProcedure, connect_go.NewUnaryHandler(
+		CollectorServiceSessionProcedure,
+		svc.Session,
+		opts...,
+	))
 	return "/bbq.collector.v1.CollectorService/", mux
 }
 
@@ -95,4 +116,8 @@ type UnimplementedCollectorServiceHandler struct{}
 
 func (UnimplementedCollectorServiceHandler) Record(context.Context, *connect_go.Request[v1.RecordRequest]) (*connect_go.Response[v1.RecordResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("bbq.collector.v1.CollectorService.Record is not implemented"))
+}
+
+func (UnimplementedCollectorServiceHandler) Session(context.Context, *connect_go.Request[v1.SessionRequest]) (*connect_go.Response[v1.SessionResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("bbq.collector.v1.CollectorService.Session is not implemented"))
 }

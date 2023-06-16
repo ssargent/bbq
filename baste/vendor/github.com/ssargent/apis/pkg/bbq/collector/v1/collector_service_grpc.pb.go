@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CollectorService_Record_FullMethodName = "/bbq.collector.v1.CollectorService/Record"
+	CollectorService_Record_FullMethodName  = "/bbq.collector.v1.CollectorService/Record"
+	CollectorService_Session_FullMethodName = "/bbq.collector.v1.CollectorService/Session"
 )
 
 // CollectorServiceClient is the client API for CollectorService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CollectorServiceClient interface {
 	Record(ctx context.Context, in *RecordRequest, opts ...grpc.CallOption) (*RecordResponse, error)
+	Session(ctx context.Context, in *SessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
 }
 
 type collectorServiceClient struct {
@@ -46,11 +48,21 @@ func (c *collectorServiceClient) Record(ctx context.Context, in *RecordRequest, 
 	return out, nil
 }
 
+func (c *collectorServiceClient) Session(ctx context.Context, in *SessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
+	out := new(SessionResponse)
+	err := c.cc.Invoke(ctx, CollectorService_Session_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CollectorServiceServer is the server API for CollectorService service.
 // All implementations must embed UnimplementedCollectorServiceServer
 // for forward compatibility
 type CollectorServiceServer interface {
 	Record(context.Context, *RecordRequest) (*RecordResponse, error)
+	Session(context.Context, *SessionRequest) (*SessionResponse, error)
 	mustEmbedUnimplementedCollectorServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedCollectorServiceServer struct {
 
 func (UnimplementedCollectorServiceServer) Record(context.Context, *RecordRequest) (*RecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Record not implemented")
+}
+func (UnimplementedCollectorServiceServer) Session(context.Context, *SessionRequest) (*SessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Session not implemented")
 }
 func (UnimplementedCollectorServiceServer) mustEmbedUnimplementedCollectorServiceServer() {}
 
@@ -92,6 +107,24 @@ func _CollectorService_Record_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CollectorService_Session_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollectorServiceServer).Session(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CollectorService_Session_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollectorServiceServer).Session(ctx, req.(*SessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CollectorService_ServiceDesc is the grpc.ServiceDesc for CollectorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var CollectorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Record",
 			Handler:    _CollectorService_Record_Handler,
+		},
+		{
+			MethodName: "Session",
+			Handler:    _CollectorService_Session_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

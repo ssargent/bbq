@@ -5,6 +5,10 @@ github.com/JuulLabs-OSS/cbgo
 ## explicit; go 1.19
 github.com/bufbuild/connect-go
 github.com/bufbuild/connect-go/internal/gen/connectext/grpc/status/v1
+# github.com/bufbuild/connect-grpcreflect-go v1.1.0
+## explicit; go 1.19
+github.com/bufbuild/connect-grpcreflect-go
+github.com/bufbuild/connect-grpcreflect-go/internal/gen/go/connectext/grpc/reflection/v1
 # github.com/go-ble/ble v0.0.0-20230130210458-dd4b07d15402
 ## explicit; go 1.13
 github.com/go-ble/ble
@@ -17,6 +21,13 @@ github.com/go-ble/ble/linux/hci
 github.com/go-ble/ble/linux/hci/cmd
 github.com/go-ble/ble/linux/hci/evt
 github.com/go-ble/ble/linux/hci/socket
+# github.com/go-chi/chi v1.5.4
+## explicit; go 1.16
+github.com/go-chi/chi
+# github.com/go-chi/chi/v5 v5.0.8
+## explicit; go 1.14
+github.com/go-chi/chi/v5
+github.com/go-chi/chi/v5/middleware
 # github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0
 ## explicit; go 1.13
 github.com/go-task/slim-sprig
@@ -35,12 +46,30 @@ github.com/golang/protobuf/ptypes/timestamp
 # github.com/google/pprof v0.0.0-20210407192527-94a9f03dee38
 ## explicit; go 1.14
 github.com/google/pprof/profile
+# github.com/google/uuid v1.3.0
+## explicit
+github.com/google/uuid
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
+# github.com/jmoiron/sqlx v1.3.5
+## explicit; go 1.10
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/joho/godotenv v1.5.1
+## explicit; go 1.12
+github.com/joho/godotenv
+# github.com/kelseyhightower/envconfig v1.4.0
+## explicit
+github.com/kelseyhightower/envconfig
 # github.com/konsorten/go-windows-terminal-sequences v1.0.1
 ## explicit
 github.com/konsorten/go-windows-terminal-sequences
+# github.com/lib/pq v1.2.0
+## explicit
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
 # github.com/mattn/go-colorable v0.1.6
 ## explicit; go 1.13
 github.com/mattn/go-colorable
@@ -71,6 +100,9 @@ github.com/onsi/ginkgo/v2/internal/interrupt_handler
 github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
+# github.com/patrickmn/go-cache v2.1.0+incompatible
+## explicit
+github.com/patrickmn/go-cache
 # github.com/pkg/errors v0.8.1
 ## explicit
 github.com/pkg/errors
@@ -108,7 +140,7 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/ssargent/apis v0.0.0-20230607024903-cc07995292fd
+# github.com/ssargent/apis v0.0.0-20230616033420-00ea486a0d03
 ## explicit; go 1.20
 github.com/ssargent/apis/pkg/bbq/collector/v1
 github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect
@@ -156,6 +188,7 @@ golang.org/x/mod/semver
 golang.org/x/net/bpf
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
+golang.org/x/net/http2/h2c
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/iana
