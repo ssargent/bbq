@@ -4,11 +4,15 @@ import "time"
 
 type Config struct {
 	Port     int
+	Grpc     GrpcConfig
 	Database DatabaseConfig
 	Cache    CacheConfig
 	Services ServiceConfig
 }
 
+type GrpcConfig struct {
+	Port int `split_words:"true" default:"41337"`
+}
 type DatabaseConfig struct {
 	Driver   string `split_words:"true" default:"postgres"`
 	Username string `split_words:"true" default:"bbq"`

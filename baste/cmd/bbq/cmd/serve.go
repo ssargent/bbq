@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/ssargent/bbq/cmd/bbq/internal"
 	"github.com/ssargent/bbq/cmd/bbq/internal/config"
+	"go.uber.org/zap"
 )
 
 var runEnvFile string
@@ -30,7 +31,13 @@ var serveCmd = &cobra.Command{
 	 - Management API
 	 - gRPC API`,
 	Run: func(cmd *cobra.Command, args []string) {
-		api, err := server()
+
+		logger, err := zap.NewProduction()
+		if err != nil {
+			log.Fatalf("zap.NewProduction(): %s", err.Error())
+		}
+
+		api, err := server(logger)
 		if err != nil {
 			log.Fatalf("server: %w", err)
 		}
@@ -56,7 +63,8 @@ func init() {
 	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func server() (*internal.API, error) {
+func server(logger *zap.Logger) (*internal.API, error) {
+
 	if err := godotenv.Load(runEnvFile); err != nil {
 		return nil, fmt.Errorf("godotenv.Load: %w", err)
 	}
@@ -76,7 +84,7 @@ func server() (*internal.API, error) {
 	fmt.Printf("Connecting to %s\n", safeDb)
 
 	cache := cache.New(cfg.Cache.DefaultExpiration, cfg.Cache.DefaultCleanup)
-	return internal.NewApi(&cfg, cache, db), nil
+	return internal.NewApi(logger, &cfg, cache, db), nil
 }
 
 func database(cfg *config.Config) (*sqlx.DB, string, error) {

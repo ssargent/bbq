@@ -49,6 +49,14 @@ github.com/google/pprof/profile
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
+# github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
+## explicit; go 1.14
+github.com/grpc-ecosystem/go-grpc-middleware
+github.com/grpc-ecosystem/go-grpc-middleware/logging
+github.com/grpc-ecosystem/go-grpc-middleware/logging/settable
+github.com/grpc-ecosystem/go-grpc-middleware/logging/zap
+github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap
+github.com/grpc-ecosystem/go-grpc-middleware/tags
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
@@ -140,10 +148,11 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/ssargent/apis v0.0.0-20230616033420-00ea486a0d03
+# github.com/ssargent/apis v0.0.0-20230626234513-554a164239cf
 ## explicit; go 1.20
 github.com/ssargent/apis/pkg/bbq/collector/v1
 github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect
+github.com/ssargent/apis/pkg/bbq/intake/v1
 # github.com/sworisbreathing/go-ibbq/v2 v2.0.0-20220601123153-2891c9740049
 ## explicit; go 1.12
 github.com/sworisbreathing/go-ibbq/v2
@@ -272,6 +281,8 @@ google.golang.org/grpc/internal/transport/networktype
 google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
 google.golang.org/grpc/peer
+google.golang.org/grpc/reflection
+google.golang.org/grpc/reflection/grpc_reflection_v1alpha
 google.golang.org/grpc/resolver
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
