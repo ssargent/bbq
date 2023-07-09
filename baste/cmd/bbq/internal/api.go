@@ -99,7 +99,7 @@ func (a *API) grpc(errors chan<- error, wg *sync.WaitGroup) {
 			grpc_ctxtags.StreamServerInterceptor(grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.CodeGenRequestFieldExtractor)),
 			grpc_zap.StreamServerInterceptor(a.logger, opts...),
 		))
-	intake.RegisterIntake(grpcServer)
+	intake.RegisterIntake(grpcServer, a.cfg, a.cache, a.DB, a.logger)
 	reflection.Register(grpcServer)
 	if err := grpcServer.Serve(lis); err != nil {
 		errors <- err

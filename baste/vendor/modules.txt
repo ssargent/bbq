@@ -9,6 +9,9 @@ github.com/bufbuild/connect-go/internal/gen/connectext/grpc/status/v1
 ## explicit; go 1.19
 github.com/bufbuild/connect-grpcreflect-go
 github.com/bufbuild/connect-grpcreflect-go/internal/gen/go/connectext/grpc/reflection/v1
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
 # github.com/go-ble/ble v0.0.0-20230130210458-dd4b07d15402
 ## explicit; go 1.13
 github.com/go-ble/ble
@@ -114,6 +117,9 @@ github.com/patrickmn/go-cache
 # github.com/pkg/errors v0.8.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
 # github.com/quic-go/qtls-go1-19 v0.2.1
 ## explicit; go 1.19
 github.com/quic-go/qtls-go1-19
@@ -153,6 +159,10 @@ github.com/spf13/pflag
 github.com/ssargent/apis/pkg/bbq/collector/v1
 github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect
 github.com/ssargent/apis/pkg/bbq/intake/v1
+# github.com/stretchr/testify v1.8.0
+## explicit; go 1.13
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
 # github.com/sworisbreathing/go-ibbq/v2 v2.0.0-20220601123153-2891c9740049
 ## explicit; go 1.12
 github.com/sworisbreathing/go-ibbq/v2
@@ -192,7 +202,7 @@ golang.org/x/mod/internal/lazyregexp
 golang.org/x/mod/modfile
 golang.org/x/mod/module
 golang.org/x/mod/semver
-# golang.org/x/net v0.8.0
+# golang.org/x/net v0.9.0
 ## explicit; go 1.17
 golang.org/x/net/bpf
 golang.org/x/net/http/httpguts
@@ -206,14 +216,14 @@ golang.org/x/net/internal/timeseries
 golang.org/x/net/ipv4
 golang.org/x/net/ipv6
 golang.org/x/net/trace
-# golang.org/x/sys v0.6.0
+# golang.org/x/sys v0.7.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.8.0
+# golang.org/x/text v0.9.0
 ## explicit; go 1.17
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
@@ -233,10 +243,10 @@ golang.org/x/tools/internal/gocommand
 golang.org/x/tools/internal/gopathwalk
 golang.org/x/tools/internal/imports
 golang.org/x/tools/internal/typeparams
-# google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
+# google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.55.0
+# google.golang.org/grpc v1.56.1
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -288,6 +298,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
+google.golang.org/grpc/test/bufconn
 # google.golang.org/protobuf v1.30.0
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
@@ -322,3 +333,6 @@ google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
