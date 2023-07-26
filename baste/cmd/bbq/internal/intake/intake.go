@@ -2,19 +2,18 @@ package intake
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-
-	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/patrickmn/go-cache"
 	pb "github.com/ssargent/apis/pkg/bbq/intake/v1"
 	"github.com/ssargent/bbq/cmd/bbq/internal/config"
+	"github.com/ssargent/bbq/internal/repository"
 	"github.com/ssargent/bbq/internal/services"
+	"github.com/ssargent/bbq/pkg/bbq"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 type intakeServer struct {
@@ -34,7 +33,7 @@ func RegisterIntake(server *grpc.Server, cfg *config.Config, cache *cache.Cache,
 }
 
 func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *sqlx.DB, logger *zap.Logger) *intakeServer {
-	intake := services.NewIntakeService(cache, db, logger)
+	intake := services.NewIntakeService(cache, logger, db, &repository.Queries{})
 	return &intakeServer{
 		intake: intake,
 		cfg:    cfg,
@@ -45,39 +44,88 @@ func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *sqlx.DB, logger
 }
 
 func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.RecordResponse, error) {
-	data, err := proto.Marshal(in)
-	if err != nil {
-		return nil, fmt.Errorf("proto.Marshal: %w", err)
+	var sensorReadingCount int
+	var actualSensorReadingCount int
+
+	// Getting the full count of readings helps us to not have to reallocate the array often.
+	for _, r := range in.Reading {
+		sensorReadingCount += len(r.Readings)
 	}
 
-	jsonData, err := json.Marshal(in)
-	if err != nil {
-		return nil, fmt.Errorf("json.Marshal: %w", err)
+	readings := make([]*bbq.SensorReading, sensorReadingCount)
+
+	for _, rding := range in.Reading {
+		sessionID, err := uuid.Parse(rding.SessionId)
+		if err != nil {
+			return nil, fmt.Errorf("uuid.Parse(SessionId): %w", err)
+		}
+
+		for _, r := range rding.Readings {
+			reading := bbq.SensorReading{}
+			reading.SessionID = sessionID
+			reading.ProbeNumber = r.SensorNumber
+			reading.Temperature = float64(r.Temperature)
+			reading.ReadingOccurred = rding.RecordedAt
+
+			readings[actualSensorReadingCount] = &reading
+			sensorReadingCount++
+		}
 	}
 
-	fmt.Printf("size of proto: %d, size of json: %d\nproto data := %v\n json version := %s\n", len(data), len(jsonData), data, string(jsonData))
+	if err := s.intake.CreateReadings(ctx, readings); err != nil {
+		return nil, fmt.Errorf("CreateReadings: %w", err)
+	}
 
+	// need to redo this.
 	return &pb.RecordResponse{
 		SessionId: "test123",
 	}, nil
 }
 
 func (s *intakeServer) Session(ctx context.Context, in *pb.SessionRequest) (*pb.SessionResponse, error) {
-	sessionID, err := uuid.NewUUID()
-	if err != nil {
-		return nil, fmt.Errorf("NewUUID: %w", err)
+	var session bbq.Session
+
+	session.Description = in.Description
+	session.DeviceName = in.DeviceName
+	session.SensorName = in.SensorName
+
+	if in.DesiredState == nil {
+		session.DesiredState = uuid.Nil
+	} else {
+		desiredState, err := uuid.Parse(*in.DesiredState)
+		if err != nil {
+			return nil, fmt.Errorf("uuid.Parse(DesiredState) %w", err)
+		}
+
+		session.DesiredState = desiredState
 	}
 
-	// s.intake.CreateSession(ctx)
+	if in.SubjectId == nil {
+		session.SubjectID = uuid.Nil
+	} else {
+		subjectId, err := uuid.Parse(*in.SubjectId)
+		if err != nil {
+			return nil, fmt.Errorf("uuid.Parse(SubjectId): %w", err)
+		}
+
+		session.SubjectID = subjectId
+	}
+
+	created, err := s.intake.CreateSession(ctx, &session)
+	if err != nil {
+		return nil, fmt.Errorf("CreateSession: %w", err)
+	}
 
 	resp := pb.SessionResponse{
 		Session: &pb.Session{
-			Id:   sessionID.String(),
-			Name: in.Name,
-			DataRate: &pb.SessionDataRate{
-				Sensors:           8,
-				MaxReadingsMinute: 120,
-			},
+			Id:           created.ID.String(),
+			DeviceId:     created.DeviceID.String(),
+			DesiredState: created.DesiredState.String(),
+			Description:  created.Description,
+			StartTime:    created.StartTime,
+			SensorId:     created.SensorID.String(),
+			SessionType:  fmt.Sprintf("%d", created.SessionType),
+			SubjectId:    created.SubjectID.String(),
 		},
 	}
 

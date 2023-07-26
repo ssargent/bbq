@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// datacollectorCmd represents the datacollector command
+// datacollectorCmd represents the datacollector command.
 var datacollectorCmd = &cobra.Command{
 	Use:   "datacollector",
 	Short: "A brief description of your command",

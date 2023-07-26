@@ -29,7 +29,8 @@ create schema bbq;
 CREATE TABLE bbq.devices (
     id uuid NOT NULL,
     name character varying(128) NOT NULL,
-    location character varying(128) NOT NULL
+    location character varying(128) NOT NULL,
+    is_default boolean NOT NULL
 );
 
 
@@ -42,8 +43,7 @@ ALTER TABLE bbq.devices OWNER TO scott;
 
 CREATE TABLE bbq.sensor_readings (
     id uuid NOT NULL,
-    session_id uuid NOT NULL,
-    sensor_id uuid NOT NULL,
+    session_id uuid NOT NULL, 
     probe_number integer NOT NULL,
     temperature double precision NOT NULL,
     reading_occurred bigint NOT NULL
@@ -60,7 +60,8 @@ ALTER TABLE bbq.sensor_readings OWNER TO scott;
 CREATE TABLE bbq.sensors (
     id uuid NOT NULL,
     name character varying(128) NOT NULL,
-    description text NOT NULL
+    description text NOT NULL,
+    is_default boolean NOT NULL
 );
 
 
@@ -75,9 +76,12 @@ CREATE TABLE bbq.sessions (
     id uuid NOT NULL,
     device_id uuid NOT NULL,
     desired_state uuid NOT NULL,
-    description uuid NOT NULL,
+    description varchar(128) NOT NULL,
     start_time bigint NOT NULL,
-    end_time bigint
+    end_time bigint,
+    sensor_id uuid NOT NULL,
+    session_type int NOT NULL,
+    subject_id uuid NOT NULL
 );
 
 

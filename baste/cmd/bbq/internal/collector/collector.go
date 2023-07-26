@@ -6,17 +6,15 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	collectorv1 "github.com/ssargent/apis/pkg/bbq/collector/v1"
 	"github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CollectorConfig struct {
 }
 
 func NewCollectorServiceHandler() (string, http.Handler, error) {
-
 	path, handler := collectorv1connect.NewCollectorServiceHandler(&collectorServiceServer{})
 
 	return path, handler, nil

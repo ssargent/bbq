@@ -10,7 +10,7 @@ import (
 	"github.com/ssargent/bbq/internal/monitors"
 )
 
-// ibbqCmd represents the ibbq command
+// ibbqCmd represents the ibbq command.
 var ibbqCmd = &cobra.Command{
 	Use:   "ibbq",
 	Short: "A brief description of your command",

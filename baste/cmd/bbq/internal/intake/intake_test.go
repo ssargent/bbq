@@ -40,12 +40,11 @@ func TestIntakeServer_Session_Grpc(t *testing.T) {
 	}{
 		"success": {
 			in: &pb.SessionRequest{
-				Name: "test122",
+				Description: "test122",
 			},
 			want: func(got *pb.SessionResponse, err error) {
 				require.NoError(t, err)
 				require.NotNil(t, got)
-
 			},
 		},
 	}
@@ -73,7 +72,7 @@ func TestIntakeServer_Session_Server(t *testing.T) {
 	}{
 		"success": {
 			in: &pb.SessionRequest{
-				Name: "test122",
+				Description: "test122",
 			},
 			want: func(got *pb.SessionResponse, err error) {
 				require.NoError(t, err)

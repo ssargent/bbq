@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -10,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// collectorCmd represents the collector command
+// collectorCmd represents the collector command.
 var collectorCmd = &cobra.Command{
 	Use:   "collector",
 	Short: "A brief description of your command",

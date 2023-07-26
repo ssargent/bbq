@@ -12,10 +12,14 @@ import (
 
 type Querier interface {
 	DeleteSubjectState(ctx context.Context, db DBTX, id uuid.UUID) error
+	GetDefaultDevice(ctx context.Context, db DBTX) (*BbqDevice, error)
+	GetDefaultSensor(ctx context.Context, db DBTX) (*BbqSensor, error)
 	GetDeviceByID(ctx context.Context, db DBTX, id uuid.UUID) (*BbqDevice, error)
+	GetDeviceByName(ctx context.Context, db DBTX, name string) (*BbqDevice, error)
 	GetDevices(ctx context.Context, db DBTX) ([]*BbqDevice, error)
 	GetReadingsBySessionID(ctx context.Context, db DBTX, sessionID uuid.UUID) ([]*BbqSensorReading, error)
 	GetSensorByID(ctx context.Context, db DBTX, id uuid.UUID) (*BbqSensor, error)
+	GetSensorByName(ctx context.Context, db DBTX, name string) (*BbqSensor, error)
 	GetSensors(ctx context.Context, db DBTX) ([]*BbqSensor, error)
 	GetSessionByID(ctx context.Context, db DBTX, id uuid.UUID) (*BbqSession, error)
 	GetSessions(ctx context.Context, db DBTX) ([]*BbqSession, error)

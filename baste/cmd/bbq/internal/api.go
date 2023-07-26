@@ -16,15 +16,14 @@ import (
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/jmoiron/sqlx"
 	"github.com/patrickmn/go-cache"
+	"github.com/ssargent/bbq/cmd/bbq/internal/collector"
+	"github.com/ssargent/bbq/cmd/bbq/internal/config"
+	"github.com/ssargent/bbq/cmd/bbq/internal/intake"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-
-	"github.com/ssargent/bbq/cmd/bbq/internal/collector"
-	"github.com/ssargent/bbq/cmd/bbq/internal/config"
-	"github.com/ssargent/bbq/cmd/bbq/internal/intake"
 )
 
 var (

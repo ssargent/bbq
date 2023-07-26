@@ -16,6 +16,9 @@ type SensorReading struct {
 
 type Session struct {
 	repository.BbqSession
+
+	DeviceName *string `json:"device_name,omitempty"`
+	SensorName *string `json:"sensor_name,omitempty"`
 }
 
 type Subject struct {

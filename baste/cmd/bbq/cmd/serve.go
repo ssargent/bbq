@@ -21,7 +21,7 @@ import (
 
 var runEnvFile string
 
-// serveCmd represents the serve command
+// serveCmd represents the serve command.
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "BBQ Server Daemon",
@@ -64,7 +64,6 @@ func init() {
 }
 
 func server(logger *zap.Logger) (*internal.API, error) {
-
 	if err := godotenv.Load(runEnvFile); err != nil {
 		return nil, fmt.Errorf("godotenv.Load: %w", err)
 	}
@@ -109,5 +108,4 @@ func explainConfig(cfg *config.Config) {
 	fmt.Printf("Config.Cache.DefaultExpiration := %s\n", cfg.Cache.DefaultExpiration)
 	fmt.Printf("Config.Cache.DefaultCleanup := %s\n", cfg.Cache.DefaultCleanup)
 	fmt.Println("-----------------")
-
 }

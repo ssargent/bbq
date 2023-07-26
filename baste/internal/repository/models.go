@@ -11,21 +11,22 @@ import (
 )
 
 type BbqDevice struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
-	Location string    `json:"location"`
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Location  string    `json:"location"`
+	IsDefault bool      `json:"is_default"`
 }
 
 type BbqSensor struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	IsDefault   bool      `json:"is_default"`
 }
 
 type BbqSensorReading struct {
 	ID              uuid.UUID `json:"id"`
 	SessionID       uuid.UUID `json:"session_id"`
-	SensorID        uuid.UUID `json:"sensor_id"`
 	ProbeNumber     int32     `json:"probe_number"`
 	Temperature     float64   `json:"temperature"`
 	ReadingOccurred int64     `json:"reading_occurred"`
@@ -35,9 +36,12 @@ type BbqSession struct {
 	ID           uuid.UUID     `json:"id"`
 	DeviceID     uuid.UUID     `json:"device_id"`
 	DesiredState uuid.UUID     `json:"desired_state"`
-	Description  uuid.UUID     `json:"description"`
+	Description  string        `json:"description"`
 	StartTime    int64         `json:"start_time"`
 	EndTime      sql.NullInt64 `json:"end_time"`
+	SensorID     uuid.UUID     `json:"sensor_id"`
+	SessionType  int32         `json:"session_type"`
+	SubjectID    uuid.UUID     `json:"subject_id"`
 }
 
 type BbqSubject struct {

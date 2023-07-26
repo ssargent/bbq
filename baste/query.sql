@@ -4,6 +4,12 @@ select * from bbq.devices;
 -- name: GetDeviceByID :one
 select * from bbq.devices where id = $1;
 
+-- name: GetDeviceByName :one 
+select * from bbq.devices where name = $1;
+
+-- name: GetDefaultDevice :one
+select * from bbq.devices where is_default = true;
+
 -- name: InsertDevice :one 
 insert into bbq.devices
 (name, location)
@@ -23,6 +29,12 @@ select * from bbq.sensors;
 -- name: GetSensorByID :one
 select * from bbq.sensors where id = $1;
 
+-- name: GetSensorByName :one
+select * from bbq.sensors where name = $1;
+
+-- name: GetDefaultSensor :one
+select * from bbq.sensors where is_default = true;
+
 -- name: InsertSensor :one 
 insert into bbq.sensors
 (name, description)
@@ -38,9 +50,9 @@ returning *;
 
 -- name: InsertSensorReading :exec
 insert into bbq.sensor_readings
-(session_id, sensor_id, probe_number, temperature, reading_occurred)
+(session_id, probe_number, temperature, reading_occurred)
 values
-($1, $2, $3, $4, $5);
+($1, $2, $3, $4);
 
 -- name: GetReadingsBySessionID :many
 select * from bbq.sensor_readings 
@@ -49,9 +61,9 @@ order by reading_occurred desc, probe_number desc;
 
 -- name: InsertSession :one
 insert into bbq.sessions
-(device_id, desired_state, description, start_time)
+(device_id, desired_state, description, start_time, sensor_id, session_type, subject_id)
 values 
-($1, $2, $3, $4)
+($1, $2, $3, $4, $5, $6, $7)
 returning *;
 
 -- name: GetSessions :many
