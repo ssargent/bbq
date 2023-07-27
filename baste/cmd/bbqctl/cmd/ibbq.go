@@ -4,7 +4,8 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"context"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/ssargent/bbq/internal/monitors"
@@ -21,8 +22,10 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("ibbq called")
-		monitors.BbqRunMain()
+		ctx := context.Background()
+		if err := monitors.BbqRunMain2(ctx); err != nil {
+			log.Fatalf("BbqRunMain2: %s", err.Error())
+		}
 	},
 }
 

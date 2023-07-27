@@ -7,3 +7,17 @@ revendor:
 .PHONY: update-protos
 update-protos:
 	go get -u github.com/ssargent/apis
+
+ 
+
+.PHONY: build-linux
+build-linux:
+	rm -rf ./build/dist
+	mkdir -p ./build/dist/amd/linux
+	mkdir -p ./build/dist/arm/linux
+	GOOS=linux GOARCH=amd64 go build -o ./build/dist/amd/linux/bbqctl ./cmd/bbqctl
+	GOOS=linux GOARCH=arm64 go build -o ./build/dist/arm/linux/bbqctl ./cmd/bbqctl
+
+.PHONY: push-gimli
+push-gimli:
+	scp ./build/dist/amd/linux/bbqctl scott@gimli:/home/scott/bbqctl

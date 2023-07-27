@@ -64,6 +64,35 @@ func BbqRunMain() {
 	fmt.Printf("Exiting\n")
 }
 
+func BbqRunMain2(ctx context.Context) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	registerInterruptHandler(cancel)
+
+	ctx = ble.WithSigHandler(ctx, cancel)
+	done := make(chan struct{})
+
+	config, err := ibbq.NewConfiguration(60*time.Second, 5*time.Minute)
+	if err != nil {
+		return fmt.Errorf("ibbq.NewConfiguration: %w", err)
+	}
+
+	bbq, err := ibbq.NewIbbq(ctx, config, disconnectedHandler(cancel, done), temperatureReceived, batteryLevelReceived, statusUpdated)
+	if err != nil {
+		return fmt.Errorf("ibbq.NewIbbq (hint: run with sudo): %w", err)
+	}
+
+	if err = bbq.Connect(); err != nil {
+		return fmt.Errorf("bbq.Connect: %w", err)
+	}
+
+	<-ctx.Done()
+	<-done
+
+	return nil
+}
+
 func registerInterruptHandler(cancel context.CancelFunc) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
