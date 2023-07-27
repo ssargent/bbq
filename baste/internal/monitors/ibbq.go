@@ -84,6 +84,8 @@ func BbqRunMain2(ctx context.Context) error {
 	}
 
 	if err = bbq.Connect(); err != nil {
+		// this error will be context.Canceled if its a timeout.
+		// refactor this to connect in a loop.
 		return fmt.Errorf("bbq.Connect: %w", err)
 	}
 
