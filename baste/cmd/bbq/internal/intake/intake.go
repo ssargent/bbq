@@ -68,8 +68,14 @@ func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.Re
 			reading.ReadingOccurred = rding.RecordedAt
 
 			readings[actualSensorReadingCount] = &reading
-			sensorReadingCount++
+			actualSensorReadingCount++
 		}
+	}
+
+	if actualSensorReadingCount != sensorReadingCount {
+		s.logger.Warn("actual sensor reading count does not match expected",
+			zap.Int("actualSensorReadingCount", actualSensorReadingCount),
+			zap.Int("expectedSensorReadingCount", sensorReadingCount))
 	}
 
 	if err := s.intake.CreateReadings(ctx, readings); err != nil {

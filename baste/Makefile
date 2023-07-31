@@ -21,3 +21,12 @@ build-linux:
 .PHONY: push-gimli
 push-gimli:
 	scp ./build/dist/amd/linux/bbqctl scott@gimli:/home/scott/bbqctl
+
+.PHONY: run-local
+run-local: build-bbq
+	./bin/bbq serve -e .env/development.env 
+
+.PHONY: build-bbq
+build-bbq:
+	go build -o ./bin/bbq ./cmd/bbq
+

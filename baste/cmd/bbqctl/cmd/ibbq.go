@@ -23,8 +23,8 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		if err := monitors.BbqRunMain2(ctx); err != nil {
-			log.Fatalf("BbqRunMain2: %s", err.Error())
+		if err := monitors.BbqRunMain(ctx); err != nil {
+			log.Fatalf("BbqRunMain: %s", err.Error())
 		}
 	},
 }

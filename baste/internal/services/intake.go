@@ -55,6 +55,9 @@ func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.Sens
 	// we can get readings in bulk, stopping the madness of a ton of grpc overhead.
 	// create the parameters for insert here.
 	for _, r := range readings {
+		if r == nil {
+			continue
+		}
 		reading := &repository.InsertSensorReadingParams{
 			SessionID:   r.SessionID,
 			ProbeNumber: r.ProbeNumber,

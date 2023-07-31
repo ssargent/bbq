@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -64,8 +65,14 @@ func init() {
 }
 
 func server(logger *zap.Logger) (*internal.API, error) {
-	if err := godotenv.Load(runEnvFile); err != nil {
-		return nil, fmt.Errorf("godotenv.Load: %w", err)
+	// in production we don't want to use something.env type files.
+	// get our values from the orchestration layer itself.
+	// but in development, its super useful.
+	// so check to see if file even exists before trying to do the godotenv
+	if _, err := os.Stat(runEnvFile); err == nil {
+		if err := godotenv.Load(runEnvFile); err != nil {
+			return nil, fmt.Errorf("godotenv.Load: %w", err)
+		}
 	}
 
 	var cfg config.Config
