@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -54,6 +55,11 @@ func (s *IntakeService) CreateSession(ctx context.Context, session *bbq.Session)
 func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.SensorReading) error {
 	// we can get readings in bulk, stopping the madness of a ton of grpc overhead.
 	// create the parameters for insert here.
+	txn, err := s.db.BeginTxx(ctx, &sql.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("db.BeginTxx: %w", err)
+	}
+
 	for _, r := range readings {
 		if r == nil {
 			continue
@@ -69,9 +75,18 @@ func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.Sens
 			ReadingOccurred: r.ReadingOccurred,
 		}
 
-		if err := s.queries.InsertSensorReading(ctx, s.db, reading); err != nil {
+		if err := s.queries.InsertSensorReading(ctx, txn, reading); err != nil {
+			txerr := txn.Rollback()
+			if txerr != nil {
+				return fmt.Errorf("txn.Rollback: %w, Original: InsertSensorReading: %w", txerr, err)
+			}
+
 			return fmt.Errorf("InsertSensorReading: %w", err)
 		}
+	}
+
+	if err := txn.Commit(); err != nil {
+		return fmt.Errorf("txn.Commit: %w", err)
 	}
 
 	return nil
