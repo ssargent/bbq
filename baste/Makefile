@@ -8,8 +8,6 @@ revendor:
 update-protos:
 	go get -u github.com/ssargent/apis
 
- 
-
 .PHONY: build-linux
 build-linux:
 	rm -rf ./build/dist
