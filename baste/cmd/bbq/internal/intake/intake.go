@@ -3,6 +3,7 @@ package intake
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -14,6 +15,7 @@ import (
 	"github.com/ssargent/bbq/pkg/bbq"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type intakeServer struct {
@@ -52,6 +54,15 @@ func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.Re
 		sensorReadingCount += len(r.Readings)
 	}
 
+	intakeSessionID := uuid.Nil
+	if len(in.Reading) > 0 {
+		sessionID, err := uuid.Parse(in.Reading[0].SessionId)
+		if err != nil {
+			return nil, fmt.Errorf("uuid.Parse(SessionId): %w", err)
+		}
+		intakeSessionID = sessionID
+	}
+
 	readings := make([]*bbq.SensorReading, sensorReadingCount)
 
 	for _, rding := range in.Reading {
@@ -84,7 +95,8 @@ func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.Re
 
 	// need to redo this.
 	return &pb.RecordResponse{
-		SessionId: "test123",
+		SessionId:  intakeSessionID.String(),
+		RecordedAt: timestamppb.New(time.Now()),
 	}, nil
 }
 
