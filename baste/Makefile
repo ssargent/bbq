@@ -28,3 +28,10 @@ run-local: build-bbq
 build-bbq:
 	go build -o ./bin/bbq ./cmd/bbq
 
+PHONY: export-schema
+export-schema:
+	@pg_dump --schema-only -d bbqd > ./sql/schema.sql
+
+.PHONY: generate
+generate: export-schema
+	@sqlc generate

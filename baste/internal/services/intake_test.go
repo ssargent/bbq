@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
-	"github.com/ssargent/bbq/internal/repository"
+	"github.com/ssargent/bbq/internal/bbq/repository"
 	"github.com/ssargent/bbq/pkg/bbq"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -15,7 +15,7 @@ import (
 
 func TestIntakeService_CreateSession(t *testing.T) {
 	type args struct {
-		db      *sqlx.DB
+		db      *pgxpool.Pool
 		cache   *cache.Cache
 		logger  *zap.Logger
 		queries repository.Querier
@@ -51,7 +51,7 @@ func TestIntakeService_CreateSession(t *testing.T) {
 
 func TestIntakeService_CreateReadings(t *testing.T) {
 	type fields struct {
-		db      *sqlx.DB
+		db      *pgxpool.Pool
 		cache   *cache.Cache
 		logger  *zap.Logger
 		queries repository.Querier
@@ -84,7 +84,7 @@ func TestIntakeService_CreateReadings(t *testing.T) {
 
 func TestIntakeService_prepareSession(t *testing.T) {
 	type fields struct {
-		db      *sqlx.DB
+		db      *pgxpool.Pool
 		cache   *cache.Cache
 		logger  *zap.Logger
 		queries repository.Querier

@@ -14,11 +14,11 @@ import (
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
 	"github.com/ssargent/bbq/cmd/bbq/internal/collector"
-	"github.com/ssargent/bbq/cmd/bbq/internal/config"
 	"github.com/ssargent/bbq/cmd/bbq/internal/intake"
+	"github.com/ssargent/bbq/internal/config"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -33,11 +33,11 @@ var (
 type API struct {
 	cfg    *config.Config
 	cache  *cache.Cache
-	DB     *sqlx.DB
+	DB     *pgxpool.Pool
 	logger *zap.Logger
 }
 
-func NewApi(logger *zap.Logger, cfg *config.Config, cache *cache.Cache, db *sqlx.DB) *API {
+func NewApi(logger *zap.Logger, cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool) *API {
 	// setup any services here...  Add those to the API Struct...
 	return &API{
 		logger: logger,

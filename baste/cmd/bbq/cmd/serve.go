@@ -4,23 +4,22 @@ Copyright © 2023 Scott Sargent <scott.sargent@gmail.com>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq" // <------------ here
 	"github.com/patrickmn/go-cache"
 	"github.com/spf13/cobra"
 	"github.com/ssargent/bbq/cmd/bbq/internal"
-	"github.com/ssargent/bbq/cmd/bbq/internal/config"
+	"github.com/ssargent/bbq/internal/config"
 	"go.uber.org/zap"
 )
-
-var runEnvFile string
 
 // serveCmd represents the serve command.
 var serveCmd = &cobra.Command{
@@ -52,7 +51,6 @@ var serveCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serveCmd)
 
-	serveCmd.Flags().StringVarP(&runEnvFile, "environment-file", "e", ".env", "contains environment settings")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
@@ -93,13 +91,15 @@ func server(logger *zap.Logger) (*internal.API, error) {
 	return internal.NewApi(logger, &cfg, cache, db), nil
 }
 
-func database(cfg *config.Config) (*sqlx.DB, string, error) {
+func database(cfg *config.Config) (*pgxpool.Pool, string, error) {
 	dbUriSafe := fmt.Sprintf("postgres://%s:xxxxxxxxxxx@%s/%s?sslmode=disable", cfg.Database.Username, cfg.Database.Server, cfg.Database.Name)
+
+	//TODO: Change this to cfg.Database.Uri()
 	dbURI := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", cfg.Database.Username, strings.TrimSpace(cfg.Database.Password), cfg.Database.Server, cfg.Database.Name)
 
-	db, err := sqlx.Connect(cfg.Database.Driver, dbURI)
+	pool, err := pgxpool.New(context.Background(), dbURI)
 
-	return db, dbUriSafe, err
+	return pool, dbUriSafe, err
 }
 
 func explainConfig(cfg *config.Config) {

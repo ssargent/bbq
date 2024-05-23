@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
 	pb "github.com/ssargent/apis/pkg/bbq/intake/v1"
-	"github.com/ssargent/bbq/cmd/bbq/internal/config"
-	"github.com/ssargent/bbq/internal/repository"
+	"github.com/ssargent/bbq/internal/bbq/repository"
+	"github.com/ssargent/bbq/internal/config"
 	"github.com/ssargent/bbq/internal/services"
 	"github.com/ssargent/bbq/pkg/bbq"
 	"go.uber.org/zap"
@@ -23,18 +23,18 @@ type intakeServer struct {
 
 	cfg    *config.Config
 	cache  *cache.Cache
-	db     *sqlx.DB
+	db     *pgxpool.Pool
 	logger *zap.Logger
 
 	intake *services.IntakeService
 }
 
 // todo(scott): this should take in the service directly, not construct it.
-func RegisterIntake(server *grpc.Server, cfg *config.Config, cache *cache.Cache, db *sqlx.DB, logger *zap.Logger) {
+func RegisterIntake(server *grpc.Server, cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) {
 	pb.RegisterIntakeServiceServer(server, newIntakeServer(cfg, cache, db, logger))
 }
 
-func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *sqlx.DB, logger *zap.Logger) *intakeServer {
+func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) *intakeServer {
 	intake := services.NewIntakeService(cache, logger, db, &repository.Queries{})
 	return &intakeServer{
 		intake: intake,
