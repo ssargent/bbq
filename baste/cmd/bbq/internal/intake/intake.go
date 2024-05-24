@@ -3,23 +3,34 @@ package intake
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
+	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
-	pb "github.com/ssargent/apis/pkg/bbq/intake/v1"
+	intakev1 "github.com/ssargent/apis/pkg/bbq/intake/v1"
+	"github.com/ssargent/apis/pkg/bbq/intake/v1/intakev1connect"
 	"github.com/ssargent/bbq/internal/bbq/repository"
 	"github.com/ssargent/bbq/internal/config"
 	"github.com/ssargent/bbq/internal/services"
 	"github.com/ssargent/bbq/pkg/bbq"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type intakeServer struct {
-	pb.UnsafeIntakeServiceServer
+type IntakeConfig struct {
+}
+
+func NewIntakeServiceHandler(cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) (string, http.Handler, error) {
+	path, handler := intakev1connect.NewIntakeServiceHandler(newIntakeServer(cfg, cache, db, logger))
+
+	return path, handler, nil
+}
+
+type intakeServiceServer struct {
+	intakev1connect.UnimplementedIntakeServiceHandler
 
 	cfg    *config.Config
 	cache  *cache.Cache
@@ -29,14 +40,9 @@ type intakeServer struct {
 	intake *services.IntakeService
 }
 
-// todo(scott): this should take in the service directly, not construct it.
-func RegisterIntake(server *grpc.Server, cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) {
-	pb.RegisterIntakeServiceServer(server, newIntakeServer(cfg, cache, db, logger))
-}
-
-func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) *intakeServer {
+func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, logger *zap.Logger) *intakeServiceServer {
 	intake := services.NewIntakeService(cache, logger, db, &repository.Queries{})
-	return &intakeServer{
+	return &intakeServiceServer{
 		intake: intake,
 		cfg:    cfg,
 		cache:  cache,
@@ -45,18 +51,18 @@ func newIntakeServer(cfg *config.Config, cache *cache.Cache, db *pgxpool.Pool, l
 	}
 }
 
-func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.RecordResponse, error) {
+func (i *intakeServiceServer) Record(ctx context.Context, req *connect.Request[intakev1.RecordRequest]) (*connect.Response[intakev1.RecordResponse], error) {
 	var sensorReadingCount int
 	var actualSensorReadingCount int
 
 	// Getting the full count of readings helps us to not have to reallocate the array often.
-	for _, r := range in.Reading {
+	for _, r := range req.Msg.Reading {
 		sensorReadingCount += len(r.Readings)
 	}
 
 	intakeSessionID := uuid.Nil
-	if len(in.Reading) > 0 {
-		sessionID, err := uuid.Parse(in.Reading[0].SessionId)
+	if len(req.Msg.Reading) > 0 {
+		sessionID, err := uuid.Parse(req.Msg.Reading[0].SessionId)
 		if err != nil {
 			return nil, fmt.Errorf("uuid.Parse(SessionId): %w", err)
 		}
@@ -65,18 +71,17 @@ func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.Re
 
 	readings := make([]*bbq.SensorReading, sensorReadingCount)
 
-	for _, rding := range in.Reading {
-		sessionID, err := uuid.Parse(rding.SessionId)
-		if err != nil {
-			return nil, fmt.Errorf("uuid.Parse(SessionId): %w", err)
-		}
-
+	for _, rding := range req.Msg.Reading {
 		for _, r := range rding.Readings {
+			occurredAt := rding.RecordedAt
+			if occurredAt == 0 {
+				occurredAt = time.Now().Unix()
+			}
 			reading := bbq.SensorReading{}
-			reading.SessionID = sessionID
+			reading.SessionID = intakeSessionID
 			reading.ProbeNumber = r.SensorNumber
 			reading.Temperature = float64(r.Temperature)
-			reading.ReadingOccurred = rding.RecordedAt
+			reading.ReadingOccurred = occurredAt
 
 			readings[actualSensorReadingCount] = &reading
 			actualSensorReadingCount++
@@ -84,24 +89,29 @@ func (s *intakeServer) Record(ctx context.Context, in *pb.RecordRequest) (*pb.Re
 	}
 
 	if actualSensorReadingCount != sensorReadingCount {
-		s.logger.Warn("actual sensor reading count does not match expected",
+		i.logger.Warn("actual sensor reading count does not match expected",
 			zap.Int("actualSensorReadingCount", actualSensorReadingCount),
 			zap.Int("expectedSensorReadingCount", sensorReadingCount))
 	}
 
-	if err := s.intake.CreateReadings(ctx, readings); err != nil {
+	if err := i.intake.CreateReadings(ctx, readings); err != nil {
 		return nil, fmt.Errorf("CreateReadings: %w", err)
 	}
 
-	// need to redo this.
-	return &pb.RecordResponse{
-		SessionId:  intakeSessionID.String(),
-		RecordedAt: timestamppb.New(time.Now()),
-	}, nil
+	res := connect.NewResponse[intakev1.RecordResponse](
+		&intakev1.RecordResponse{
+			SessionId:  intakeSessionID.String(),
+			RecordedAt: timestamppb.Now(),
+		},
+	)
+
+	return res, nil
 }
 
-func (s *intakeServer) Session(ctx context.Context, in *pb.SessionRequest) (*pb.SessionResponse, error) {
+func (i *intakeServiceServer) Session(ctx context.Context, req *connect.Request[intakev1.SessionRequest]) (*connect.Response[intakev1.SessionResponse], error) {
 	var session bbq.Session
+
+	in := req.Msg
 
 	session.Description = in.Description
 	session.DeviceName = in.DeviceName
@@ -129,23 +139,25 @@ func (s *intakeServer) Session(ctx context.Context, in *pb.SessionRequest) (*pb.
 		session.SubjectID = subjectId
 	}
 
-	created, err := s.intake.CreateSession(ctx, &session)
+	created, err := i.intake.CreateSession(ctx, &session)
 	if err != nil {
 		return nil, fmt.Errorf("CreateSession: %w", err)
 	}
 
-	resp := pb.SessionResponse{
-		Session: &pb.Session{
-			Id:           created.ID.String(),
-			DeviceId:     created.DeviceID.String(),
-			DesiredState: created.DesiredState.String(),
-			Description:  created.Description,
-			StartTime:    created.StartTime,
-			SensorId:     created.SensorID.String(),
-			SessionType:  fmt.Sprintf("%d", created.SessionType),
-			SubjectId:    created.SubjectID.String(),
+	res := connect.NewResponse[intakev1.SessionResponse](
+		&intakev1.SessionResponse{
+			Session: &intakev1.Session{
+				Id:           created.ID.String(),
+				DeviceId:     created.DeviceID.String(),
+				DesiredState: created.DesiredState.String(),
+				Description:  created.Description,
+				StartTime:    created.StartTime,
+				SensorId:     created.SensorID.String(),
+				SessionType:  fmt.Sprintf("%d", created.SessionType),
+				SubjectId:    created.SubjectID.String(),
+			},
 		},
-	}
+	)
 
-	return &resp, nil
+	return res, nil
 }

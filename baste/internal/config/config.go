@@ -35,6 +35,7 @@ type CacheConfig struct {
 
 type ServiceConfig struct {
 	CollectorEnabled  bool `split_words:"true" default:"false"`
+	IntakeEnabled     bool `split_words:"true" default:"false"`
 	ConsoleEnabled    bool `split_words:"true" default:"false"`
 	SimulatorEnabled  bool `split_words:"true" default:"false"`
 	PublicApiEnabled  bool `split_words:"true" default:"false"`

@@ -3,7 +3,6 @@ package internal
 import (
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"strings"
 	"sync"
@@ -11,9 +10,7 @@ import (
 	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/v5/middleware"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
 	"github.com/ssargent/bbq/cmd/bbq/internal/collector"
@@ -22,8 +19,6 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 var (
@@ -55,7 +50,7 @@ func (a *API) ListenAndServe() error {
 	wg.Add(2)
 
 	go a.rest(errorChannel, &wg)
-	go a.grpc(errorChannel, &wg)
+	//go a.grpc(errorChannel, &wg)
 
 	go func() {
 		wg.Wait()
@@ -73,7 +68,7 @@ func (a *API) ListenAndServe() error {
 	return nil
 }
 
-func (a *API) grpc(errors chan<- error, wg *sync.WaitGroup) {
+/*func (a *API) grpc(errors chan<- error, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", a.cfg.Grpc.Port))
@@ -82,11 +77,7 @@ func (a *API) grpc(errors chan<- error, wg *sync.WaitGroup) {
 	}
 
 	opts := []grpc_zap.Option{}
-	/*opts := []grpc_zap.Option{
-		grpc_zap.WithDurationField(func(duration time.Duration) zapcore.Field {
-			return zap.Int64("grpc.time_ns", duration.Nanoseconds())
-		}),
-	}*/
+
 
 	// Make sure that log statements internal to gRPC library are logged using the zapLogger as well.
 	grpc_zap.ReplaceGrpcLoggerV2(a.logger)
@@ -104,6 +95,7 @@ func (a *API) grpc(errors chan<- error, wg *sync.WaitGroup) {
 		errors <- err
 	}
 }
+*/
 
 func (a *API) rest(errors chan<- error, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -128,6 +120,18 @@ func (a *API) rest(errors chan<- error, wg *sync.WaitGroup) {
 		// Register the service for grpc reflection.  If reflection is enabled it will use this
 		// and wire it up below.
 		grpcPaths = append(grpcPaths, strings.Replace(collectorPath, "/", "", -1))
+	}
+
+	if a.cfg.Services.IntakeEnabled {
+		intakePath, intakeHandler, err := intake.NewIntakeServiceHandler(a.cfg, a.cache, a.DB, a.logger)
+		if err != nil {
+			errors <- fmt.Errorf("intake.NewIntakeServiceHandler: %w", err)
+		}
+
+		fmt.Printf("intakePath: %s\n", intakePath)
+		r.Mount(intakePath, intakeHandler)
+
+		grpcPaths = append(grpcPaths, strings.Replace(intakePath, "/", "", -1))
 	}
 
 	reflector := grpcreflect.NewStaticReflector(grpcPaths...)
