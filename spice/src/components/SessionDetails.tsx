@@ -5,7 +5,7 @@ import {
   InputLabel,
   OutlinedInput,
   Paper,
-  TextField,
+  Typography,
 } from '@mui/material';
 import { Session } from 'bbq/intake/v1/bbq_pb';
 import { useState } from 'react';
@@ -36,6 +36,9 @@ const SessionDetails = ({ session, onCreateSession }: SessionDetailsProps) => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </FormControl>
+          <Typography variant="body2" sx={{ m: 1 }}>
+            {session?.id}
+          </Typography>
         </Grid>
         <Grid item sm={12} sx={{ textAlign: 'right' }}>
           <Button variant="contained" onClick={() => createSession()}>

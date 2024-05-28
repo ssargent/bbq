@@ -1,6 +1,6 @@
-import { Grid, Paper, Slider, Typography } from '@mui/material';
+import { Button, ButtonGroup, Grid, Paper, Slider, Typography } from '@mui/material';
 import { Session } from 'bbq/intake/v1/bbq_pb';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SensorProbe {
   number: number;
@@ -11,11 +11,27 @@ interface SensorProbe {
 interface VirtualBBQProps {
   probes: SensorProbe[];
   session: Session | undefined;
+  onTemperatureChange: (temperatures: number[]) => void;
+  cooking: boolean;
+  startCooking: () => void;
+  stopCooking: () => void;
 }
 
-const VirtualBBQ = ({ probes, session }: VirtualBBQProps) => {
+const VirtualBBQ = ({
+  probes,
+  session,
+  onTemperatureChange,
+  cooking,
+  startCooking,
+  stopCooking,
+}: VirtualBBQProps) => {
   const [temperatures, setTemperature] = useState<number[]>([125, 125, 125, 125]);
   const valuetext = (value: number) => `${value}°F`;
+
+  useEffect(() => {
+    onTemperatureChange(temperatures);
+  }, [temperatures, onTemperatureChange]);
+
   return (
     <Paper elevation={2} sx={{ p: 2, m: 2 }}>
       <h2>Virtual BBQ</h2>
@@ -47,9 +63,27 @@ const VirtualBBQ = ({ probes, session }: VirtualBBQProps) => {
                   });
                 }}
               />
-            </Grid>{' '}
+            </Grid>
           </>
         ))}
+        <Grid item sm={12} sx={{ textAlign: 'right' }}>
+          <ButtonGroup>
+            <Button
+              variant="contained"
+              onClick={startCooking}
+              disabled={session === undefined || cooking}
+            >
+              Start Cooking
+            </Button>
+            <Button
+              variant="contained"
+              onClick={stopCooking}
+              disabled={session === undefined || !cooking}
+            >
+              Stop Cooking
+            </Button>
+          </ButtonGroup>
+        </Grid>
       </Grid>
     </Paper>
   );

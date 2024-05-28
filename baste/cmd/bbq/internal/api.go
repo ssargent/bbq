@@ -10,7 +10,7 @@ import (
 	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/v5/middleware"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
 	"github.com/ssargent/bbq/cmd/bbq/internal/collector"
@@ -21,9 +21,9 @@ import (
 	"golang.org/x/net/http2/h2c"
 )
 
-var (
-	customFunc grpc_zap.CodeToLevel
-)
+//var (
+//	customFunc grpc_zap.CodeToLevel
+//)
 
 type API struct {
 	cfg    *config.Config
@@ -105,6 +105,16 @@ func (a *API) rest(errors chan<- error, wg *sync.WaitGroup) {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"*"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 
 	grpcPaths := make([]string, 0)
 
