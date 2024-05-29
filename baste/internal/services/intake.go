@@ -2,20 +2,20 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/patrickmn/go-cache"
+	"github.com/ssargent/bbq/internal/bbq/repository"
 	"github.com/ssargent/bbq/internal/caching"
-	"github.com/ssargent/bbq/internal/repository"
 	"github.com/ssargent/bbq/pkg/bbq"
 	"go.uber.org/zap"
 )
 
 type IntakeService struct {
-	db      *sqlx.DB
+	db      *pgxpool.Pool
 	cache   *cache.Cache
 	logger  *zap.Logger
 	queries repository.Querier
@@ -55,7 +55,7 @@ func (s *IntakeService) CreateSession(ctx context.Context, session *bbq.Session)
 func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.SensorReading) error {
 	// we can get readings in bulk, stopping the madness of a ton of grpc overhead.
 	// create the parameters for insert here.
-	txn, err := s.db.BeginTxx(ctx, &sql.TxOptions{})
+	txn, err := s.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return fmt.Errorf("db.BeginTxx: %w", err)
 	}
@@ -76,7 +76,7 @@ func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.Sens
 		}
 
 		if err := s.queries.InsertSensorReading(ctx, txn, reading); err != nil {
-			txerr := txn.Rollback()
+			txerr := txn.Rollback(ctx)
 			if txerr != nil {
 				return fmt.Errorf("txn.Rollback: %w, Original: InsertSensorReading: %w", txerr, err)
 			}
@@ -85,7 +85,7 @@ func (s *IntakeService) CreateReadings(ctx context.Context, readings []*bbq.Sens
 		}
 	}
 
-	if err := txn.Commit(); err != nil {
+	if err := txn.Commit(ctx); err != nil {
 		return fmt.Errorf("txn.Commit: %w", err)
 	}
 
@@ -133,7 +133,7 @@ func (s *IntakeService) prepareSession(
 	return session, nil
 }
 
-func NewIntakeService(cache *cache.Cache, logger *zap.Logger, db *sqlx.DB, q repository.Querier) *IntakeService {
+func NewIntakeService(cache *cache.Cache, logger *zap.Logger, db *pgxpool.Pool, q repository.Querier) *IntakeService {
 	return &IntakeService{
 		db:      db,
 		cache:   cache,

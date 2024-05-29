@@ -1,6 +1,6 @@
 package bbq
 
-import "github.com/ssargent/bbq/internal/repository"
+import "github.com/ssargent/bbq/internal/bbq/repository"
 
 type Device struct {
 	repository.BbqDevice
