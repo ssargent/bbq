@@ -9,7 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
+var runEnvFile string
+
+// rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Use:   "bbq",
 	Short: "A brief description of your application",
@@ -40,6 +42,7 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bbq.yaml)")
 
+	rootCmd.PersistentFlags().StringVarP(&runEnvFile, "environment-file", "e", ".env/development.env", "contains environment settings")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
