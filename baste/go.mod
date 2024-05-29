@@ -16,7 +16,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/cobra v1.7.0
-	github.com/ssargent/apis v0.0.0-20240424004418-b701445b69ce
+	github.com/ssargent/public-apis v0.0.0-20240529215548-4c4bac1886be
 	github.com/stretchr/testify v1.8.3
 	github.com/sworisbreathing/go-ibbq/v2 v2.0.0-20220601123153-2891c9740049
 	go.uber.org/zap v1.24.0

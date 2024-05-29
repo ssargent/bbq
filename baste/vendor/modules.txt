@@ -141,12 +141,12 @@ github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/ssargent/apis v0.0.0-20240424004418-b701445b69ce
+# github.com/ssargent/public-apis v0.0.0-20240529215548-4c4bac1886be
 ## explicit; go 1.20
-github.com/ssargent/apis/pkg/bbq/collector/v1
-github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect
-github.com/ssargent/apis/pkg/bbq/intake/v1
-github.com/ssargent/apis/pkg/bbq/intake/v1/intakev1connect
+github.com/ssargent/public-apis/pkg/bbq/collector/v1
+github.com/ssargent/public-apis/pkg/bbq/collector/v1/collectorv1connect
+github.com/ssargent/public-apis/pkg/bbq/intake/v1
+github.com/ssargent/public-apis/pkg/bbq/intake/v1/intakev1connect
 # github.com/stretchr/testify v1.8.3
 ## explicit; go 1.20
 github.com/stretchr/testify/assert
