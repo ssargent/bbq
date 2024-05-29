@@ -6,8 +6,8 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
-	collectorv1 "github.com/ssargent/apis/pkg/bbq/collector/v1"
-	"github.com/ssargent/apis/pkg/bbq/collector/v1/collectorv1connect"
+	collectorv1 "github.com/ssargent/public-apis/pkg/bbq/collector/v1"
+	"github.com/ssargent/public-apis/pkg/bbq/collector/v1/collectorv1connect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
