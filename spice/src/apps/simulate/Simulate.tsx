@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material';
 import { TransportContext } from 'TransportContext';
 import { Reading, SensorReading, Session } from 'bbq/intake/v1/bbq_pb';
 import { RecordRequest, SessionRequest } from 'bbq/intake/v1/intake_service_pb';
@@ -11,13 +12,13 @@ const Simulate = () => {
   const { intakeService } = useBBQApiCall(transport);
   const [session, setSession] = useState<Session | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [probes, setProbes] = useState<SensorProbe[]>([
+  const probes: SensorProbe[] = [
     { number: 0, maxTemp: 1200, minTemp: 100 },
     { number: 1, maxTemp: 1200, minTemp: 100 },
     { number: 2, maxTemp: 1200, minTemp: 100 },
     { number: 3, maxTemp: 1200, minTemp: 100 },
-  ]);
-  const [intervalHandle, setIntervalHandle] = useState<number | undefined>(undefined);
+  ];
+
   const [cooking, setCooking] = useState<boolean>(false);
   const [currentTemps, setCurrentTemps] = useState<number[]>([125, 125, 125, 125]);
   const createSession = (session: Session) => {
@@ -93,6 +94,7 @@ const Simulate = () => {
   return (
     <>
       <h1>Simulate</h1>
+      {error && <Alert severity="error">{error}</Alert>}
       <SessionDetails
         session={session}
         onCreateSession={(session: Session) => {

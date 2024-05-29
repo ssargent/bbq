@@ -1,13 +1,13 @@
-import { PromiseClient, createPromiseClient } from '@connectrpc/connect';
+import { PromiseClient, Transport, createPromiseClient } from '@connectrpc/connect';
 import { IntakeService } from 'bbq/intake/v1/intake_service_connect';
 import { useEffect, useState } from 'react';
 
-const getClient = (transport: any) => {
+const getClient = (transport: Transport) => {
   const client = createPromiseClient(IntakeService, transport);
   return client;
 };
 
-const useBBQApiCall = (transport: any) => {
+const useBBQApiCall = (transport: Transport) => {
   const [intakeService, setIntakeService] = useState<
     PromiseClient<typeof IntakeService> | undefined
   >(undefined);
